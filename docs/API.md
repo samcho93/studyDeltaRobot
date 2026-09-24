@@ -107,10 +107,14 @@ robot = DeltaRobot(design=None, backend="auto", scene=None, **backend_options)
 |---|---|---|
 | `record` | 가상 시간 기록(Playground, PC 드라이런) | `time_limit=600`, `verbose=False` |
 | `websim` | PC 파이썬 → 웹 시뮬레이터 실시간 (ws://127.0.0.1:8765) | `host`, `port=8765`, `wait_connect=60` |
-| `serial` | 아두이노 펌웨어 (`J d1 d2 d3` / `T 0|1` / `E` / `?`) | `port="COM3"`, `baud=115200`, `rate=50` |
+| `serial` | 아두이노 펌웨어 (`J d1 d2 d3` / `T 0|1` / `E` / `R` / `?`) | `port="COM3"`, `baud=115200`, `rate=50` |
 | `ros2` | `/delta/joint_command`(JointState), `/delta/tool_command`(Bool), `/delta/estop`(Bool) | `node_name` |
 
 `serial`·`ros2`는 관절 속도가 모터 한계를 넘으면 `WorkspaceError`로 **거부**, `record`·`websim`은 경고만 출력.
+
+- `serial` 백엔드: `robot.backend.estop()` → `E`(서보 힘 풀림·툴 끔, 이후 명령 무시), `robot.backend.reset()` → `R`(마지막 각도로 서보 재연결, 백엔드의 비상정지 상태도 해제).
+- `ros2` 백엔드는 `ros2_ws/src/delta_robot` 의 `delta_driver` 가 떠 있어야 합니다 (`ros2 launch delta_robot display.launch.py`).
+- 메시지 형식 전체(WebSocket·시리얼·ROS 2 토픽): `docs/PROTOCOL.md`.
 
 ## 9. CLI
 

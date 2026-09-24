@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Playground — studyDeltaRobot</title>
+<meta name="description" content="브라우저에서 deltarobot 파이썬 코드를 실행하고 결과를 3D 시뮬레이터로 재생하는 Playground (Pyodide).">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<link rel="stylesheet" href="../assets/css/sim.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/file-guard.js"></script>
+<!-- CodeMirror +esm bundles pull slightly different versions of shared packages; pin one copy. -->
+<script type="importmap">
+{
+  "imports": {
+    "https://cdn.jsdelivr.net/npm/@codemirror/state@6.5.0/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/state@6.5.2/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/view@6.36.1/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.37.2/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/view@6.36.2/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.37.2/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/view@6.36.4/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.37.2/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/view@6.36.5/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.37.2/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/view@6.36.8/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.37.2/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/view@6.37.1/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.37.2/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/language@6.10.8/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/language@6.11.1/+esm",
+    "https://cdn.jsdelivr.net/npm/@codemirror/language@6.11.0/+esm": "https://cdn.jsdelivr.net/npm/@codemirror/language@6.11.1/+esm",
+    "https://cdn.jsdelivr.net/npm/@lezer/common@1.2.1/+esm": "https://cdn.jsdelivr.net/npm/@lezer/common@1.2.3/+esm",
+    "https://cdn.jsdelivr.net/npm/@marijn/find-cluster-break@1.0.0/+esm": "https://cdn.jsdelivr.net/npm/@marijn/find-cluster-break@1.0.2/+esm"
+  }
+}
+</script>
+<style>
+  html, body { height: 100%; }
+  .pg { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+  .pg-main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+  .pg-left { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); }
+  .pg-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 12px; background: var(--bg-elev); border-bottom: 1px solid var(--border); }
+  .pg-bar select { font: inherit; font-size: 12.5px; padding: 5px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg); color: var(--text); max-width: 260px; }
+  .pg-editor { flex: 1.3; min-height: 0; overflow: auto; background: #282c34; }
+  .pg-editor .cm-editor { height: 100%; font-size: 13.5px; }
+  .pg-editor .cm-scroller { font-family: var(--mono); }
+  .pg-textarea { width: 100%; height: 100%; border: 0; resize: none; padding: 12px; font: 13.5px/1.5 var(--mono); background: #282c34; color: #e6e6e6; }
+  .pg-outhead { display: flex; align-items: center; gap: 8px; padding: 5px 12px; font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--text-faint); background: var(--bg-elev); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border-soft); }
+  .pg-outhead button { margin-left: auto; }
+  .pg-out { flex: 1; min-height: 90px; overflow: auto; padding: 8px 12px; font: 12.5px/1.5 var(--mono); background: var(--bg-code); color: #d6dde6; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .ln-err { color: #fca5a5; } .ln-info { color: #7dd3fc; } .ln-ok { color: #86efac; }
+  .pg-right { display: flex; flex-direction: column; min-height: 0; }
+  .pg-right iframe { flex: 1; width: 100%; border: 0; min-height: 0; background: var(--bg); }
+  .pg-summary { padding: 8px 12px; background: var(--bg-elev); border-top: 1px solid var(--border); font-size: 12.5px; min-height: 44px; }
+  .pg-summary .d-check { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .pg-summary .d-check li { border: 0; padding: 0; }
+  .pg-status { font-size: 12px; color: var(--text-faint); margin-left: auto; }
+  .pg-status.ok { color: var(--accent); } .pg-status.bad { color: var(--danger); }
+  .d-check { list-style: none; padding: 0; }
+  .d-check li { display: flex; gap: 6px; align-items: baseline; }
+  .d-check li.ok b { color: var(--accent); } .d-check li.bad b { color: var(--danger); }
+  .tool-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tool-nav a[aria-current="page"] { color: var(--accent); border-color: var(--accent-dim); }
+  @media (max-width: 900px) {
+    .pg { height: auto; overflow: auto; }
+    .pg-main { grid-template-columns: 1fr; }
+    .pg-left { border-right: 0; }
+    .pg-editor { min-height: 320px; }
+    .pg-right iframe { height: 58vh; flex: none; }
+    .sim-top { flex-wrap: wrap; }
+    .sim-top-actions { margin-left: 0; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body class="pg">
+<header class="sim-top">
+  <a class="sim-back" href="../index.html">&larr; 강의</a>
+  <div class="sim-title"><strong>Python Playground</strong><span id="pyInfo">Pyodide 준비 중…</span></div>
+  <div class="sim-top-actions">
+    <nav class="tool-nav" aria-label="도구">
+      <a class="sim-back" href="../sim/index.html">시뮬레이터</a>
+      <a class="sim-back" href="playground.html" aria-current="page">Playground</a>
+      <a class="sim-back" href="urdf-viewer.html">URDF 뷰어</a>
+      <a class="sim-back" href="kinematics-lab.html">기구학 실험실</a>
+    </nav>
+    <button class="theme-btn" type="button" data-theme-toggle aria-label="테마 전환">테마</button>
+  </div>
+</header>
+
+<main class="pg-main">
+  <section class="pg-left">
+    <div class="pg-bar">
+      <button class="s-btn primary" id="btnRun" type="button" disabled title="Ctrl+Enter">&#9654; 실행</button>
+      <button class="s-btn" id="btnStop" type="button" disabled>&#9632; 정지</button>
+      <select id="examples" aria-label="예제"><option value="">예제 불러오기…</option></select>
+      <button class="s-btn" id="btnShare" type="button" title="코드를 담은 링크 복사">링크 복사</button>
+      <button class="s-btn" id="btnDownload" type="button" title="main.py로 저장 — PC에서 같은 코드를 backend='websim'으로 실행">.py 저장</button>
+      <span class="pg-status" id="pyStatus">준비 중…</span>
+    </div>
+    <div class="pg-editor" id="editor"></div>
+    <div class="pg-outhead">출력<button class="s-btn" id="btnClear" type="button">지우기</button></div>
+    <div class="pg-out" id="out" aria-live="polite"></div>
+  </section>
+  <section class="pg-right">
+    <iframe id="simFrame" src="../sim/index.html?embed=1" title="델타로봇 시뮬레이터 (재생)"></iframe>
+    <div class="pg-summary" id="summary">
+      <span class="hint">코드를 실행하면 기록된 동작이 위 시뮬레이터에서 재생되고, 모터 검증 결과가 여기에 표시됩니다.
+      설계·장면은 <a href="../sim/index.html">시뮬레이터</a>에서 마지막으로 고른 값을 씁니다.</span>
+    </div>
+  </section>
+</main>
+<script type="module" src="playground.js"></script>
+</body>
+</html>

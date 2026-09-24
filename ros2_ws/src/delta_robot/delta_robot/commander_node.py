@@ -83,7 +83,7 @@ class DeltaCommander(Node):
             samples = core.plan_line(self.design, start, goal, str(gp("profile").value),
                                      float(gp("speed").value) or None, float(gp("accel").value) or None)
         except core.PlanError as e:
-            self.get_logger().error("goal (%.3f, %.3f, %.3f) rejected: %s" % (goal + (e,)))
+            self.get_logger().error("goal rejected: %s" % e)
             return
         for q in samples:
             self.queue.append(("q", q))

@@ -600,7 +600,17 @@ def load_curriculum() -> dict:
     return data
 
 
+def refresh_manifest() -> None:
+    """python/manifest.json lists the deltarobot files the Playground mounts into Pyodide."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("make_manifest", ROOT / "python" / "make_manifest.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.main()
+
+
 def main() -> int:
+    refresh_manifest()
     cur = load_curriculum()
     LESSONS.mkdir(exist_ok=True)
 
