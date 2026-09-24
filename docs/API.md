@@ -83,6 +83,7 @@ robot = DeltaRobot(design=None, backend="auto", scene=None, **backend_options)
 | `home()` | 세 모터 모두 `home_theta`(0.35 rad)로 관절 보간 이동 |
 | `move_to(x, y, z, speed=None, accel=None, profile=None)` | TCP 직선 이동 |
 | `move_by(dx=0, dy=0, dz=0)` | 상대 직선 이동 |
+| `move_path(points, speed=None, accel=None, profile=None)` | 여러 TCP 점을 잇는 꺾은선을 **하나의 속도 프로파일**로 (모서리에서 멈추지 않음 — 그리기·도포용) |
 | `arch_to(x, y, z, height=0.03, radius=0)` | pick & place 아치(문) 궤적 |
 | `move_joints(t1, t2, t3, degrees=False)` | 관절 공간 이동 |
 | `move_joint_to(x, y, z)` | 목표는 TCP, 경로는 관절 보간 |

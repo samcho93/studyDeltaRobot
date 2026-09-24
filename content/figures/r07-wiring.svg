@@ -1,0 +1,42 @@
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RC 서보 델타 배선도">
+  <defs>
+    <marker id="arr-r07-wiring" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r07-wiring-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="20" y="30" width="170" height="110" rx="10"/>
+  <text class="lbl" x="105" y="56" text-anchor="middle">Arduino Uno/Nano</text>
+  <text class="sub mono" x="105" y="78" text-anchor="middle">D9 · D10 · D11 → 서보</text>
+  <text class="sub mono" x="105" y="96" text-anchor="middle">D7 → 툴 (MOSFET)</text>
+  <text class="sub mono" x="105" y="114" text-anchor="middle">USB ↔ PC 115200</text>
+  <rect class="box" x="20" y="220" width="170" height="90" rx="10"/>
+  <text class="lbl" x="105" y="248" text-anchor="middle">PC</text>
+  <text class="sub mono" x="105" y="268" text-anchor="middle">backend="serial"</text>
+  <text class="tag mono" x="105" y="288" text-anchor="middle">port="COM3" / /dev/ttyACM0</text>
+  <path class="ln" d="M105 218 L105 142" stroke-width="2" marker-end="url(#arr-r07-wiring)" marker-start="url(#arr-r07-wiring)"/>
+  <text class="tag" x="112" y="185" text-anchor="start">USB</text>
+  <rect class="box" x="270" y="220" width="170" height="90" rx="10"/>
+  <text class="lbl" x="355" y="248" text-anchor="middle">서보 전원 6 V 5 A</text>
+  <text class="sub dg" x="355" y="268" text-anchor="middle">USB 전원 사용 금지</text>
+  <text class="tag" x="355" y="288" text-anchor="middle">GND를 아두이노와 공통</text>
+  <rect class="box" x="520" y="30" width="180" height="48" rx="8"/>
+  <text class="lbl" x="610" y="50" text-anchor="middle">MG996R 서보 1</text>
+  <text class="sub mono" x="610" y="68" text-anchor="middle">신호 D9 · 6 V · GND</text>
+  <path class="ln-hi" d="M190 60 L518 54" stroke-width="1.6" marker-end="url(#arr-r07-wiring-hi)"/>
+  <path class="ln" d="M440 240 L518 60" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <rect class="box" x="520" y="92" width="180" height="48" rx="8"/>
+  <text class="lbl" x="610" y="112" text-anchor="middle">MG996R 서보 2</text>
+  <text class="sub mono" x="610" y="130" text-anchor="middle">신호 D10 · 6 V · GND</text>
+  <path class="ln-hi" d="M190 70 L518 116" stroke-width="1.6" marker-end="url(#arr-r07-wiring-hi)"/>
+  <path class="ln" d="M440 240 L518 122" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <rect class="box" x="520" y="154" width="180" height="48" rx="8"/>
+  <text class="lbl" x="610" y="174" text-anchor="middle">MG996R 서보 3</text>
+  <text class="sub mono" x="610" y="192" text-anchor="middle">신호 D11 · 6 V · GND</text>
+  <path class="ln-hi" d="M190 80 L518 178" stroke-width="1.6" marker-end="url(#arr-r07-wiring-hi)"/>
+  <path class="ln" d="M440 240 L518 184" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <rect class="box" x="520" y="230" width="180" height="70" rx="8"/>
+  <text class="lbl" x="610" y="256" text-anchor="middle">툴: 흡착 펌프 / 전자석</text>
+  <text class="sub" x="610" y="276" text-anchor="middle">MOSFET 모듈 또는 릴레이</text>
+  <text class="tag" x="610" y="292" text-anchor="middle">(유도성 부하는 다이오드)</text>
+  <path class="ln" d="M190 110 L518 262" stroke-width="1.6" marker-end="url(#arr-r07-wiring)"/>
+  <text class="sub" x="360" y="340" text-anchor="middle">점선: 6 V 서보 전원 — 신호선(실선)과 GND는 반드시 공통으로 연결</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="컨베이어 부품과 로봇이 만나는 시각 계산">
+  <defs>
+    <marker id="arr-r08-intercept" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r08-intercept-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M70 260 L490 260" stroke-width="1.6" marker-end="url(#arr-r08-intercept)"/>
+  <path class="ln" d="M70 260 L70 30" stroke-width="1.6" marker-end="url(#arr-r08-intercept)"/>
+  <text class="tag" x="490" y="280" text-anchor="end">시간 t</text>
+  <text class="tag" x="62" y="38" text-anchor="end">x</text>
+  <path class="ln-hi" d="M70 230 L470 70" stroke-width="2.4"/>
+  <text class="tag hi" x="474" y="66" text-anchor="start">부품 x(t) = x₀ + v·(t − t₀)</text>
+  <circle class="hi" cx="100" cy="215.75" r="4"/>
+  <text class="tag" x="100" y="200" text-anchor="middle">지금 t₀</text>
+  <path class="ln" d="M240 260 L240 149.25" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <circle class="box" cx="240" cy="149.25" r="4"/>
+  <text class="sub" x="240" y="278" text-anchor="middle">Δt₁</text>
+  <path class="ln" d="M320 260 L320 111.25" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <circle class="box" cx="320" cy="111.25" r="4"/>
+  <text class="sub" x="320" y="278" text-anchor="middle">Δt₂</text>
+  <path class="ln" d="M340 260 L340 101.75" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <circle class="dg" cx="340" cy="101.75" r="4"/>
+  <text class="sub" x="340" y="278" text-anchor="middle">Δt₃ ≈ Δt₂</text>
+  <rect class="box" x="510" y="30" width="200" height="230" rx="8"/>
+  <text class="lbl" x="610" y="54" text-anchor="middle">반복 계산 (3~5회)</text>
+  <text class="sub mono" x="526" y="82" text-anchor="start">Δt ← 0</text>
+  <text class="sub mono" x="526" y="106" text-anchor="start">x_hit = x₀ + v·Δt</text>
+  <text class="sub mono" x="526" y="130" text-anchor="start">경로 = arch_path(현재, x_hit)</text>
+  <text class="sub mono" x="526" y="154" text-anchor="start">Δt ← Profile(경로 길이).T</text>
+  <text class="sub mono" x="526" y="178" text-anchor="start">→ 수렴하면 arch_to(x_hit)</text>
+  <text class="tag" x="526" y="202" text-anchor="start"></text>
+  <text class="tag" x="526" y="226" text-anchor="start">v ≪ 로봇 속도라 빨리 수렴</text>
+  <text class="sub" x="360" y="312" text-anchor="middle">도착 시각에 부품이 있을 x를 겨냥 → 도착 즉시 tool_on(), 컨베이어 속도로 잠깐 따라가며 흡착</text>
+</svg>

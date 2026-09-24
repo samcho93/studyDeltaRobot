@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>델타로봇 시뮬레이터 — studyDeltaRobot</title>
+<meta name="description" content="암 길이·모터·감속기·엔드이펙터를 골라 바로 시뮬레이션하고 토크·속도·작업영역을 검증하는 델타로봇 3D 시뮬레이터.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/file-guard.js"></script>
+<link rel="stylesheet" href="../assets/css/sim.css">
+<link rel="stylesheet" href="sim.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body class="sim-page dsim">
+
+<header class="sim-top">
+  <a class="sim-back" href="../index.html">&larr; 강의</a>
+  <div class="sim-title">
+    <strong>델타로봇 시뮬레이터</strong>
+    <span id="subTitle">불러오는 중…</span>
+  </div>
+  <div class="sim-top-actions">
+    <nav class="tool-nav" aria-label="도구">
+      <a class="sim-back" href="index.html" aria-current="page">시뮬레이터</a>
+      <a class="sim-back" href="../tools/playground.html">Playground</a>
+      <a class="sim-back" href="../tools/urdf-viewer.html">URDF 뷰어</a>
+      <a class="sim-back" href="../tools/kinematics-lab.html">기구학 실험실</a>
+    </nav>
+    <span class="d-chip" id="linkChip" hidden>PC 연결됨</span>
+    <button class="d-estop" id="estop" type="button" title="비상정지 — 재생을 멈추고 연결된 PC/ROS에 estop 전송 (Esc)">
+      <span class="d-estop-dot" aria-hidden="true"></span>STOP <kbd>Esc</kbd>
+    </button>
+    <button class="theme-btn" type="button" data-theme-toggle aria-label="테마 전환">테마</button>
+    <button class="icon-btn" id="btnFit" type="button" title="화면에 맞추기" aria-label="화면에 맞추기">&#9974;</button>
+  </div>
+</header>
+
+<main class="sim-layout">
+  <section class="sim-stage" id="stage">
+    <div class="viewport" id="viewport"></div>
+
+    <div class="stage-overlay stage-tl">
+      <div class="pose-readout" id="hud">
+        <div class="pr-row"><span>TCP</span><code id="hudTcp">—</code></div>
+        <div class="pr-row"><span>θ</span><code id="hudQ">—</code></div>
+        <div class="pr-row"><span>시간</span><code id="hudT">—</code></div>
+        <div class="pr-row"><span>툴</span><code id="hudTool">—</code></div>
+      </div>
+    </div>
+
+    <div class="stage-overlay stage-bl">
+      <div class="view-chips">
+        <label class="chk"><input type="checkbox" id="optCloud"> 작업영역 점</label>
+        <label class="chk"><input type="checkbox" id="optCyl" checked> 작업 실린더</label>
+        <label class="chk"><input type="checkbox" id="optPath" checked> 경로</label>
+        <label class="chk"><input type="checkbox" id="optTrail"> TCP 궤적</label>
+      </div>
+      <div class="drop-hint">드래그 회전 &middot; 휠 확대 &middot; 우클릭 드래그 이동</div>
+    </div>
+
+    <div class="d-player" id="player">
+      <button class="s-btn" id="btnPlay" type="button" title="재생 / 일시정지 (P)">&#9654;</button>
+      <button class="s-btn" id="btnRestart" type="button" title="처음으로">&#8634;</button>
+      <input type="range" id="seek" min="0" max="1000" value="0" aria-label="재생 위치">
+      <span class="d-time" id="timeLabel">0.00 / 0.00 s</span>
+      <select id="rate" aria-label="재생 배속">
+        <option value="0.1">×0.1</option><option value="0.25">×0.25</option><option value="0.5">×0.5</option>
+        <option value="1" selected>×1</option><option value="2">×2</option><option value="4">×4</option>
+      </select>
+    </div>
+
+    <div class="fallback-note" id="noGL" hidden></div>
+    <div class="d-toast" id="toast" role="status" hidden></div>
+  </section>
+
+  <aside class="sim-panel" id="panel">
+    <div class="tabs" role="tablist">
+      <button type="button" class="active" data-tab="design">설계</button>
+      <button type="button" data-tab="jog">조그</button>
+      <button type="button" data-tab="task">작업</button>
+      <button type="button" data-tab="analysis">분석</button>
+      <button type="button" data-tab="link">연결</button>
+    </div>
+
+    <!-- ── 설계 ── -->
+    <div class="tab-body active" id="tab-design">
+      <h3 class="sub-title">프리셋</h3>
+      <select id="preset" class="d-select" aria-label="프리셋"></select>
+      <p class="hint" id="presetDesc"></p>
+
+      <h3 class="sub-title">치수 (mm)</h3>
+      <div class="sliders compact" id="dimSliders"></div>
+
+      <h3 class="sub-title">한계</h3>
+      <div class="sliders compact" id="limSliders"></div>
+
+      <h3 class="sub-title">재질</h3>
+      <div class="field-grid two">
+        <label>위팔 <select id="matUpper" class="d-select"></select></label>
+        <label>아래팔 로드 <select id="matFore" class="d-select"></select></label>
+      </div>
+
+      <h3 class="sub-title">구동부</h3>
+      <label class="d-field">모터 <select id="motor" class="d-select"></select></label>
+      <p class="hint" id="motorDesc"></p>
+      <div class="field-grid two">
+        <label>감속기 <select id="gearbox" class="d-select"></select></label>
+        <label>감속비 <select id="ratio" class="d-select"></select></label>
+      </div>
+      <table class="servo-table d-spec" id="driveTable"></table>
+
+      <h3 class="sub-title">엔드이펙터·하중</h3>
+      <label class="d-field">툴 <select id="tool" class="d-select"></select></label>
+      <p class="hint" id="toolDesc"></p>
+      <div class="field-grid two">
+        <label>페이로드 (kg) <input type="number" id="payload" min="0" max="10" step="0.01"></label>
+        <label>이펙터 판 (kg) <input type="number" id="effMass" min="0.005" max="2" step="0.005"></label>
+      </div>
+
+      <div class="warn-box" id="designErr" hidden></div>
+
+      <h3 class="sub-title">파생값</h3>
+      <div class="kv" id="derived"></div>
+
+      <div class="panel-actions">
+        <button class="s-btn primary" id="btnCheck" type="button">설계 검증</button>
+        <button class="s-btn" id="btnResetDesign" type="button">프리셋 값으로</button>
+      </div>
+      <div id="checkResult"></div>
+    </div>
+
+    <!-- ── 조그 ── -->
+    <div class="tab-body" id="tab-jog">
+      <h3 class="sub-title">TCP 위치 (mm) — 역기구학</h3>
+      <div class="sliders" id="xyzSliders"></div>
+      <h3 class="sub-title">모터각 (°) — 순기구학</h3>
+      <div class="sliders" id="qSliders"></div>
+      <div class="panel-actions">
+        <button class="s-btn" id="btnHome" type="button">홈</button>
+        <button class="s-btn" id="btnJogTool" type="button">툴 ON</button>
+        <button class="s-btn" id="btnGoal" type="button" disabled title="연결된 ROS 2 web_bridge로 /delta/goal 전송">ROS goal 보내기</button>
+      </div>
+      <p class="d-msg" id="jogMsg"></p>
+      <h3 class="sub-title">상태</h3>
+      <table class="servo-table" id="jogTable"></table>
+      <p class="hint">조건수 = σmax/σmin (야코비안). 1에 가까울수록 모든 방향으로 고르게 움직이고, 커질수록 특이점에 가깝습니다.
+      정적 토크는 현재 자세에서 이펙터+툴+페이로드와 팔 무게를 버티는 데 필요한 <b>모터축</b> 토크입니다 (− = 팔을 들어 올리는 방향).</p>
+    </div>
+
+    <!-- ── 작업 ── -->
+    <div class="tab-body" id="tab-task">
+      <h3 class="sub-title">장면</h3>
+      <select id="sceneKind" class="d-select" aria-label="장면"></select>
+      <h3 class="sub-title">데모 프로그램</h3>
+      <select id="program" class="d-select" aria-label="데모 프로그램"></select>
+      <div class="panel-actions">
+        <button class="s-btn primary" id="btnRun" type="button">실행</button>
+        <a class="s-btn" id="btnToPlayground" href="../tools/playground.html">Python으로 작성하기 &rarr;</a>
+      </div>
+      <p class="d-msg" id="taskMsg"></p>
+      <h3 class="sub-title">궤적 설정</h3>
+      <div class="field-grid two">
+        <label>속도 프로파일 <select id="profile" class="d-select"></select></label>
+        <label>아치 높이 (mm) <input type="number" id="archH" min="5" max="200" step="1" value="30"></label>
+        <label>최대 속도 (m/s) <input type="number" id="speed" min="0.01" max="10" step="0.01"></label>
+        <label>최대 가속도 (m/s²) <input type="number" id="accel" min="0.1" max="200" step="0.1"></label>
+      </div>
+      <p class="hint">속도·가속도 기본값은 로봇 크기에 비례합니다(speed = 0.25·(L+l)/0.43, accel = 10·speed). Python의
+      <code>set_speed()</code>·<code>set_profile()</code>와 같은 값입니다.</p>
+      <div class="kv" id="taskInfo"></div>
+    </div>
+
+    <!-- ── 분석 ── -->
+    <div class="tab-body" id="tab-analysis">
+      <div class="d-charts">
+        <canvas id="chartQ" aria-label="모터각 그래프"></canvas>
+        <canvas id="chartW" aria-label="모터 속도 그래프"></canvas>
+        <canvas id="chartT" aria-label="모터 토크 그래프"></canvas>
+      </div>
+      <p class="hint">점선: <span class="d-red">빨강</span> = 모터 피크 토크·최고 속도, <span class="d-amber">주황</span> = 정격(연속) 토크.
+      토크·속도는 <b>모터축</b> 값입니다 (출력축 ÷ 감속비·효율).</p>
+      <h3 class="sub-title">모터 검증 (안전율 1.2)</h3>
+      <div id="evalBox"><p class="hint">작업 탭에서 프로그램을 실행하면 결과가 여기에 표시됩니다.</p></div>
+      <h3 class="sub-title">작업영역</h3>
+      <div class="kv" id="wsInfo"></div>
+      <canvas id="chartCyl" class="d-cyl" aria-label="높이별 최대 반지름"></canvas>
+    </div>
+
+    <!-- ── 연결 ── -->
+    <div class="tab-body" id="tab-link">
+      <h3 class="sub-title">PC Python / ROS 2 연결</h3>
+      <p class="hint" style="margin-top:0">PC에서 <code>DeltaRobot(backend="websim")</code> 스크립트나 ROS 2 <code>delta_web_bridge</code>를
+        먼저 실행한 뒤 연결하세요. 연결되면 PC가 보내는 모터각으로 이 화면의 로봇이 움직입니다.</p>
+      <div class="url-row">
+        <input type="text" id="wsUrl" value="ws://127.0.0.1:8765" aria-label="WebSocket 주소" spellcheck="false">
+        <button class="s-btn primary" id="btnConnect" type="button">PC Python 연결</button>
+      </div>
+      <p class="vstat" id="linkStatus">연결 안 됨</p>
+      <div class="msg-box small" id="linkLog" aria-live="polite"></div>
+
+      <h3 class="sub-title">파일</h3>
+      <div class="panel-actions">
+        <button class="s-btn" id="btnExport" type="button">설계 JSON 저장</button>
+        <label class="s-btn file-btn">설계 JSON 열기<input type="file" id="fileDesign" accept=".json" hidden></label>
+        <button class="s-btn" id="btnUrdf" type="button">URDF 내려받기</button>
+        <label class="s-btn file-btn">타임라인 JSON 열기<input type="file" id="fileTimeline" accept=".json" hidden></label>
+        <button class="s-btn" id="btnShare" type="button">공유 링크 복사</button>
+      </div>
+      <p class="hint">타임라인 JSON은 PC에서 <code>json.dump(robot.backend.export(), f)</code>로 저장한 기록(record 백엔드)입니다.
+        설계 JSON은 Python <code>DeltaDesign.load()</code>와 <code>python -m deltarobot.urdf --design</code>이 그대로 읽습니다.</p>
+    </div>
+  </aside>
+</main>
+
+<script type="module">
+  import('./app.js').catch(function (err) {
+    const box = document.getElementById('noGL');
+    box.hidden = false;
+    box.innerHTML = (location.protocol === 'file:'
+      ? '파일을 직접 열어서(file://) 실행하면 브라우저가 모듈 로드를 차단합니다. 저장소 폴더에서 <code>python build.py --serve</code> 실행 후 <b>http://localhost:8000/sim/</b> 으로 접속하세요.'
+      : '시뮬레이터 모듈을 불러오지 못했습니다. three.js를 jsdelivr CDN에서 받으므로 <b>인터넷 연결이 필요</b>합니다.') +
+      '<br><small>' + String(err && err.message || err) + '</small>';
+    console.error(err);
+  });
+</script>
+</body>
+</html>

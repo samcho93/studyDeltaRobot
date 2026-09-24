@@ -1,0 +1,29 @@
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="websim 백엔드 연결 순서">
+  <defs>
+    <marker id="arr-r03-websim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r03-websim-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="20" y="30" width="250" height="270" rx="10"/>
+  <text class="lbl" x="145" y="56" text-anchor="middle">PC: python my_robot.py</text>
+  <text class="sub mono" x="145" y="78" text-anchor="middle">DeltaRobot(backend="websim")</text>
+  <text class="tag mono" x="145" y="96" text-anchor="middle">WebSocket 서버 127.0.0.1:8765</text>
+  <rect class="box" x="450" y="30" width="250" height="270" rx="10"/>
+  <text class="lbl" x="575" y="56" text-anchor="middle">브라우저: sim/index.html</text>
+  <text class="sub" x="575" y="78" text-anchor="middle">연결 탭 → [PC Python 연결]</text>
+  <text class="tag" x="575" y="96" text-anchor="middle">WebSocket 클라이언트</text>
+  <path class="ln" d="M448 130 L272 130" stroke-width="2" marker-end="url(#arr-r03-websim)"/>
+  <text class="tag mono" x="360" y="124" text-anchor="middle">← 연결 (Origin 검사, 허용 밖이면 403)</text>
+  <path class="ln" d="M448 160 L272 160" stroke-width="2" marker-end="url(#arr-r03-websim)"/>
+  <text class="tag mono" x="360" y="154" text-anchor="middle">← hello {design, scene}</text>
+  <path class="ln-hi" d="M272 190 L448 190" stroke-width="2" marker-end="url(#arr-r03-websim-hi)"/>
+  <text class="tag mono" x="360" y="184" text-anchor="middle">design {design, scene} →</text>
+  <path class="ln-hi" d="M272 220 L448 220" stroke-width="2" marker-end="url(#arr-r03-websim-hi)"/>
+  <text class="tag mono" x="360" y="214" text-anchor="middle">state {t, q[3], tool} → (10 ms마다)</text>
+  <path class="ln" d="M448 256 L272 256" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arr-r03-websim)"/>
+  <text class="tag mono dg" x="360" y="250" text-anchor="middle">← estop  → EmergencyStop 예외</text>
+  <text class="sub" x="145" y="140" text-anchor="middle">대기 (wait_connect 60 s)</text>
+  <text class="sub" x="145" y="200" text-anchor="middle">설계·장면 확정</text>
+  <text class="sub" x="145" y="230" text-anchor="middle">궤적을 실시간으로 전송</text>
+  <text class="sub" x="575" y="230" text-anchor="middle">받은 모터각으로 3D 표시</text>
+  <text class="sub" x="575" y="270" text-anchor="middle">상단 비상정지 버튼</text>
+</svg>

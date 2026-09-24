@@ -1,0 +1,58 @@
+<svg viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="델타로봇의 구성 요소">
+  <defs>
+    <marker id="arr-t02-structure" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-t02-structure-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="box" d="M440.8 96 L442.4 91.5 L442.1 87 L439.8 82.5 L435.7 78.1 L429.8 73.9 L422.2 70.1 L412.9 66.5 L402.3 63.4 L390.4 60.7 L377.5 58.5 L363.8 56.8 L349.5 55.8 L334.9 55.3 L320.2 55.4 L305.7 56.1 L291.5 57.3 L278.1 59.2 L265.5 61.5 L254 64.4 L243.8 67.7 L235.1 71.3 L228 75.3 L222.7 79.5 L219.2 84 L217.6 88.5 L217.9 93 L220.2 97.5 L224.3 101.9 L230.2 106.1 L237.8 109.9 L247.1 113.5 L257.7 116.6 L269.6 119.3 L282.5 121.5 L296.2 123.2 L310.5 124.2 L325.1 124.7 L339.8 124.6 L354.3 123.9 L368.5 122.7 L381.9 120.8 L394.5 118.5 L406 115.6 L416.2 112.3 L424.9 108.7 L432 104.7 L437.3 100.5 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M273.8 66.7 L324.6 61" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M299.2 63.9 L262.1 73.8" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M240.9 76.2 L283.2 71.5" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M240.9 76.2 L324.7 315.8" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M283.2 71.5 L367 311" stroke-width="1.8"/>
+  <circle class="hi" cx="240.9" cy="76.2" r="2.6"/>
+  <circle class="hi" cx="283.2" cy="71.5" r="2.6"/>
+  <circle class="hi" cx="324.7" cy="315.8" r="2.6"/>
+  <circle class="hi" cx="367" cy="311" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M423.3 86.6 L413.9 103" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M418.6 94.8 L532.7 116.9" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M536.6 110.1 L528.8 123.8" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M536.6 110.1 L391.5 317.4" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M528.8 123.8 L383.7 331.1" stroke-width="1.8"/>
+  <circle class="hi" cx="536.6" cy="110.1" r="2.6"/>
+  <circle class="hi" cx="528.8" cy="123.8" r="2.6"/>
+  <circle class="hi" cx="391.5" cy="317.4" r="2.6"/>
+  <circle class="hi" cx="383.7" cy="331.1" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M292.8 116.7 L251.5 105.9" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M272.1 111.3 L202.4 178.5" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M219.6 183 L185.1 174" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M219.6 183 L353.6 334.5" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M185.1 174 L319.1 325.5" stroke-width="1.8"/>
+  <circle class="hi" cx="219.6" cy="183" r="2.6"/>
+  <circle class="hi" cx="185.1" cy="174" r="2.6"/>
+  <circle class="hi" cx="353.6" cy="334.5" r="2.6"/>
+  <circle class="hi" cx="319.1" cy="325.5" r="2.6"/>
+  <path class="box-hi" d="M398.5 324.8 L399.1 322.6 L398.5 320.3 L396.6 318.1 L393.4 316 L389.2 314.1 L383.9 312.5 L377.9 311.2 L371.1 310.2 L364 309.6 L356.6 309.4 L349.2 309.6 L342 310.2 L335.3 311.2 L329.3 312.5 L324 314.1 L319.8 316 L316.6 318.1 L314.7 320.3 L314.1 322.6 L314.7 324.8 L316.6 327.1 L319.8 329.1 L324 331 L329.3 332.6 L335.3 333.9 L342 334.9 L349.2 335.5 L356.6 335.7 L364 335.5 L371.1 334.9 L377.9 333.9 L383.9 332.6 L389.2 331 L393.4 329.1 L396.6 327.1 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M356.6 322.6 L356.6 382.5" stroke-width="3"/>
+  <circle class="hi" cx="356.6" cy="382.5" r="3.5"/>
+  <path class="ln" d="M554 36 L330 90" stroke-width="1" marker-end="url(#arr-t02-structure)"/>
+  <text class="lbl" x="560" y="40" text-anchor="start">베이스 (고정)</text>
+  <text class="sub" x="560" y="57" text-anchor="start">모터 3개가 120° 간격</text>
+  <path class="ln" d="M594 96 L418.6 94.8" stroke-width="1" marker-end="url(#arr-t02-structure)"/>
+  <text class="lbl" x="600" y="100" text-anchor="start">모터 = 능동 회전관절</text>
+  <text class="sub" x="600" y="117" text-anchor="start">축은 베이스 원의 접선 방향</text>
+  <path class="ln" d="M614 166 L475.7 105.9" stroke-width="1" marker-end="url(#arr-t02-structure)"/>
+  <text class="lbl" x="620" y="170" text-anchor="start">위팔 L</text>
+  <text class="sub" x="620" y="187" text-anchor="start">모터가 직접 돌리는 링크</text>
+  <path class="ln" d="M614 231 L532.7 116.9" stroke-width="1" marker-end="url(#arr-t02-structure)"/>
+  <text class="lbl" x="620" y="235" text-anchor="start">팔꿈치 (볼조인트 2개)</text>
+  <text class="sub" x="620" y="252" text-anchor="start">간격 w</text>
+  <path class="ln" d="M614 296 L464 213.7" stroke-width="1" marker-end="url(#arr-t02-structure)"/>
+  <text class="lbl" x="620" y="300" text-anchor="start">아래팔 = 평행사변형</text>
+  <text class="sub" x="620" y="317" text-anchor="start">길이 l 로드 2개</text>
+  <path class="ln" d="M604 376 L356.6 322.6" stroke-width="1" marker-end="url(#arr-t02-structure)"/>
+  <text class="lbl" x="610" y="380" text-anchor="start">이펙터 (움직이는 판)</text>
+  <text class="sub" x="610" y="397" text-anchor="start">볼조인트 6개, 병진만</text>
+  <path class="ln" d="M156 426 L356.6 382.5" stroke-width="1" marker-end="url(#arr-t02-structure)"/>
+  <text class="lbl" x="150" y="430" text-anchor="end">TCP (툴 끝)</text>
+  <text class="sub" x="150" y="447" text-anchor="end">이펙터 중심 − 툴 길이</text>
+</svg>

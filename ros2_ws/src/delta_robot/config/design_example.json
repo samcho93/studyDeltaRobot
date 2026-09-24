@@ -1,0 +1,20 @@
+{
+  "design": {
+    "base_radius": 0.1,
+    "effector_radius": 0.035,
+    "upper_arm": 0.13,
+    "forearm": 0.3,
+    "forearm_spacing": 0.05,
+    "theta_min": -0.7,
+    "theta_max": 1.5,
+    "ball_joint_limit": 0.6,
+    "upper_arm_material": "al_tube",
+    "forearm_material": "cfrp_tube",
+    "motor": "dxl_xm430_w350",
+    "gearbox": "none",
+    "gear_ratio": 1,
+    "tool": "gripper_servo",
+    "payload": 0.2,
+    "effector_mass": 0.06
+  }
+}

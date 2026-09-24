@@ -1,0 +1,96 @@
+/* sim.css — delta simulator page extras (on top of assets/css/sim.css) */
+
+.dsim .sim-layout { grid-template-columns: minmax(0, 1fr) 390px; }
+.dsim .sim-stage { background: var(--bg); }
+.tool-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.tool-nav a[aria-current="page"] { color: var(--accent); border-color: var(--accent-dim); }
+
+.d-select {
+  width: 100%; font: inherit; font-size: 12.5px;
+  padding: 6px 8px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+}
+.d-field { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; }
+.field-grid select { font-family: var(--sans); }
+
+.d-num {
+  width: 72px; font-family: var(--mono); font-size: 11.5px; padding: 2px 4px; margin-left: auto;
+  border: 1px solid var(--border-soft); border-radius: 4px; background: var(--bg); color: var(--accent); text-align: right;
+}
+.jr-head .d-num { margin-left: auto; }
+.joint-row.bad .jr-name, .joint-row.bad .d-num { color: var(--danger); }
+
+.d-spec td, .d-spec th { font-size: 11px; }
+.d-msg { font-size: 12px; min-height: 1.2em; margin: 4px 0 8px; color: var(--text-dim); }
+.d-msg.bad { color: var(--danger); }
+.d-msg.ok { color: var(--accent); }
+
+.d-red { color: #ef4444; font-weight: 700; }
+.d-amber { color: #f59e0b; font-weight: 700; }
+
+.d-charts { display: flex; flex-direction: column; gap: 8px; }
+.d-charts canvas { width: 100%; height: 128px; display: block; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); background: var(--bg); }
+.d-cyl { width: 100%; height: 140px; display: block; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); background: var(--bg); }
+
+.d-check { list-style: none; margin: 8px 0; padding: 0; font-size: 12.5px; }
+.d-check li { display: flex; gap: 8px; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--border-soft); }
+.d-check li b { min-width: 16px; }
+.d-check li.ok b { color: var(--accent); }
+.d-check li.bad b { color: var(--danger); }
+.d-check li.warn b { color: var(--warn); }
+.d-check li span { flex: 1; }
+.d-check li code { font-family: var(--mono); font-size: 11.5px; color: var(--text); }
+
+.d-player {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: 14px; z-index: 6;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: var(--radius);
+  background: var(--overlay); backdrop-filter: blur(6px); border: 1px solid var(--border);
+  width: min(560px, calc(100% - 28px));
+}
+.d-player .s-btn { padding: 4px 10px; }
+.d-player input[type="range"] { flex: 1; accent-color: var(--accent); min-width: 60px; }
+.d-player select { font: inherit; font-size: 12px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 2px 4px; }
+.d-time { font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); white-space: nowrap; }
+
+.dsim .stage-bl { bottom: 70px; }
+
+.d-chip {
+  font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+  border: 1px solid var(--accent-dim); color: var(--accent); background: var(--accent-soft);
+}
+.d-estop {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: inherit; font-size: 12.5px; font-weight: 800; letter-spacing: .04em;
+  padding: 6px 12px; border-radius: var(--radius-sm); cursor: pointer;
+  border: 1px solid #b91c1c; background: #dc2626; color: #fff;
+}
+.d-estop:hover { background: #b91c1c; }
+.d-estop kbd { font: inherit; font-size: 10.5px; opacity: .8; border: 1px solid rgba(255,255,255,.5); border-radius: 3px; padding: 0 4px; }
+.d-estop-dot { width: 9px; height: 9px; border-radius: 50%; background: #fff; }
+
+.d-toast {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 8;
+  max-width: min(560px, calc(100% - 28px)); padding: 9px 14px; border-radius: var(--radius);
+  font-size: 13px; background: var(--overlay-strong); border: 1px solid var(--border); color: var(--text);
+}
+.d-toast.bad { border-color: var(--danger); color: var(--danger); }
+
+/* embed mode (Playground): stage only */
+.embed .sim-top, .embed .sim-panel { display: none; }
+.embed .sim-layout { grid-template-columns: 1fr; }
+.embed .stage-bl .drop-hint { display: none; }
+
+@media (max-width: 980px) {
+  .dsim.sim-page { height: auto; overflow: auto; }
+  .dsim .sim-layout { grid-template-columns: 1fr; }
+  .dsim .sim-stage { height: 62vh; min-height: 360px; }
+  .dsim .sim-panel { border-left: none; border-top: 1px solid var(--border); }
+  .dsim .tab-body { max-height: none; }
+  .sim-top { flex-wrap: wrap; gap: 8px 12px; }
+  .sim-top-actions { margin-left: 0; width: 100%; flex-wrap: wrap; }
+  .tool-nav a { padding: 4px 8px; font-size: 12px; }
+  .dsim .stage-bl { display: none; }
+}
+.embed.dsim.sim-page { height: 100vh; overflow: hidden; }
+.embed .sim-stage { height: 100vh !important; }

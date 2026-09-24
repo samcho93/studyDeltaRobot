@@ -1,0 +1,31 @@
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TCP와 이펙터 중심, 좌표 규약">
+  <defs>
+    <marker id="arr-r01-tcp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r01-tcp-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="170" y="40" width="240" height="16" rx="4"/>
+  <text class="tag" x="290" y="32" text-anchor="middle">베이스 (z = 0, 모터축 평면)</text>
+  <path class="ln-hi" d="M200 48 L170 110" stroke-width="5"/>
+  <path class="ln-hi" d="M380 48 L410 110" stroke-width="5"/>
+  <path class="ln" d="M170 110 L262 200" stroke-width="2"/>
+  <path class="ln" d="M410 110 L318 200" stroke-width="2"/>
+  <rect class="box" x="250" y="196" width="80" height="12" rx="3"/>
+  <circle class="hi" cx="290" cy="202" r="4"/>
+  <path class="ln" d="M290 208 L290 252" stroke-width="4"/>
+  <circle class="dg" cx="290" cy="256" r="4"/>
+  <path class="ln" d="M340 202 L380 202" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="386" y="206" text-anchor="start">이펙터 중심  robot.effector · kinematics.ik/fk</text>
+  <path class="ln" d="M296 256 L380 256" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <text class="tag hi" x="386" y="260" text-anchor="start">TCP (툴 끝)  robot.position · move_to/arch_to</text>
+  <path class="ln" d="M250 202 L250 256" stroke-width="1.6" marker-end="url(#arr-r01-tcp)" marker-start="url(#arr-r01-tcp)"/>
+  <text class="sub mono" x="244" y="234" text-anchor="end">tool.length</text>
+  <path class="ln-hi" d="M70 250 L130 250" stroke-width="2" marker-end="url(#arr-r01-tcp-hi)"/>
+  <text class="tag" x="136" y="254" text-anchor="start">x (팔 1 방향)</text>
+  <path class="ln-hi" d="M70 250 L70 190" stroke-width="2" marker-end="url(#arr-r01-tcp-hi)"/>
+  <text class="tag" x="70" y="184" text-anchor="middle">z (위)</text>
+  <text class="sub" x="70" y="274" text-anchor="middle">작업은 z &lt; 0</text>
+  <text class="lbl" x="560" y="60" text-anchor="middle">단위: m · rad · kg · s</text>
+  <text class="sub" x="560" y="84" text-anchor="middle">θ = 0: 위팔 수평, 아래로 +</text>
+  <text class="sub" x="560" y="104" text-anchor="middle">팔 방위각 φ = 0°, 120°, 240°</text>
+  <text class="sub mono" x="560" y="124" text-anchor="middle">TCP = 이펙터 중심 − (0, 0, tool.length)</text>
+</svg>

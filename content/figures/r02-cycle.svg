@@ -1,0 +1,24 @@
+<svg viewBox="0 0 720 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="색깔 분류 한 사이클의 동작">
+  <defs>
+    <marker id="arr-r02-cycle" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r02-cycle-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M30 230 L690 230" stroke-width="1.6"/>
+  <text class="tag" x="40" y="248" text-anchor="start">작업대 surface_z</text>
+  <rect class="box-hi" x="110" y="214" width="30" height="16" rx="2"/>
+  <text class="tag" x="125" y="248" text-anchor="middle">부품 top</text>
+  <rect class="box" x="520" y="216" width="110" height="14" rx="2"/>
+  <text class="tag" x="575" y="248" text-anchor="middle">상자 (x, y, w, d, h)</text>
+  <text class="tag mono" x="135" y="70" text-anchor="start">① arch_to(part)</text>
+  <path class="ln-hi" d="M125 205 L125 110 Q125 90 145 90 L555 90 Q575 90 575 110 L575 200" stroke-width="2.4" marker-end="url(#arr-r02-cycle-hi)"/>
+  <circle class="hi" cx="125" cy="207" r="5"/>
+  <text class="tag mono" x="160" y="200" text-anchor="start">② tool_on() → 부품 id</text>
+  <text class="sub" x="160" y="216" text-anchor="start">   wait(0.1) 흡착 안정</text>
+  <text class="tag mono" x="350" y="80" text-anchor="middle">③ arch_to(bin, place_z)   height = 아치 높이</text>
+  <circle class="hi" cx="575" cy="202" r="5"/>
+  <text class="tag mono" x="565" y="180" text-anchor="end">④ tool_off() → 상자 판정</text>
+  <path class="ln" d="M660 92 L660 200" stroke-width="1.6" marker-end="url(#arr-r02-cycle)" marker-start="url(#arr-r02-cycle)"/>
+  <text class="sub mono" x="652" y="140" text-anchor="end">height</text>
+  <text class="sub" x="652" y="156" text-anchor="end">(높은 쪽 끝 기준)</text>
+  <text class="sub" x="360" y="270" text-anchor="middle">place_z = surface_z + bin h + part h + 여유 5 mm   ·   놓는 판정은 x·y가 상자 안인지만 봅니다</text>
+</svg>

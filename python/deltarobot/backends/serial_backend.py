@@ -3,7 +3,8 @@
 Line protocol (115200 baud, ASCII, one command per line):
     J <deg1> <deg2> <deg3>   target motor angles [deg], 0 = arm horizontal, + = down
     T <0|1>                  tool off / on
-    E                        emergency stop (servos detach until reset)
+    E                        emergency stop (servos detach, tool off, J/T ignored until R)
+    R                        reset after E: servos re-attach at their last angle
     ?                        status -> "OK <deg1> <deg2> <deg3> <tool>"
 Requires: pip install pyserial
 """
@@ -58,6 +59,13 @@ class SerialBackend(RealtimeBackend):
     def estop(self) -> None:
         if self.ser is not None:
             self._write("E")
+
+    def reset(self) -> None:
+        """Leave the firmware e-stop state: servos re-attach and hold their last angle."""
+        if self.ser is not None:
+            self._write("R")
+        self._estop = False
+        self._last = -1.0
 
     def close(self) -> None:
         if self.ser is not None:

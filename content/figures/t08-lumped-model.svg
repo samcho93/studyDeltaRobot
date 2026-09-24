@@ -1,0 +1,36 @@
+<svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="동역학 간이 모델: 질량 나누어 붙이기">
+  <defs>
+    <marker id="arr-t08-lumped-model" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-t08-lumped-model-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <circle class="box" cx="90" cy="90" r="16"/>
+  <text class="tag" x="90" y="94" text-anchor="middle">J</text>
+  <path class="ln-hi" d="M90 90 L237.2 175" stroke-width="6" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M237.2 175 L177.2 365" stroke-width="2.2" stroke-dasharray="5 4"/>
+  <circle class="wr" cx="163.6" cy="132.5" r="9"/>
+  <text class="tag" x="177.6" y="122.5" text-anchor="start">m_arm @ L/2</text>
+  <circle class="wr" cx="237.2" cy="175" r="11"/>
+  <text class="tag" x="253.2" y="171" text-anchor="start">m_elbow + ½·m_pair @ L</text>
+  <path style="fill:none;stroke:var(--accent-dim)" d="M117.2 365 L207.2 365" stroke-width="9" stroke-linecap="round"/>
+  <circle class="wr" cx="162.2" cy="365" r="13"/>
+  <text class="tag" x="162.2" y="401" text-anchor="middle">m_p = 판 + 툴 + 페이로드 + 3·½·m_pair</text>
+  <text class="tag" x="70" y="64" text-anchor="start">모터 + 감속기 (반사 관성 N²·J)</text>
+  <text class="lbl" x="96" y="150" text-anchor="middle">θ</text>
+  <path class="ln" d="M132 90 A42 42 0 0 1 126.4 111" stroke-width="1.1" marker-end="url(#arr-t08-lumped-model)"/>
+  <path class="ln" d="M227.2 315 L227.2 375" stroke-width="1.4" marker-end="url(#arr-t08-lumped-model)"/>
+  <text class="lbl" x="233.2" y="345" text-anchor="start">g</text>
+  <rect class="box" x="420" y="30" width="325" height="320" rx="8"/>
+  <text class="lbl" x="436" y="58" text-anchor="start">팔 하나 (출력축 기준)</text>
+  <text class="sub" x="436" y="80" text-anchor="start">I = m_arm·L²/3 + (m_elbow + ½m_pair)·L²</text>
+  <text class="sub" x="436" y="102" text-anchor="start">      + 구동부 반사 관성</text>
+  <text class="sub" x="436" y="124" text-anchor="start">k_g = m_arm·L/2 + (m_elbow + ½m_pair)·L</text>
+  <text class="sub" x="436" y="146" text-anchor="start"></text>
+  <text class="lbl" x="436" y="168" text-anchor="start">이펙터 판 (세 팔 공통)</text>
+  <text class="sub" x="436" y="190" text-anchor="start">F = m_p·(a − g⃗),  g⃗ = (0, 0, −g)</text>
+  <text class="sub" x="436" y="212" text-anchor="start"></text>
+  <text class="lbl" x="436" y="234" text-anchor="start">관절 토크 (τ &gt; 0 = 팔을 아래로)</text>
+  <text class="sub" x="436" y="256" text-anchor="start">τᵢ = I·θ̈ᵢ − k_g·g·cos θᵢ + (Jᵀ·F)ᵢ</text>
+  <text class="sub" x="436" y="278" text-anchor="start"></text>
+  <text class="lbl" x="436" y="300" text-anchor="start">모터축</text>
+  <text class="sub" x="436" y="322" text-anchor="start">τm = τ / (N·η),  ωm = θ̇·N</text>
+</svg>

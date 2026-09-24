@@ -1,0 +1,42 @@
+<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="닫힌 사슬을 URDF 트리로 바꾸는 방법">
+  <defs>
+    <marker id="arr-r05-tree" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r05-tree-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <text class="lbl" x="150" y="26" text-anchor="middle">실제 기구: 닫힌 사슬</text>
+  <rect class="box" x="60" y="50" width="180" height="14" rx="4"/>
+  <text class="sub mono" x="150" y="44" text-anchor="middle">base_link</text>
+  <path class="ln-hi" d="M80 57 L60 130" stroke-width="4"/>
+  <path class="ln" d="M60 130 L127.5 260" stroke-width="1.6"/>
+  <path class="ln-hi" d="M150 57 L150 130" stroke-width="4"/>
+  <path class="ln" d="M150 130 L150 260" stroke-width="1.6"/>
+  <path class="ln-hi" d="M220 57 L240 130" stroke-width="4"/>
+  <path class="ln" d="M240 130 L172.5 260" stroke-width="1.6"/>
+  <rect class="box" x="120" y="256" width="60" height="12" rx="3"/>
+  <text class="sub" x="150" y="290" text-anchor="middle">effector (세 팔이 한 판에서 만남)</text>
+  <text class="tag dg" x="150" y="320" text-anchor="middle">→ 링크 하나에 부모가 셋: URDF 불가</text>
+  <text class="lbl" x="510" y="26" text-anchor="middle">URDF: 트리 + 가상 관절</text>
+  <rect class="box-hi" x="330" y="40" width="130" height="30" rx="6"/>
+  <text class="lbl mono" x="395" y="60" text-anchor="middle">base_link</text>
+  <path class="ln" d="M350 70 L350 100" stroke-width="1.6"/>
+  <path class="ln" d="M350 100 L370 100" stroke-width="1.6"/>
+  <text class="tag mono hi" x="376" y="104" text-anchor="start">motor{i}_joint</text>
+  <text class="sub" x="560" y="104" text-anchor="start">revolute · 능동</text>
+  <path class="ln" d="M350 70 L350 145" stroke-width="1.6"/>
+  <path class="ln" d="M350 145 L370 145" stroke-width="1.6"/>
+  <text class="tag mono" x="376" y="149" text-anchor="start">elbow{i}a_pitch / yaw</text>
+  <text class="sub" x="560" y="149" text-anchor="start">수동 (계산값)</text>
+  <path class="ln" d="M350 70 L350 190" stroke-width="1.6"/>
+  <path class="ln" d="M350 190 L370 190" stroke-width="1.6"/>
+  <text class="tag mono" x="376" y="194" text-anchor="start">elbow{i}b_pitch / yaw</text>
+  <text class="sub" x="560" y="194" text-anchor="start">mimic → a</text>
+  <text class="sub mono" x="376" y="222" text-anchor="start">upper_arm{i} → elbow{i}{a,b}_link → forearm{i}{a,b}  (끝이 열려 있음)</text>
+  <path class="ln" d="M340 70 L340 262" stroke-width="1.6"/>
+  <path class="ln" d="M340 262 L370 262" stroke-width="1.6"/>
+  <text class="tag mono hi" x="376" y="266" text-anchor="start">effector_x → effector_y → effector_z</text>
+  <text class="sub" x="376" y="284" text-anchor="start">prismatic · 가상 (FK로 계산)</text>
+  <text class="sub mono" x="376" y="308" text-anchor="start">→ effector → tool_link → tcp (fixed)</text>
+  <rect class="box" x="330" y="326" width="370" height="44" rx="8"/>
+  <text class="sub" x="515" y="344" text-anchor="middle">delta_driver가 모터각 θ로 FK·수동 관절각을 계산해</text>
+  <text class="sub" x="515" y="362" text-anchor="middle">/joint_states에 모두 발행 → 끝이 맞아 닫힌 것처럼 보임</text>
+</svg>

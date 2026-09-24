@@ -1,0 +1,19 @@
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="모터각 영점과 방향 캘리브레이션">
+  <defs>
+    <marker id="arr-r07-calib" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r07-calib-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="120" y="50" width="60" height="80" rx="6"/>
+  <text class="sub" x="150" y="148" text-anchor="middle">서보</text>
+  <circle class="hi" cx="180" cy="90" r="6"/>
+  <path class="ln-hi" d="M180 90 L330 90" stroke-width="6"/>
+  <text class="lbl" x="340" y="94" text-anchor="start">θ = 0° : 위팔 수평</text>
+  <path class="ln" d="M180 90 L302.873 176.036" stroke-width="4" stroke-dasharray="5 4"/>
+  <text class="tag" x="310.873" y="180.036" text-anchor="start">θ = +35° : 아래로 (홈 0.35 rad ≈ 20°)</text>
+  <path class="ln" d="M240 90 A60 60 0 0 1 229.149 124.415" stroke-width="1.6" marker-end="url(#arr-r07-calib)"/>
+  <text class="lbl hi" x="250" y="124" text-anchor="start">+</text>
+  <rect class="box" x="20" y="190" width="680" height="76" rx="8"/>
+  <text class="lbl mono" x="36" y="214" text-anchor="start">펌웨어 변환:  서보 명령[°] = 90 + 방향ᵢ × θᵢ + 오프셋ᵢ</text>
+  <text class="sub" x="36" y="236" text-anchor="start">방향ᵢ = +1 또는 −1 (서보 장착 방향) · 오프셋ᵢ = 수평에서 읽은 보정값 · θ는 −40°…+85°로 제한</text>
+  <text class="tag" x="36" y="256" text-anchor="start">세 팔이 모두 수평이면 이펙터는 베이스 아래 정중앙 — 자로 대칭을 확인</text>
+</svg>

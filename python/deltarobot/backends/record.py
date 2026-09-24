@@ -13,6 +13,8 @@ from .base import Backend, Vec
 
 RECORDERS: List["RecordBackend"] = []
 HOLD_DT = 0.05
+# set by the Playground: {"design": {...}, "scene": {...}} of the simulator on the page
+DEFAULT_HELLO: Dict[str, Any] = {}
 
 
 class RecordBackend(Backend):
@@ -23,6 +25,9 @@ class RecordBackend(Backend):
         self.verbose = verbose
         self.frames: List[Dict[str, Any]] = []
         RECORDERS.append(self)
+
+    def open(self, robot: Any) -> Dict[str, Any]:
+        return dict(DEFAULT_HELLO)
 
     def start(self, robot: Any) -> None:
         super().start(robot)

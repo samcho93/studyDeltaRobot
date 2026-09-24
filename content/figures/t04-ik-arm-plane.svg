@@ -1,0 +1,37 @@
+<svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="팔 평면에서 두 원의 교점으로 푸는 역기구학">
+  <defs>
+    <marker id="arr-t04-ik-arm-plane" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-t04-ik-arm-plane-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M70 90 L520 90" stroke-width="1" stroke-dasharray="5 4"/>
+  <path class="ln" d="M250 36 L250 387" stroke-width="1" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.5" y="82.8" text-anchor="start">z = 0</text>
+  <text class="tag" x="253.6" y="40.5" text-anchor="start">x′=0</text>
+  <circle style="fill:none;stroke:var(--accent);stroke-dasharray:6 4;stroke-width:1.3" cx="340" cy="90" r="117"/>
+  <path style="fill:none;stroke:var(--warn);stroke-dasharray:6 4" d="M114.1 80 A269.2 269.2 0 0 1 448.3 169.6" stroke-width="1.3"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M340 90 L228.4 54.8" stroke-width="3" stroke-dasharray="5 4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M228.4 54.8 L227.8 324" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <path class="ln-hi" d="M340 90 L437.3 155" stroke-width="6" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M437.3 155 L227.8 324" stroke-width="2.2"/>
+  <circle class="box" cx="340" cy="90" r="8"/>
+  <circle class="hi" cx="437.3" cy="155" r="5.5"/>
+  <circle class="box" cx="228.4" cy="54.8" r="5"/>
+  <circle class="hi" cx="227.8" cy="324" r="5.5"/>
+  <text class="tag" x="340" y="76" text-anchor="middle">모터 (R, 0)</text>
+  <text class="tag" x="449.3" y="151" text-anchor="start">해 A: 팔꿈치 바깥 (선택)</text>
+  <text class="tag" x="449.3" y="167" text-anchor="start">θ = 0.589 rad</text>
+  <text class="tag" x="216.4" y="58.8" text-anchor="end">해 B: 팔꿈치 안쪽</text>
+  <text class="tag" x="216.4" y="74.8" text-anchor="end">θ = -2.836 rad</text>
+  <text class="tag" x="239.8" y="328" text-anchor="start">B′ = (x′ + r, z)</text>
+  <text class="sub" x="461.5" y="135" text-anchor="start">반지름 L</text>
+  <text class="sub" x="97" y="108" text-anchor="start">반지름 √(l² − y′²)</text>
+  <rect class="box" x="540" y="250" width="210" height="175" rx="8"/>
+  <text class="lbl" x="552" y="274" text-anchor="start">팔 2 (φ = 120°) 의 팔 평면</text>
+  <text class="sub" x="552" y="296" text-anchor="start">P = (0.05, −0.04, −0.26)</text>
+  <text class="sub" x="552" y="316" text-anchor="start">x′ = -0.0596, y′ = -0.0233</text>
+  <text class="sub" x="552" y="336" text-anchor="start">a = x′ + r − R = -0.1246</text>
+  <text class="sub" x="552" y="356" text-anchor="start">K = -0.0407, ρ = 0.2883</text>
+  <text class="sub" x="552" y="376" text-anchor="start">α = atan2(a, z) = -2.6946</text>
+  <text class="sub" x="552" y="396" text-anchor="start">두 해 중 cos θ 가 큰 쪽</text>
+  <text class="sub" x="552" y="414" text-anchor="start">edu_dynamixel, 축척 일정</text>
+</svg>

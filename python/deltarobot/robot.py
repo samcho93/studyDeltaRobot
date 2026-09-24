@@ -76,15 +76,19 @@ class DeltaRobot:
         self.backend = _make_backend(backend, **backend_options)
         hello = self.backend.open(self) or {}
         # a connected simulator may dictate the design / scene it is showing
-        if design is None and hello.get("design"):
+        from_hello = design is None and bool(hello.get("design"))
+        if from_hello:
             design = hello["design"]
         self.design = _make_design(design)
         problems = self.design.validate()
         hard = [p for p in problems if "무시" not in p and "짧으면" not in p]
         if hard:
             raise ValueError("설계 오류: " + "; ".join(hard))
-        if scene is None:
-            scene = hello.get("scene")
+        hello_scene = hello.get("scene")
+        if scene is None and hello_scene:
+            same = from_hello or (hello.get("design") or {}) == self.design.to_dict()
+            # the simulator's scene is sized for its own design; rebuild it for another design
+            scene = hello_scene if same else hello_scene.get("kind", "pick_place")
         if scene is None:
             from .scene import default_scene
             scene = default_scene(self.design, "pick_place")
@@ -187,6 +191,18 @@ class DeltaRobot:
         """Straight-line TCP move to (x, y, z) [m]."""
         self.ik(x, y, z)
         self._run_cartesian(traj.line_path(self.effector, self._eff(x, y, z)), speed, accel, profile)
+
+    def move_path(self, points: Sequence[Sequence[float]], speed: Optional[float] = None,
+                  accel: Optional[float] = None, profile: Optional[str] = None) -> None:
+        """Polyline through TCP points with ONE speed profile (no stop at the corners)."""
+        path = traj.Path()
+        prev = self.effector
+        for pt in points:
+            self.ik(*pt)
+            e = self._eff(*pt)
+            path.line(prev, e)
+            prev = e
+        self._run_cartesian(path, speed, accel, profile)
 
     def move_by(self, dx: float = 0.0, dy: float = 0.0, dz: float = 0.0, **kw: Any) -> None:
         x, y, z = self.position
