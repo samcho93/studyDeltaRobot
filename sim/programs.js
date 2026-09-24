@@ -61,30 +61,19 @@ function conveyorDemo(p, until = 30) {
   const conv = p.sceneData.conveyor;
   const bins = p.sceneData.bins || [];
   const rc = p.sceneData.work_radius;
-  const up = p.archH;
-  const skipped = new Set();
+  const tried = new Set();
+  const lead = 1.2;   // rough look-ahead [s] to decide which part to chase
   while (p.t < until) {
-    let target = null;
-    // earliest part (largest x) that we can still intercept inside the reach window
-    const cands = p.parts().filter((q) => q.on === 'conveyor' && !skipped.has(q.id)).sort((a, b) => b.x - a.x);
-    for (const c of cands) {
-      let tHit = 0;
-      let x = c.x;
-      for (let it = 0; it < 4; it++) {
-        const pt = [x, c.y, c.top];
-        tHit = p.archDuration(pt, up);
-        x = c.x + conv.speed * tHit;
-      }
-      const pick = [x, c.y, c.top];
-      if (x > 1.1 * rc) { skipped.add(c.id); continue; }   // already past the reach window
-      if (p.reachable(pick)) { target = { c, pick }; break; }
-    }
+    // most downstream part that will still be reachable a little later
+    const target = p.parts().filter((q) => q.on === 'conveyor' && !tried.has(q.id)).sort((a, b) => b.x - a.x)
+      .find((q) => { const x = q.x + conv.speed * lead; return x < 0.9 * rc && p.reachable([x, q.y, p.pickZ(q)]); });
     if (!target) { p.wait(0.1); continue; }
-    if (tool.ferrous_only && target.c.material !== 'steel') { skipped.add(target.c.id); continue; }
-    p.archTo(target.pick, up);
-    p.toolOn();
-    const bin = bins.find((b) => b.color === target.c.color) || bins[0];
-    p.archTo([bin.x, bin.y, p.sceneData.surface_z + bin.h + target.c.h + 0.02], up);
+    tried.add(target.id);
+    let got = null;
+    try { got = p.trackPick(target.id); } catch (e) { if (!(e instanceof WorkspaceError)) throw e; continue; }
+    if (!got) { p.toolOff(); continue; }
+    const bin = bins.find((b) => b.color === target.color) || bins[0];
+    p.archTo([bin.x, bin.y, p.sceneData.surface_z + bin.h + target.h + 0.02], p.archH);
     p.toolOff();
   }
   return { score: p.scene.score() };

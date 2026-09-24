@@ -219,6 +219,79 @@ class DeltaRobot:
         path = traj.arch_path(self.effector, self._eff(x, y, z), height, radius)
         self._run_cartesian(path, speed, accel, profile)
 
+    # ------------------------------------------------------------ conveyor tracking
+    def pick_z(self, part: Dict[str, Any]) -> float:
+        """TCP height to grab a part: the top face (suction / magnet) or mid-height (gripper)."""
+        if self.design.tool_spec["kind"] == "gripper":
+            return part["z"] + 0.5 * part["h"]
+        return part["top"]
+
+    def _run_tcp_samples(self, fn: Any, duration: float) -> None:
+        """Stream TCP positions fn(tau), tau in (0, duration], sampled at <= DT (last sample exactly at duration)."""
+        n = max(1, int(math.ceil(duration / DT - 1e-9)))
+        t0 = self.time
+        stream: List[Tuple[float, Vec]] = []
+        for k in range(1, n + 1):
+            tau = duration * k / n
+            x, y, z = fn(tau)
+            rep = kin.limit_report(self.design, self._eff(x, y, z))
+            if not rep["ok"]:
+                raise WorkspaceError("트래킹 중 " + self._explain((x, y, z), rep["problems"]))
+            stream.append((t0 + tau, rep["theta"]))  # type: ignore[arg-type]
+        self._send(stream)
+
+    def track_pick(self, part: Any, hover: float = 0.02, descent_time: float = 0.3, dwell: float = 0.1,
+                   height: float = 0.03, z: Optional[float] = None) -> Optional[str]:
+        """Pick a part that rides the conveyor while moving WITH the belt.
+
+        1. arch to a hover point above where the part will be (ahead by v·T_d/2),
+        2. descend `hover` in `descent_time` while the x-velocity ramps smoothly 0 -> belt speed,
+           so the tool meets the part exactly at contact with the same velocity,
+        3. switch the tool on and ride along for `dwell` s, 4. rise while ramping back to 0.
+        `part` is a part dict from robot.parts() or its id. Returns the grabbed part id (None = missed).
+        Parts that are not on the conveyor are picked with a plain vertical approach.
+        """
+        pid = part if isinstance(part, str) else part["id"]
+
+        def now_part() -> Dict[str, Any]:
+            for p in self.parts():
+                if p["id"] == pid:
+                    return p
+            raise WorkspaceError("부품 %s 가 지금 보이지 않습니다 (이미 지나갔거나 잡혀 있음)" % pid)
+
+        p = now_part()
+        conv = self.scene.conveyor()
+        v = float(conv["speed"]) if conv and p["on"] == "conveyor" else 0.0
+        zc = self.pick_z(p) if z is None else z
+        td = max(DT, float(descent_time))
+        # fixed point: arrival time depends on the hover point, which depends on the arrival time
+        t_now = self.time
+        travel = 0.0
+        for _ in range(6):
+            xh = p["x"] + v * (travel + 0.5 * td)
+            path = traj.arch_path(self.effector, self._eff(xh, p["y"], zc + hover), height)
+            travel = traj.Profile(self.profile, path.length, self.speed, self.accel).T
+        xh = p["x"] + v * (travel + 0.5 * td)
+        self.arch_to(xh, p["y"], zc + hover, height=height)
+        if abs(self.time - (t_now + travel)) > 1e-6:          # realtime backends: re-aim at the part
+            p = now_part()
+            xh = p["x"] + v * 0.5 * td
+        y = p["y"]
+        quintic = traj.Profile("quintic", 1.0, 1.0, 1.0)
+        s = lambda u: quintic.at(u * quintic.T)[0]            # 0..1 smooth step
+        # 2. descend while accelerating to the belt speed: x' = v (1 - cos(pi tau / td)) / 2
+        self._run_tcp_samples(lambda tau: (xh + 0.5 * v * (tau - td / math.pi * math.sin(math.pi * tau / td)),
+                                           y, zc + hover * (1.0 - s(tau / td))), td)
+        got = self.tool_on()
+        x1 = xh + 0.5 * v * td
+        if dwell > 0:                                         # 3. ride along with the belt
+            self._run_tcp_samples(lambda tau: (x1 + v * tau, y, zc), dwell)
+        x2 = x1 + v * max(0.0, dwell)
+        # 4. rise while decelerating: x' = v (1 + cos(pi tau / td)) / 2
+        self._run_tcp_samples(lambda tau: (x2 + 0.5 * v * (tau + td / math.pi * math.sin(math.pi * tau / td)),
+                                           y, zc + hover * s(tau / td)), td)
+        return got
+
     def move_joints(self, t1: float, t2: float, t3: float, degrees: bool = False,
                     speed: Optional[float] = None, accel: Optional[float] = None,
                     profile: Optional[str] = None) -> None:

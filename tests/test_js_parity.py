@@ -91,6 +91,15 @@ def py_results(c):
     frames = [{"t": k * 0.01, "q": [0.3 + 0.2 * math.sin(3 * k * 0.01), 0.35, 0.4 - 0.1 * k * 0.01], "tool": 0}
               for k in range(41)]
     r["evaluate"] = dyn.evaluate(d, dyn.analyze(d, frames))
+    if d.tool_spec["kind"] != "pen" and not d.tool_spec["ferrous_only"]:
+        from deltarobot import DeltaRobot
+        rb = DeltaRobot(d, scene=r["scene_conv"])
+        rb.home()
+        rb.wait(3.0)
+        part = sorted([q for q in rb.parts() if q["on"] == "conveyor"], key=lambda q: -q["x"])[0]
+        got = rb.track_pick(part)
+        fr = rb.backend.frames
+        r["track"] = {"got": got, "t": rb.time, "n": len(fr), "q": list(rb.q), "mid": fr[int(len(fr) * 0.8)]}
     return r
 
 
@@ -112,4 +121,5 @@ def test_parity(js, name):
     for key in py:
         if key == "urdf":
             continue
-        close(py[key], j[key], 1e-6 if key.startswith("scene") else 1e-7, key)
+        tol = 1e-6 if key.startswith("scene") else 1e-5 if key == "track" else 1e-7
+        close(py[key], j[key], tol, key)

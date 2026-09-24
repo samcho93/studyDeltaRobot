@@ -77,44 +77,35 @@ print("모터 검증: 피크 %.0f%%  RMS %.0f%%  속도 %.0f%%  ->" % (r["peak_r
 `,
   },
   {
-    id: 'conveyor', title: '④ 컨베이어 트래킹',
-    code: `from deltarobot import DeltaRobot
-from deltarobot.trajectory import Profile, arch_path
+    id: 'conveyor', title: '④ 컨베이어 트래킹 (벨트 속도 맞춰 집기)',
+    code: `from deltarobot import DeltaRobot, WorkspaceError
 
 robot = DeltaRobot(scene="conveyor")
 conv = robot.scene.conveyor()
-print("컨베이어 속도 %.3f m/s, 부품 높이 %.3f m" % (conv["speed"], conv["h"]))
+v = conv["speed"]
+print("컨베이어 속도 %.3f m/s" % v)
 robot.home()
-UP = 0.03
-done = set()
-
-def travel_time(target):
-    """현재 위치에서 target(TCP)까지 아치 이동에 걸리는 시간 추정."""
-    eff = lambda p: (p[0], p[1], p[2] + robot.design.tool_length)
-    path = arch_path(robot.effector, eff(target), UP)
-    return Profile(robot.profile, path.length, robot.speed, robot.accel).T
+tried = set()
 
 while robot.time < 30:
-    target = None
-    for part in sorted(robot.parts(), key=lambda p: -p["x"]):
-        if part["on"] != "conveyor" or part["id"] in done:
-            continue
-        x = part["x"]
-        for _ in range(4):                       # 만날 위치를 반복해서 예측
-            x = part["x"] + conv["speed"] * travel_time((x, part["y"], part["top"]))
-        if robot.reachable(x, part["y"], part["top"]):
-            target = (part, x)
-            break
-    if target is None:
+    # 가장 하류(x가 큰) 부품부터, 1.2초 뒤에도 닿는 것만
+    cands = sorted((p for p in robot.parts() if p["on"] == "conveyor" and p["id"] not in tried),
+                   key=lambda p: -p["x"])
+    part = next((p for p in cands if robot.reachable(p["x"] + v * 1.2, p["y"], robot.pick_z(p))), None)
+    if part is None:
         robot.wait(0.1)
         continue
-    part, x = target
-    robot.arch_to(x, part["y"], part["top"], height=UP)
-    if robot.tool_on():
+    tried.add(part["id"])
+    try:
+        got = robot.track_pick(part)       # 벨트와 같은 속도로 내려가 잡고, 따라가다 올라옴
+    except WorkspaceError as e:
+        print("건너뜀:", e)
+        continue
+    if got:
         box = next(b for b in robot.bins() if b["color"] == part["color"])
-        robot.arch_to(box["x"], box["y"], robot.scene.surface_z + box["h"] + part["h"] + 0.02, height=UP)
+        robot.arch_to(box["x"], box["y"], robot.scene.surface_z + box["h"] + part["h"] + 0.02)
         robot.tool_off()
-    done.add(part["id"])
+        print("  %s -> 상자 %s (t=%.1f s)" % (got, box["id"], robot.time))
 
 print("결과:", robot.scene.score())
 `,

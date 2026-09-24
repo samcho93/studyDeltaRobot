@@ -274,6 +274,18 @@ def state_message(t: float, q: Sequence[float], tool: bool) -> Dict[str, Any]:
             "tool": 1 if tool else 0}
 
 
+def parse_session(raw: str) -> Optional[Dict[str, Any]]:
+    """/delta/session payload -> {"design": dict|None, "scene": dict} (None if malformed)."""
+    try:
+        data = json.loads(raw)
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(data, dict) or not isinstance(data.get("scene"), dict):
+        return None
+    design = data.get("design") if isinstance(data.get("design"), dict) else None
+    return {"design": design, "scene": data["scene"]}
+
+
 def parse_client_message(raw: Any) -> Optional[Dict[str, Any]]:
     """JSON object with a string 'type', else None."""
     if isinstance(raw, (bytes, bytearray)):

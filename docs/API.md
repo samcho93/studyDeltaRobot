@@ -85,6 +85,8 @@ robot = DeltaRobot(design=None, backend="auto", scene=None, **backend_options)
 | `move_by(dx=0, dy=0, dz=0)` | 상대 직선 이동 |
 | `move_path(points, speed=None, accel=None, profile=None)` | 여러 TCP 점을 잇는 꺾은선을 **하나의 속도 프로파일**로 (모서리에서 멈추지 않음 — 그리기·도포용) |
 | `arch_to(x, y, z, height=0.03, radius=0)` | pick & place 아치(문) 궤적 |
+| `track_pick(part, hover=0.02, descent_time=0.3, dwell=0.1, height=0.03, z=None)` | **컨베이어 트래킹 pick**: 부품 앞쪽 상공으로 아치 이동 → 벨트 속도로 가속하며 하강(접촉 순간 위치·속도 일치) → `tool_on` → `dwell`초 동행 → 감속하며 상승. 잡은 id 반환 |
+| `pick_z(part)` | 부품을 잡을 TCP 높이 (흡착·전자석 = 윗면, 그리퍼 = 높이 중간) |
 | `move_joints(t1, t2, t3, degrees=False)` | 관절 공간 이동 |
 | `move_joint_to(x, y, z)` | 목표는 TCP, 경로는 관절 보간 |
 | `tool_on()` / `tool_off()` | 흡착/그리퍼/전자석/펜. 별칭 `suction_on/off`, `grip/release`, `magnet_on/off`, `pen_down/up`. 잡은 부품 id 반환 |
@@ -108,7 +110,7 @@ robot = DeltaRobot(design=None, backend="auto", scene=None, **backend_options)
 | `record` | 가상 시간 기록(Playground, PC 드라이런) | `time_limit=600`, `verbose=False` |
 | `websim` | PC 파이썬 → 웹 시뮬레이터 실시간 (ws://127.0.0.1:8765) | `host`, `port=8765`, `wait_connect=60` |
 | `serial` | 아두이노 펌웨어 (`J d1 d2 d3` / `T 0|1` / `E` / `R` / `?`) | `port="COM3"`, `baud=115200`, `rate=50`, `max_joint_speed=3.49` (펌웨어 200°/s) |
-| `ros2` | `/delta/joint_command`(JointState), `/delta/tool_command`(Bool), `/delta/estop`(Bool) | `node_name` |
+| `ros2` | `/delta/joint_command`(JointState), `/delta/tool_command`(Bool), `/delta/estop`(Bool), 시작 시 `/delta/session`(String JSON: design·scene, latched) → web_bridge 시계 동기 | `node_name` |
 
 `serial`·`ros2`는 관절 속도가 모터 한계를 넘으면 `WorkspaceError`로 **거부**, `record`·`websim`은 경고만 출력.
 

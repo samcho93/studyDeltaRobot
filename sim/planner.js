@@ -80,6 +80,52 @@ export class Planner {
     if (s.length) this.advance(s[s.length - 1][0]);
   }
   home() { const h = this.d.homeTheta; this.moveJoints([h, h, h]); }
+
+  pickZ(part) { return this.d.toolSpec.kind === 'gripper' ? part.z + 0.5 * part.h : part.top; }
+
+  /** Stream TCP positions fn(tau), tau in (0, duration], last sample exactly at duration. */
+  runTcpSamples(fn, duration) {
+    const n = Math.max(1, Math.ceil(duration / DT - 1e-9));
+    const t0 = this.t;
+    for (let k = 1; k <= n; k++) {
+      const tau = duration * k / n;
+      const tcp = fn(tau);
+      const rep = limitReport(this.d, this.eff(tcp));
+      if (!rep.ok) throw new WorkspaceError('트래킹 중 ' + explain(tcp, rep.problems));
+      this.frames.push({ t: t0 + tau, q: rep.theta, tool: this.tool });
+      this.q = rep.theta;
+    }
+    this.advance(t0 + duration);
+  }
+
+  /** Conveyor tracking pick — mirror of DeltaRobot.track_pick (python/deltarobot/robot.py). */
+  trackPick(pid, o = {}) {
+    const hover = o.hover ?? 0.02, td = Math.max(DT, o.descentTime ?? 0.3), dwell = o.dwell ?? 0.1, height = o.height ?? this.archH;
+    const find = () => this.parts().find((q) => q.id === pid);
+    const p = find();
+    if (!p) throw new WorkspaceError(`부품 ${pid} 가 지금 보이지 않습니다`);
+    const conv = this.sceneData.conveyor;
+    const v = conv && p.on === 'conveyor' ? conv.speed : 0;
+    const zc = o.z ?? this.pickZ(p);
+    let travel = 0, xh = p.x;
+    for (let it = 0; it < 6; it++) {
+      xh = p.x + v * (travel + 0.5 * td);
+      const path = archPath(this.effector, this.eff([xh, p.y, zc + hover]), height);
+      travel = new Profile(this.profile, path.length, this.speed, this.accel).T;
+    }
+    xh = p.x + v * (travel + 0.5 * td);
+    this.archTo([xh, p.y, zc + hover], height);
+    const y = p.y;
+    const q5 = new Profile('quintic', 1, 1, 1);
+    const s = (u) => q5.at(u * q5.T)[0];
+    this.runTcpSamples((tau) => [xh + 0.5 * v * (tau - td / Math.PI * Math.sin(Math.PI * tau / td)), y, zc + hover * (1 - s(tau / td))], td);
+    const got = this.toolOn();
+    const x1 = xh + 0.5 * v * td;
+    if (dwell > 0) this.runTcpSamples((tau) => [x1 + v * tau, y, zc], dwell);
+    const x2 = x1 + v * Math.max(0, dwell);
+    this.runTcpSamples((tau) => [x2 + 0.5 * v * (tau + td / Math.PI * Math.sin(Math.PI * tau / td)), y, zc + hover * s(tau / td)], td);
+    return got;
+  }
   wait(sec) {
     const end = this.t + sec;
     let t = this.t;

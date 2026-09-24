@@ -13,6 +13,7 @@ const dyn = await imp('assets/js/delta/dynamics.js');
 const tr = await imp('assets/js/delta/trajectory.js');
 const urdf = await imp('assets/js/delta/urdf.js');
 const scene = await imp('assets/js/delta/scene.js');
+const { Planner } = await imp('sim/planner.js');
 
 designMod.setCatalog(JSON.parse(readFileSync(path.join(root, 'python/deltarobot/data/catalog.json'), 'utf8')));
 const cases = JSON.parse(readFileSync(0, 'utf8'));
@@ -44,6 +45,15 @@ for (const [name, c] of Object.entries(cases)) {
   const frames = [];
   for (let k = 0; k <= 40; k++) { const t = k * 0.01; frames.push({ t, q: [0.3 + 0.2 * Math.sin(3 * t), 0.35, 0.4 - 0.1 * t], tool: 0 }); }
   r.evaluate = dyn.evaluate(d, dyn.analyze(d, frames));
+  if (d.toolSpec.kind !== 'pen' && !d.toolSpec.ferrous_only) {
+    // conveyor tracking pick: same frames as python DeltaRobot.track_pick
+    const pl = new Planner(d, r.scene_conv, {});
+    pl.home();
+    pl.wait(3.0);
+    const part = pl.parts().filter((q) => q.on === 'conveyor').sort((a, b) => b.x - a.x)[0];
+    const got = pl.trackPick(part.id);
+    r.track = { got, t: pl.t, n: pl.frames.length, q: pl.q, mid: pl.frames[Math.floor(pl.frames.length * 0.8)] };
+  }
   out[name] = r;
 }
 process.stdout.write(JSON.stringify(out));

@@ -21,8 +21,9 @@ from typing import Any, Dict, Optional, Set
 
 from geometry_msgs.msg import Point
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 
 from deltarobot.backends.websim import origin_allowed
 from deltarobot.scene import default_scene
@@ -54,6 +55,8 @@ class DeltaWebBridge(Node):
         self.pub_goal = self.create_publisher(Point, "/delta/goal", 10)
         self.create_subscription(JointState, "/joint_states", self._on_joint_states, 10)
         self.create_subscription(Bool, "/delta/tool_state", self._on_tool_state, 10)
+        latched = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.create_subscription(String, "/delta/session", self._on_session, latched)
         self.create_timer(1.0 / core.STATE_MAX_RATE, self._tick)
 
         self._server: Any = None
@@ -117,6 +120,27 @@ class DeltaWebBridge(Node):
 
     def _on_tool_state(self, msg: Bool) -> None:
         self._tool = bool(msg.data)
+
+    def _on_session(self, msg: String) -> None:
+        """A Python client (backend="ros2") started: adopt its scene and restart the clock (t = 0)."""
+        sess = core.parse_session(msg.data)
+        if sess is None:
+            self.get_logger().warning("malformed /delta/session message")
+            return
+        if sess["design"] and sess["design"] != self.design.to_dict():
+            self.get_logger().warning("client design differs from the bridge design — "
+                                      "start the bridge with the same preset/design_file")
+        self.scene = sess["scene"]
+        self._t0 = time.monotonic()
+        data = json.dumps(core.design_message(self.design, self.scene))
+        with self._lock:
+            clients = list(self._clients)
+        for ws in clients:
+            try:
+                ws.send(data)
+            except Exception:  # noqa: BLE001
+                pass
+        self.get_logger().info("new client session: scene '%s', clock reset" % self.scene.get("kind", "?"))
 
     def _tick(self) -> None:
         if self._q is None or not self._throttle.ready(time.monotonic()):

@@ -397,3 +397,12 @@ def test_firmware_protocol():
     for token in ("115200", "'J'", "'T'", "'E'", "'R'", "'?'", "OK ", "detach"):
         assert token in ino
     assert (ROOT / "firmware" / "README.md").exists()
+
+
+def test_parse_session():
+    import json as _json
+    ok = core.parse_session(_json.dumps({"design": {"upper_arm": 0.1}, "scene": {"kind": "conveyor"}}))
+    assert ok == {"design": {"upper_arm": 0.1}, "scene": {"kind": "conveyor"}}
+    assert core.parse_session("not json") is None
+    assert core.parse_session(_json.dumps({"design": {}})) is None
+    assert core.parse_session(_json.dumps({"scene": {"kind": "empty"}}))["design"] is None

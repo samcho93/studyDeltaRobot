@@ -115,6 +115,7 @@ studyDeltaRobot 의 웹 시뮬레이터·PC Python·ROS 2·아두이노가 주�
 | `/delta/joint_command` | `sensor_msgs/JointState` | → driver | `motor1_joint..motor3_joint` [rad] |
 | `/delta/tool_command` | `std_msgs/Bool` | → driver | 툴 |
 | `/delta/estop` | `std_msgs/Bool` | → driver, commander | True = 정지·명령 무시, False = 해제 |
+| `/delta/session` | `std_msgs/String` (TRANSIENT_LOCAL) | `deltarobot` ros2 백엔드 → web_bridge | 파이썬 프로그램 시작 시 한 번 `{"design","scene"}` JSON. 브리지는 장면을 받아들이고 시계를 t = 0으로 맞춘 뒤 `design` 메시지를 시뮬레이터에 다시 보냄 → 컨베이어 부품 위치 동기 |
 | `/joint_states` | `sensor_msgs/JointState` | driver → | 능동 + 수동(elbow*a_pitch/yaw) + effector_x/y/z |
 | `/delta/tool_state` | `std_msgs/Bool` | driver → | 툴 상태 |
 | `/delta/tcp` | `geometry_msgs/PointStamped` | driver → | TCP 위치, frame `base_link` |
