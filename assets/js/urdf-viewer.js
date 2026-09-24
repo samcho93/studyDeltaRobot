@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import URDFLoader from 'urdf-loader';
 import { Design, loadCatalog } from './delta/design.js';
-import { tryFk, PHI } from './delta/kinematics.js';
+import { tryFk, PHI, limitReport, workspaceBounds } from './delta/kinematics.js';
 import { generate, jointState } from './delta/urdf.js';
 import { overlayArrow, rotationArrow, textSprite } from '../../sim/render.js';
 
@@ -76,6 +76,7 @@ function load() {
   $('nJoints').textContent = `${joints.length} (능동 3 · 수동 ${joints.filter((j) => j.name.startsWith('elbow')).length} · 가상 3${grip ? ' · 그리퍼 ' + grip : ''} · 고정 ${joints.filter((j) => j.jointType === 'fixed').length})`;
   $('toolWrap').hidden = !grip;
   buildSliders();
+  buildMultiSliders();
   paintTree();
   const h = design.homeTheta;
   q = [h, h, h];
@@ -83,6 +84,74 @@ function load() {
   fit();
   axesVisible();
   jointAxes();
+}
+
+/** Generic slider row: returns {set(v)} ; onInput(v) gets the slider value. */
+function makeRow(host, name, ko, lo, hi, step, unit, onInput) {
+  const row = document.createElement('div');
+  row.className = 'joint-row';
+  row.innerHTML = `<div class="jr-head"><span class="jr-name">${name}</span><span class="jr-ko">${ko}</span><span class="jr-val"></span></div>
+    <input type="range" min="${lo}" max="${hi}" step="${step}">`;
+  const rng = row.querySelector('input'), val = row.querySelector('.jr-val');
+  const digits = step < 1 ? 1 : 0;
+  rng.addEventListener('input', () => { val.textContent = Number(rng.value).toFixed(digits) + unit; onInput(Number(rng.value)); });
+  host.appendChild(row);
+  return { set: (v) => { rng.value = v; val.textContent = Number(v).toFixed(digits) + unit; } };
+}
+
+let tcpRows = [], allRow = null, manualRows = {}, manual = {};
+function tcpNow() {
+  const p = tryFk(design, q);
+  return p ? [p[0], p[1], p[2] - design.toolLength] : null;
+}
+function buildMultiSliders() {
+  $('tcpSliders').innerHTML = ''; $('allSlider').innerHTML = '';
+  const [rad] = workspaceBounds(design);
+  const R = Math.round(rad * 1000), zlo = Math.round(-(design.upper_arm + design.forearm + design.toolLength) * 1000);
+  tcpRows = ['x', 'y', 'z'].map((ax, i) => makeRow($('tcpSliders'), ax, 'TCP ' + ax, i < 2 ? -R : zlo, i < 2 ? R : -10, 1, ' mm', (v) => {
+    const tcp = tcpNow() || [0, 0, -0.3];
+    tcp[i] = v / 1000;
+    const rep = limitReport(design, [tcp[0], tcp[1], tcp[2] + design.toolLength]);
+    const msg = $('tcpMsg');
+    if (rep.theta) { q = rep.theta.slice(); apply(false); }
+    msg.className = 'u-msg' + (rep.ok ? '' : ' bad');
+    msg.textContent = !rep.theta ? '팔 길이로 닿지 않는 위치입니다' : rep.ok ? 'θ = ' + q.map((t) => (t * DEG).toFixed(1) + '°').join(', ')
+      : '한계 초과(' + rep.problems.join(', ') + ') — 실제 로봇은 갈 수 없는 자세';
+  }));
+  allRow = makeRow($('allSlider'), 'θ', '세 모터 공통', (design.theta_min * DEG).toFixed(1), (design.theta_max * DEG).toFixed(1), 0.1, '°', (v) => {
+    const old = q.slice();
+    q = [v / DEG, v / DEG, v / DEG];
+    if (!apply()) { q = old; apply(); }
+  });
+  buildManual();
+}
+function buildManual() {
+  $('manualSliders').innerHTML = '';
+  manualRows = {};
+  const js = jointState(design, q, 0);
+  const [rad] = workspaceBounds(design);
+  for (const name of Object.keys(js)) {
+    if (name.startsWith('motor')) continue;
+    const lin = name.startsWith('effector') || name.startsWith('gripper');
+    let lo, hi;
+    if (name.startsWith('effector')) { lo = name === 'effector_z' ? -(design.upper_arm + design.forearm) * 1000 : -rad * 1000; hi = name === 'effector_z' ? 0 : rad * 1000; }
+    else if (name.startsWith('gripper')) { lo = -6; hi = 0; }
+    else { lo = -180; hi = 180; }
+    manualRows[name] = makeRow($('manualSliders'), name, lin ? '직동' : '회전', Math.round(lo), Math.round(hi), lin ? 0.5 : 0.5, lin ? ' mm' : '°', (v) => {
+      manual[name] = lin ? v / 1000 : v / DEG;
+      apply(false);
+    });
+  }
+  loadManualFromFk();
+}
+function loadManualFromFk() {
+  const js = jointState(design, q, $('optTool').checked ? 1 : 0);
+  for (const [n, v] of Object.entries(js)) {
+    if (n.startsWith('motor')) continue;
+    manual[n] = v;
+    const lin = n.startsWith('effector') || n.startsWith('gripper');
+    if (manualRows[n]) manualRows[n].set(lin ? v * 1000 : v * DEG);
+  }
 }
 
 function buildSliders() {
@@ -101,15 +170,21 @@ function buildSliders() {
   });
 }
 
-function apply() {
+function apply(syncTcp = true) {
   const p = tryFk(design, q);
   sliders.forEach((s, i) => { s.rng.value = (q[i] * DEG).toFixed(1); s.val.textContent = (q[i] * DEG).toFixed(1) + '°'; });
   if (!p) { $('closure').textContent = '순기구학 해 없음'; return false; }
+  if (syncTcp && tcpRows.length) {
+    const t = [p[0], p[1], p[2] - design.toolLength];
+    tcpRows.forEach((r, i) => r.set(Math.round(t[i] * 1000)));
+    $('tcpMsg').textContent = '';
+  }
+  if (allRow && q[0] === q[1] && q[1] === q[2]) allRow.set((q[0] * DEG).toFixed(1));
   const js = jointState(design, q, $('optTool').checked ? 1 : 0);
   const passive = $('optPassive').checked;
   for (const [name, v] of Object.entries(js)) {
     const isActive = name.startsWith('motor') || name.startsWith('gripper');
-    robot.setJointValue(name, isActive || passive ? v : 0);
+    robot.setJointValue(name, isActive || passive ? v : (manual[name] ?? 0));
   }
   robot.updateMatrixWorld(true);
   // closure error: forearm tip vs where the effector's ball joint is
@@ -127,7 +202,7 @@ function apply() {
       err = Math.max(err, tip.distanceTo(want));
     }
   }
-  $('closure').textContent = (err * 1000).toFixed(3) + ' mm' + (passive ? '' : '  ← 사슬이 풀림');
+  $('closure').textContent = (err * 1000).toFixed(3) + ' mm' + (err > 0.001 ? '  ← 사슬이 풀림' : '');
   $('closure').style.color = err > 0.001 ? 'var(--danger)' : '';
   $('passiveTable').innerHTML = '<tr><th>관절</th><th>값</th></tr>' + Object.entries(js).filter(([n]) => !n.startsWith('motor')).map(([n, v]) =>
     `<tr><td>${n}</td><td>${n.startsWith('effector') || n.startsWith('gripper') ? (v * 1000).toFixed(1) + ' mm' : (v * DEG).toFixed(2) + '°'}</td></tr>`).join('');
@@ -209,7 +284,14 @@ function axesVisible() {
 }
 
 src.addEventListener('change', load);
-$('optPassive').addEventListener('change', apply);
+$('optPassive').addEventListener('change', () => {
+  $('manualBox').hidden = $('optPassive').checked;
+  if (!$('optPassive').checked) { for (const n of Object.keys(manual)) manual[n] = 0; loadManualZero(); }
+  apply();
+});
+function loadManualZero() { for (const [n, r] of Object.entries(manualRows)) { manual[n] = 0; r.set(0); } }
+$('btnManualFk').addEventListener('click', () => { loadManualFromFk(); apply(false); });
+$('btnManualZero').addEventListener('click', () => { loadManualZero(); apply(false); });
 $('optTool').addEventListener('change', apply);
 $('optAxes').addEventListener('change', axesVisible);
 $('optJointAxes').addEventListener('change', jointAxes);

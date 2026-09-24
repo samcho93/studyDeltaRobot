@@ -32,6 +32,8 @@
   .link-list .j-virtual { color: #c084fc; }
   .link-list .j-fixed { color: var(--text-faint); }
   .legend span { display: inline-block; margin-right: 12px; font-size: 11.5px; }
+  .u-msg { font-size: 12px; min-height: 1.2em; margin: 4px 0 8px; color: var(--text-faint); }
+  .u-msg.bad { color: var(--danger); }
 </style>
 </head>
 <body class="sim-page dsim">
@@ -78,12 +80,27 @@
       <h3 class="sub-title">설계</h3>
       <select id="source" class="d-select" aria-label="설계 선택"></select>
       <p class="hint" id="srcNote"></p>
-      <h3 class="sub-title">능동 관절 (모터) — 슬라이더</h3>
+      <h3 class="sub-title">TCP 위치로 움직이기 (역기구학 → 세 모터 동시)</h3>
+      <div class="sliders compact" id="tcpSliders"></div>
+      <p class="u-msg" id="tcpMsg"></p>
+      <h3 class="sub-title">세 모터 함께 (θ1 = θ2 = θ3 → 위아래 이동)</h3>
+      <div class="sliders compact" id="allSlider"></div>
+      <h3 class="sub-title">능동 관절 (모터) — 하나씩</h3>
       <div class="sliders" id="sliders"></div>
       <div class="panel-actions">
         <button class="s-btn" id="btnHome" type="button">홈</button>
         <button class="s-btn" id="btnWiggle" type="button">자동 움직이기</button>
         <label class="chk" id="toolWrap"><input type="checkbox" id="optTool"> 툴 ON (그리퍼 닫기)</label>
+      </div>
+      <div id="manualBox" hidden>
+        <h3 class="sub-title">수동·가상 관절 직접 움직이기</h3>
+        <p class="hint" style="margin-top:0">"수동 관절 계산"을 끈 상태입니다. URDF 트리의 관절을 하나씩 움직여 보세요 —
+          값을 아무렇게나 넣으면 로드 끝이 이펙터에서 떨어집니다(닫힘 오차). <b>계산값 불러오기</b>를 누르면 순기구학 값으로 맞춰집니다.</p>
+        <div class="panel-actions" style="margin-top:0">
+          <button class="s-btn" id="btnManualFk" type="button">계산값 불러오기</button>
+          <button class="s-btn" id="btnManualZero" type="button">모두 0</button>
+        </div>
+        <div class="sliders compact" id="manualSliders"></div>
       </div>
       <h3 class="sub-title">계산된 수동·가상 관절</h3>
       <table class="servo-table" id="passiveTable"></table>
