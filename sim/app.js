@@ -554,7 +554,7 @@ async function placeAt(x, y, surface) {
 }
 function paintBins() {
   const bins = S.sceneData.bins || [];
-  const name = { red: '빨강', blue: '파랑', green: '초록' };
+  const name = { red: '빨강', blue: '파랑', green: '초록', yellow: '노랑', orange: '주황', purple: '보라', brown: '갈색', black: '검정', white: '흰색', gray: '회색' };
   $('binBtns').innerHTML = bins.map((b) => `<button class="s-btn" type="button" data-bin="${b.id}">상자 ${b.id}(${name[b.color] || b.color})로 옮기기</button>`).join('');
   $('binBtns').querySelectorAll('button').forEach((btn) => btn.addEventListener('click', () => {
     const b = bins.find((x) => x.id === btn.dataset.bin);

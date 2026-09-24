@@ -218,7 +218,9 @@ if (editor.loadError) out('코드 편집기(CodeMirror)를 불러오지 못해 �
 if (pendingRun && ready) { pendingRun = false; run(); }
 
 const sel = $('examples');
-sel.innerHTML += EXAMPLES.map((e) => `<option value="${e.id}">${e.title}</option>`).join('');
+const groups = [...new Set(EXAMPLES.map((e) => e.group || '예제'))];
+sel.innerHTML += groups.map((g) => `<optgroup label="${g}">` + EXAMPLES.filter((e) => (e.group || '예제') === g)
+  .map((e) => `<option value="${e.id}">${e.title}</option>`).join('') + '</optgroup>').join('');
 sel.addEventListener('change', () => {
   const ex = EXAMPLES.find((e) => e.id === sel.value);
   if (ex && (editor.getValue() === ex.code || confirm('지금 코드를 예제로 바꿀까요? (현재 코드는 사라집니다)'))) editor.setValue(ex.code);

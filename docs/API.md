@@ -155,7 +155,8 @@ python -m deltarobot.urdf --design my_design.json -o delta.urdf
 
 ### Python Playground `tools/playground.html`
 - Pyodide에서 `deltarobot`을 import. 실행하면 `record` 백엔드가 가상 시간으로 동작을 기록 → 오른쪽 내장 시뮬레이터가 재생.
-- 예제 목록, 출력 창, [실행](Ctrl+Enter), [정지], 결과 요약(총 시간, 모터 검증), `print` 출력.
+- 예제 목록(기초 4 · 현장 응용 9 · 설계·분석 5, `tools/playground-examples.js`의 `group`으로 묶음), 출력 창, [실행](Ctrl+Enter), [정지], 결과 요약(총 시간, 모터 검증), `print` 출력.
+- 사용자 정의 씬: `default_scene(design, kind)`로 만든 dict의 `parts`·`bins`·`conveyor.spawn`을 바꿔 `DeltaRobot(scene=dict)`로 넘기면 시뮬레이터가 그대로 그립니다. 부품·상자 색: red, blue, green, yellow, orange, purple, brown, black, white, gray.
 - 설계는 시뮬레이터에서 마지막으로 쓴 설계(없으면 코드의 프리셋). 코드에 `DeltaRobot("edu_servo")`처럼 쓰면 그 설계가 우선.
 - `time.sleep()`은 가상 시간으로 바뀝니다(브라우저가 멈추지 않음). 가상 시간 600 s를 넘으면 중단.
 

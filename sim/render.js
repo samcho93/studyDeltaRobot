@@ -7,8 +7,9 @@ import { generate as generateUrdf, jointState } from '../assets/js/delta/urdf.js
 
 THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
-const PART_COLORS = { red: 0xe5484d, blue: 0x3e7bfa, green: 0x30a46c };
-const BIN_COLORS = { red: 0xe5484d, blue: 0x3e7bfa, green: 0x30a46c };
+const PART_COLORS = { red: 0xe5484d, blue: 0x3e7bfa, green: 0x30a46c, yellow: 0xf5c518, orange: 0xf08c2e,
+  purple: 0x8e4ec6, brown: 0x9a6a3c, black: 0x2a2a2e, white: 0xf2f2f2, gray: 0x9aa0a6 };
+const BIN_COLORS = { ...PART_COLORS, white: 0xe8e8e8 };
 const Y = new THREE.Vector3(0, 1, 0);
 
 function cssVar(name, fb) {
