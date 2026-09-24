@@ -54,6 +54,15 @@ async function boot() {
   }
   S.cat = await loadCatalog('../python/deltarobot/data/catalog.json');
   view = new DeltaView($('viewport'));
+  if (params.get('model') === 'mesh') $('optUrdf').checked = false;
+  view.useUrdf = $('optUrdf').checked;
+  $('optUrdf').addEventListener('change', () => {
+    view.useUrdf = $('optUrdf').checked;
+    view.build(S.design, S.sceneData);
+    refreshOverlays();
+    toast(view.useUrdf ? (view.urdfError ? 'URDF 모델을 만들지 못해 기본 모델로 그립니다: ' + view.urdfError
+      : 'URDF 모델로 그립니다 — URDF 뷰어·ROS 2 RViz와 같은 모델') : '기본(three.js 도형) 모델로 그립니다');
+  });
   window.deltaSim = { view, state: S };   // debugging handle (browser console)
 
   // initial design: #design= > ?preset= > localStorage > default

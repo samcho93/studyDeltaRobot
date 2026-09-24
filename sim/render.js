@@ -1,7 +1,9 @@
 // render.js — three.js view of the delta robot and its work cell (z-up, metres).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import URDFLoader from 'urdf-loader';
 import { PHI, elbow, ballJoint, fk } from '../assets/js/delta/kinematics.js';
+import { generate as generateUrdf, jointState } from '../assets/js/delta/urdf.js';
 
 THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
@@ -149,7 +151,11 @@ export class DeltaView {
   // ------------------------------------------------------------------ robot
   build(d, sceneData) {
     this.d = d;
-    if (this.robot) { this.scene.remove(this.robot.group); this.dispose(this.robot.group); }
+    if (this.robot) {
+      for (const obj of [this.robot.group, this.robot.meshGroup]) {
+        if (obj) { this.scene.remove(obj); this.dispose(obj); }
+      }
+    }
     const g = new THREE.Group();
     const R = d.base_radius, L = d.upper_arm, l = d.forearm, w = d.forearm_spacing, r = d.effector_radius;
     const size = L + l;
@@ -214,7 +220,15 @@ export class DeltaView {
     g.add(eff);
 
     this.scene.add(g);
-    this.robot = { group: g, arms, eff, tool, size };
+    this.robot = { group: g, arms, eff, tool, size, kind: 'mesh' };
+    if (this.useUrdf) {
+      try {
+        this.buildFromUrdf(d, g);
+      } catch (e) {
+        console.warn('[sim] URDF model failed, using the built-in model:', e);
+        this.urdfError = String(e.message || e);
+      }
+    }
     this.buildCell(sceneData);
     this.clearTrail();
     this.frames = null;
@@ -361,12 +375,56 @@ export class DeltaView {
     return m;
   }
 
+  /**
+   * Draw the robot from the URDF generated for this design (assets/js/delta/urdf.js) —
+   * the same model the URDF viewer and ROS 2 (robot_state_publisher / RViz) use.
+   * Every frame only the joint values change: motors + passive joints from jointState().
+   */
+  buildFromUrdf(d, meshGroup) {
+    this.urdfText = generateUrdf(d);
+    const robot = new URDFLoader().parse(this.urdfText);
+    robot.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    const byLink = (name) => {
+      const out = [];
+      const link = robot.links[name];
+      if (link) link.traverse((o) => { if (o.isMesh && o.parent && (o.parent === link || o.parent.parent === link)) out.push(o); });
+      return out;
+    };
+    // keep each mesh's own URDF material so we can restore it after tinting
+    robot.traverse((o) => { if (o.isMesh) o.userData.baseMat = o.material; });
+    const arms = [0, 1, 2].map((i) => ({ swing: robot.links[`upper_arm${i + 1}`], meshes: byLink(`upper_arm${i + 1}`) }));
+    meshGroup.visible = false;                       // hide the hand-built model
+    this.scene.add(robot);
+    this.robot = {
+      group: robot, meshGroup, urdf: robot, arms, eff: robot.links.effector,
+      toolMeshes: byLink('tool_link'), size: this.robot.size, kind: 'urdf',
+      tool: { kind: d.toolSpec.kind, on: [] },
+    };
+    this.urdfError = null;
+  }
+
   /** Update robot pose, tool state, and parts (sceneState: SceneState or null). */
   setPose(q, tool, sceneState, t, bad = false) {
     const d = this.d;
     if (!this.robot || !d) return null;
     let p;
     try { p = fk(d, q); } catch (e) { return null; }
+    if (this.robot.kind === 'urdf') this.poseUrdf(q, tool, bad);
+    else this.poseMesh(q, tool, bad, p);
+    return this.poseScene(p, sceneState, t);
+  }
+
+  poseUrdf(q, tool, bad) {
+    const r = this.robot;
+    const js = jointState(this.d, q);
+    for (const name in js) r.urdf.setJointValue(name, js[name]);
+    r.arms.forEach((arm, i) => arm.meshes.forEach((m) => { m.material = bad && bad[i] ? this.mat.armBad : m.userData.baseMat; }));
+    const on = tool && r.tool.kind !== 'pen';
+    r.toolMeshes.forEach((m) => { m.material = on ? this.mat.toolOn : m.userData.baseMat; });
+  }
+
+  poseMesh(q, tool, bad, p) {
+    const d = this.d;
     const w = d.forearm_spacing;
     this.robot.arms.forEach((arm, i) => {
       arm.swing.rotation.y = q[i];
@@ -387,7 +445,11 @@ export class DeltaView {
     tl.on.forEach((m) => { m.material = tool ? this.mat.toolOn : this.mat.tool; });
     if (tl.fingers) tl.fingers.forEach((f) => { f.position.x = f.userData.side * (tool ? 0.011 : 0.02); });
     if (tl.kind === 'pen') this.robot.tool.on.forEach((m) => { m.material = this.mat.tool; });
+  }
 
+  poseScene(p, sceneState, t) {
+    const d = this.d;
+    const tl = this.robot.tool;
     const tcp = [p[0], p[1], p[2] - d.toolLength];
     if (sceneState) {
       const seen = new Set();

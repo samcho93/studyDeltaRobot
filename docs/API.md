@@ -135,6 +135,9 @@ python -m deltarobot.urdf --design my_design.json -o delta.urdf
   작업영역 점구름 표시, 작업 실린더 표시
 - 탭 **연결**: [PC Python 연결] (ws://127.0.0.1:8765, websim 백엔드·ROS 2 web_bridge 공용), 타임라인 JSON 불러오기,
   설계 JSON 내보내기/불러오기, URDF 내려받기, 공유 링크 복사
+- 로봇은 기본적으로 **설계값으로 생성한 URDF**(`assets/js/delta/urdf.js`, Python `deltarobot.urdf`와 동일)를 urdf-loader로 불러와 그리고,
+  매 프레임 `jointState()`로 모터·수동·가상 관절값만 넣습니다 — URDF 뷰어·ROS 2 RViz와 같은 모델. 왼쪽 아래 **URDF 모델**을 끄거나
+  `?model=mesh`로 열면 three.js 도형으로 그린 기본 모델을 씁니다.
 - 상단: 비상정지 버튼(연결 시 `{"type":"estop"}` 전송), 테마, 도구 링크
 - URL: `?preset=edu_servo`, `?scene=conveyor`, `#design=<base64url JSON>`, `?embed=1`(Playground 내장용)
 - 현재 설계는 `localStorage['studydelta.design.v1']`에 저장되어 URDF 뷰어·Playground가 같이 씁니다.
