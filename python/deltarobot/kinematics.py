@@ -283,10 +283,11 @@ def limit_report(design, p: Sequence[float]) -> Dict[str, object]:
     except Unreachable:
         return {"ok": False, "theta": None, "problems": ["unreachable"], "ball": [], "elbow": []}
     ball, elb = [], []
+    pa = passive_angles(design, th, p)
     for i in range(3):
         if th[i] < design.theta_min - 1e-9 or th[i] > design.theta_max + 1e-9:
             problems.append("theta%d" % (i + 1))
-        yaw = passive_angles(design, th, p)[i][1]
+        yaw = pa[i][1]
         ball.append(abs(yaw))
         if abs(yaw) > design.ball_joint_limit:
             problems.append("ball%d" % (i + 1))

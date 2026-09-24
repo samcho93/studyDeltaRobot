@@ -284,8 +284,7 @@ R-r +20%     -0.2681      -0.1582 ..  -0.4167</code></pre></div>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/kinematics-lab.html">기구학 실험실</a></p>
 <h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
 <h3 id="1-모터각-부호가-반대-팔이-올라가야-할-때-내려감">1) 모터각 부호가 반대 (팔이 올라가야 할 때 내려감)<a class="anchor" href="#1-모터각-부호가-반대-팔이-올라가야-할-때-내려감">#</a></h3>
-<ul><li>원인: "위로 +"(수학에서 흔한 반시계 방향) 규약을 쓴 코드나 실물 서보 방향을 그대로 섞었습니다.</li><li>해결: 이 강의는 <strong>아래로 +</strong>입니다. 팔꿈치 식 <span class="math">E = (R + L·cos θ, 0, −L·sin θ)</span>의 <strong>마이너스</strong>를 확인하세요.</li></ul>
-<p>실물 서보는 설치 방향에 따라 부호가 반대일 수 있으므로 펌웨어/캘리브레이션에서 방향 계수로 맞춥니다(R07).</p>
+<ul><li>원인: "위로 +"(수학에서 흔한 반시계 방향) 규약을 쓴 코드나 실물 서보 방향을 그대로 섞었습니다.</li><li>해결: 이 강의는 <strong>아래로 +</strong>입니다. 팔꿈치 식 <span class="math">E = (R + L·cos θ, 0, −L·sin θ)</span>의 <strong>마이너스</strong>를 확인하세요. 실물 서보는 설치 방향에 따라 부호가 반대일 수 있으므로 펌웨어/캘리브레이션에서 방향 계수로 맞춥니다(R07).</li></ul>
 <h3 id="2-각도를-도-로-넣음">2) 각도를 도(°)로 넣음<a class="anchor" href="#2-각도를-도-로-넣음">#</a></h3>
 <div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">deltarobot.robot.WorkspaceError: 모터 1 각도 1145.9° 가 한계 [-40.1°, 85.9°] 밖입니다</code></pre></div>
 <ul><li>원인: <code>robot.move_joints(20, 20, 20)</code>처럼 도 단위 숫자를 라디안 자리에 넣었습니다(20 rad = 1145.9°).</li><li>해결: <code>math.radians(20)</code>으로 바꾸거나 <code>robot.move_joints(20, 20, 20, degrees=True)</code>를 씁니다. 라이브러리 내부는 모두 rad입니다.</li></ul>
@@ -294,8 +293,7 @@ R-r +20%     -0.2681      -0.1582 ..  -0.4167</code></pre></div>
 <h3 id="4-tcp와-이펙터-중심을-섞어서-7-cm-차이">4) TCP와 이펙터 중심을 섞어서 7 cm 차이<a class="anchor" href="#4-tcp와-이펙터-중심을-섞어서-7-cm-차이">#</a></h3>
 <ul><li>원인: <code>kin.ik(d, p)</code>에 TCP 좌표를 넣었거나, <code>robot.move_to()</code>에 이펙터 중심 좌표를 넣었습니다.</li><li>해결: <code>kinematics</code> 모듈 = 이펙터 중심, <code>DeltaRobot</code> = TCP. 변환은 <code>p_effector = (x, y, z + d.tool_length)</code>.</li></ul>
 <h3 id="5-r과-r을-판의-바깥-크기로-입력">5) R과 r을 판의 바깥 크기로 입력<a class="anchor" href="#5-r과-r을-판의-바깥-크기로-입력">#</a></h3>
-<ul><li>원인: 베이스 판·이펙터 판의 외곽 반지름을 R, r로 넣었습니다.</li><li>해결: R은 모터축(위팔 회전 중심)까지, r은 볼조인트 <strong>쌍의 중심</strong>까지 거리입니다. CAD에서 볼조인트 중심점을 찍어 재세요.</li></ul>
-<p>r ≥ R이면 <code>DeltaDesign.validate()</code>가 "effector_radius(r)는 base_radius(R)보다 작아야 합니다"를 돌려줍니다.</p>
+<ul><li>원인: 베이스 판·이펙터 판의 외곽 반지름을 R, r로 넣었습니다.</li><li>해결: R은 모터축(위팔 회전 중심)까지, r은 볼조인트 <strong>쌍의 중심</strong>까지 거리입니다. CAD에서 볼조인트 중심점을 찍어 재세요. r ≥ R이면 <code>DeltaDesign.validate()</code>가 "effector_radius(r)는 base_radius(R)보다 작아야 합니다"를 돌려줍니다.</li></ul>
 <h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
 <ol><li>팔 좌표계 변환식을 이용해 베이스 좌표의 점 (0.05, −0.04, −0.26)을 팔 2(φ = 120°)의 팔 좌표로 손으로 바꾸고, T04에서 쓰는 <code>a = x′ + r − R</code> 값을 구하세요.</li><li>실습 A의 <code>d_eq</code> 대신 <code>d.copy(base_radius=0.2, effector_radius=0.135)</code>를 만들어 IK 결과가 같은지 확인하고, 이 설계가 물리적으로 어떤 모양인지 설명하세요.</li><li>실습 B에 <code>(&quot;w +50%&quot;, {&quot;forearm_spacing&quot;: ...})</code> 경우를 추가해 결과가 변하지 않음을 보이고, 그래도 w를 설계할 때 고려해야 할 점을 두 가지 쓰세요.</li></ol>
 <h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>

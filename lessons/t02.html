@@ -222,17 +222,14 @@
 <div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">M = 6·(8 − 1 − 9) + 15 = −12 + 15 = 3</code></pre></div>
 <p>평행사변형은 아래팔을 두 방향(팔 평면 안의 흔들림, 팔 평면 밖으로의 기울어짐)으로만 움직이게 하고 제 축 회전은 막으므로, 등가적으로 유니버설 조인트 두 개와 같습니다. 두 모델 모두 <strong>유효 자유도 3</strong>입니다.</p>
 <div class="callout callout-warn"><div class="callout-title">Grübler 식의 한계</div><div class="callout-body"><p>Kutzbach 식은 "관절이 일반적인 위치에 있다"고 가정한 <strong>개수 세기</strong>일 뿐입니다.</p>
-<ul><li>평행사변형처럼 특수한 기하(평행·같은 길이)가 있으면 식보다 실제 자유도가 커지거나 작아지는 경우가 있습니다(과구속 기구).</li><li>식은 자유도의 <strong>개수</strong>만 알려 주고 <strong>종류</strong>(병진인지 회전인지)는 알려 주지 않습니다. 모델 B의 3-RUU 사슬도 유니버설 조인트의 축 방향을 다르게 배치하면</li></ul>
-<p>병진이 아니라 회전이 섞인 3자유도 기구가 됩니다. 델타의 이펙터가 "병진 3자유도"라는 것은 앞 절의 <strong>평행사변형 논증</strong>으로 알 수 있습니다.</p>
-<ul><li>특이점(T06)에서는 순간적으로 자유도가 늘거나 줄어듭니다.</li></ul></div></div>
+<ul><li>평행사변형처럼 특수한 기하(평행·같은 길이)가 있으면 식보다 실제 자유도가 커지거나 작아지는 경우가 있습니다(과구속 기구).</li><li>식은 자유도의 <strong>개수</strong>만 알려 주고 <strong>종류</strong>(병진인지 회전인지)는 알려 주지 않습니다. 모델 B의 3-RUU 사슬도 유니버설 조인트의 축 방향을 다르게 배치하면 병진이 아니라 회전이 섞인 3자유도 기구가 됩니다. 델타의 이펙터가 "병진 3자유도"라는 것은 앞 절의 <strong>평행사변형 논증</strong>으로 알 수 있습니다.</li><li>특이점(T06)에서는 순간적으로 자유도가 늘거나 줄어듭니다.</li></ul></div></div>
 <h2 id="3자유도-의-의미">"3자유도"의 의미<a class="anchor" href="#3자유도-의-의미">#</a></h2>
 <ul><li>입력: 모터각 3개 <span class="math">(θ₁, θ₂, θ₃)</span></li><li>출력: 이펙터 중심 위치 3개 <span class="math">(x, y, z)</span>. 방향은 항상 베이스와 평행.</li><li>입력 3개 ↔ 출력 3개가 일대일로 대응하므로(특이점과 해 선택 제외), <strong>목표 위치만 주면 모터각이 정해집니다.</strong> 이것이 T04 역기구학입니다.</li></ul>
 <div class="table-wrap"><table><thead><tr><th>원하는 동작</th><th>3자유도 델타로 가능?</th><th>필요한 것</th></tr></thead><tbody><tr><td>x·y·z 이동 (pick &amp; place, 그리기)</td><td>가능</td><td>—</td></tr><tr><td>제품을 수직축으로 돌려 놓기</td><td>불가</td><td>4번째 축(가운데 신축 회전축) 또는 툴 회전 모터</td></tr><tr><td>이펙터 기울이기</td><td>불가</td><td>5·6자유도 병렬 기구(예: 스튜어트 플랫폼)</td></tr></tbody></table></div>
 <h2 id="실습-urdf-뷰어에서-닫힌-사슬-보기">실습 — URDF 뷰어에서 닫힌 사슬 보기<a class="anchor" href="#실습-urdf-뷰어에서-닫힌-사슬-보기">#</a></h2>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/urdf-viewer.html">URDF 뷰어 열기</a></p>
 <div class="callout callout-task"><div class="callout-title">수동 관절 관찰</div><div class="callout-body"><ol><li>URDF 뷰어를 열고 모터 θ1~θ3 슬라이더를 움직입니다. 이펙터가 <strong>기울지 않고</strong> 이동하는지 봅니다.</li><li>링크 트리를 펼쳐 모터 관절 3개 외에 팔마다 수동 관절(아래팔의 pitch·yaw)이 있는 것을 확인합니다.</li><li><strong>[수동 관절 계산 끄기]</strong> 토글을 켜고 슬라이더를 움직입니다. 아래팔이 이펙터와 떨어져 "닫힌 사슬이 풀려" 보입니다. URDF(트리 구조)는 고리를 표현하지 못하므로, 수동 관절 각도를 기구학으로 계산해 채워 넣어야 한다는 뜻입니다.</li><li>로드 하나가 자기 축으로 도는 자유도는 뷰어에 관절로 존재하지 않습니다. 모델 A와 모델 B 중 URDF가 어느 쪽에 가까운지 생각해 보세요.</li></ol></div></div>
-<div class="callout callout-check"><div class="callout-title">스스로 점검</div><div class="callout-body"><ul><li>로드가 한 팔에 하나만 있다면(평행사변형 없이 로드 1개 + 볼조인트 2개) 이펙터는 회전할 수 있을까요? Kutzbach 식으로 세어 보세요.</li><li>모델 A에서 볼조인트 12개를 모두 유니버설 조인트로 바꾸면 M은 얼마일까요? 로드 자기 축 회전은 여전히 있을까요?</li></ul>
-<p>(힌트: 음수가 나옵니다. 그런데도 실제 기구가 움직일 수 있는 이유를 위 "Grübler 식의 한계"에서 찾아보세요.)</p></div></div>
+<div class="callout callout-check"><div class="callout-title">스스로 점검</div><div class="callout-body"><ul><li>로드가 한 팔에 하나만 있다면(평행사변형 없이 로드 1개 + 볼조인트 2개) 이펙터는 회전할 수 있을까요? Kutzbach 식으로 세어 보세요.</li><li>모델 A에서 볼조인트 12개를 모두 유니버설 조인트로 바꾸면 M은 얼마일까요? 로드 자기 축 회전은 여전히 있을까요? (힌트: 음수가 나옵니다. 그런데도 실제 기구가 움직일 수 있는 이유를 위 "Grübler 식의 한계"에서 찾아보세요.)</li></ul></div></div>
 <h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
 <h3 id="1-kutzbach-식에서-링크-수를-셀-때-베이스를-빼먹음">1) Kutzbach 식에서 링크 수를 셀 때 베이스를 빼먹음<a class="anchor" href="#1-kutzbach-식에서-링크-수를-셀-때-베이스를-빼먹음">#</a></h3>
 <ul><li>원인: 식의 n은 <strong>고정 링크를 포함</strong>한 수입니다. 베이스를 빼면 <code>n − 1</code>에서 한 번 더 빠져 답이 6만큼 작아집니다.</li><li>해결: 표를 만들어 "베이스 1 + 움직이는 링크 ..."처럼 명시적으로 셉니다.</li></ul>

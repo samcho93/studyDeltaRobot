@@ -185,7 +185,7 @@
 <div class="callout callout-warn"><div class="callout-title">TCP와 이펙터 중심을 섞지 마세요</div><div class="callout-body"><p><code>kinematics.ik(d, p)</code>에 부품 윗면 좌표를 그대로 넣으면 툴 길이(흡착컵 <code>suction_20</code>은 45 mm)만큼 <strong>부품을 파고드는</strong> 모터각이 나옵니다. 로봇을 움직일 때는 항상 <code>robot.ik()</code>, <code>robot.move_to()</code>처럼 TCP 기준 메서드를 쓰세요.</p></div></div>
 <h2 id="실습-1-첫-프로그램">실습 1: 첫 프로그램<a class="anchor" href="#실습-1-첫-프로그램">#</a></h2>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
-<p>아래 코드를 Playground에 붙여 넣고 <a href="Ctrl+Enter">실행</a>을 누르세요. 오른쪽 시뮬레이터가 기록된 동작을 재생합니다.</p>
+<p>아래 코드를 Playground에 붙여 넣고 <strong>실행</strong> 버튼(또는 <code>Ctrl+Enter</code>)을 누르세요. 오른쪽 시뮬레이터가 기록된 동작을 재생합니다.</p>
 <div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import time
 from deltarobot import DeltaRobot
 

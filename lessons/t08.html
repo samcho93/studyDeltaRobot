@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T08. 동역학과 모터 토크 · studyDeltaRobot</title>
+<meta name="description" content="질량을 나누어 붙이는 간이 모델로 중력·관성 토크와 τ = Jᵀ F를 계산하고, 피크·RMS 토크의 의미를 이해합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-theory">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" class="active" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="t08" data-track="theory">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-theory">기초 이론·기구학</span> T-3 작업영역과 동역학 &middot; 약 90분 &middot; 고급</div>
+    <h1><span class="lesson-no">T08</span>동역학과 모터 토크</h1>
+    <p class="lede">질량을 나누어 붙이는 간이 모델로 중력·관성 토크와 τ = Jᵀ F를 계산하고, 피크·RMS 토크의 의미를 이해합니다.</p>
+    <div class="requires">선수 챕터: <a href="t06.html">T06</a> <a href="t07.html">T07</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a><a class="ghost-btn" href="../tools/playground.html">Python Playground</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>델타로봇의 질량을 "위팔 쪽"과 "이펙터 쪽"으로 나누어 붙이는 <strong>간이(lumped) 동역학 모델</strong>을 설명하고, 각 질량·관성 항을 계산할 수 있습니다.</li><li>관절 토크 식 <span class="math">τᵢ = I·θ̈ᵢ − k_g·g·cos θᵢ + (Jᵀ·m_p·(a − g_vec))ᵢ</span>의 각 항의 의미와 <strong>부호</strong>(+ = 팔을 아래로)를 설명할 수 있습니다.</li><li>출력축 토크·속도를 모터축으로 바꾸고(<span class="math">τm = τ/(N·η)</span>, <span class="math">ωm = θ̇·N</span>), 피크·RMS 토크와 속도-토크 곡선으로 모터를 검증할 수 있습니다.</li><li>감속비에 따른 반사 관성과 관성비의 의미를 이해하고, <code>static_torques()</code>와 <code>DeltaRobot.analyze()</code>로 설계를 평가할 수 있습니다.</li></ul>
+<h2 id="왜-간이-모델인가">왜 간이 모델인가<a class="anchor" href="#왜-간이-모델인가">#</a></h2>
+<p>델타로봇의 정확한 강체 동역학(라그랑주 방정식 + 닫힌 사슬 구속)은 식이 길고, 볼조인트·로드의 회전 관성까지 넣으면 더 복잡해집니다. 모터 선정 단계에서는 <strong>로드의 질량을 양끝에 반씩 나눠 붙이는</strong> 근사가 널리 쓰입니다(Codourey 1998 등). 로드는 가볍고 가늘어서 자기 회전 관성이 작고, 양끝이 볼조인트라 축력만 받으므로 이 근사가 잘 맞습니다. 라이브러리 <code>deltarobot.dynamics</code>는 이 모델을 그대로 구현합니다(JS 버전 <code>assets/js/delta/dynamics.js</code>와 결과가 같도록 테스트됩니다).</p>
+<figure class="fig" id="fig-t08-lumped-model"><svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="동역학 간이 모델: 질량 나누어 붙이기">
+  <defs>
+    <marker id="arr-t08-lumped-model" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-t08-lumped-model-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <circle class="box" cx="90" cy="90" r="16"/>
+  <text class="tag" x="90" y="94" text-anchor="middle">J</text>
+  <path class="ln-hi" d="M90 90 L237.2 175" stroke-width="6" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M237.2 175 L177.2 365" stroke-width="2.2" stroke-dasharray="5 4"/>
+  <circle class="wr" cx="163.6" cy="132.5" r="9"/>
+  <text class="tag" x="177.6" y="122.5" text-anchor="start">m_arm @ L/2</text>
+  <circle class="wr" cx="237.2" cy="175" r="11"/>
+  <text class="tag" x="253.2" y="171" text-anchor="start">m_elbow + ½m_pair @ L</text>
+  <path style="fill:none;stroke:var(--accent-dim)" d="M117.2 365 L207.2 365" stroke-width="9" stroke-linecap="round"/>
+  <circle class="wr" cx="162.2" cy="365" r="13"/>
+  <text class="tag" x="162.2" y="401" text-anchor="middle">m_p = 판 + 툴 + 페이로드 + 3·½·m_pair</text>
+  <text class="tag" x="70" y="64" text-anchor="start">모터 + 감속기 (반사 관성 N²·J)</text>
+  <text class="lbl" x="142" y="112" text-anchor="middle">θ</text>
+  <path class="ln" d="M132 90 A42 42 0 0 1 126.4 111" stroke-width="1.1" marker-end="url(#arr-t08-lumped-model)"/>
+  <path class="ln" d="M227.2 315 L227.2 375" stroke-width="1.4" marker-end="url(#arr-t08-lumped-model)"/>
+  <text class="lbl" x="233.2" y="345" text-anchor="start">g</text>
+  <rect class="box" x="440" y="30" width="310" height="320" rx="8"/>
+  <text class="lbl" x="454" y="58" text-anchor="start">팔 하나 (출력축 기준)</text>
+  <text class="sub" x="454" y="80" text-anchor="start">I = m_arm·L²/3 + (m_elbow + ½m_pair)·L²</text>
+  <text class="sub" x="454" y="102" text-anchor="start">      + 구동부 반사 관성</text>
+  <text class="sub" x="454" y="124" text-anchor="start">k_g = m_arm·L/2 + (m_elbow + ½m_pair)·L</text>
+  <text class="sub" x="454" y="146" text-anchor="start"></text>
+  <text class="lbl" x="454" y="168" text-anchor="start">이펙터 판 (세 팔 공통)</text>
+  <text class="sub" x="454" y="190" text-anchor="start">F = m_p·(a − g_vec),  g_vec = (0, 0, −g)</text>
+  <text class="sub" x="454" y="212" text-anchor="start"></text>
+  <text class="lbl" x="454" y="234" text-anchor="start">관절 토크 (τ &gt; 0 = 팔을 아래로)</text>
+  <text class="sub" x="454" y="256" text-anchor="start">τᵢ = I·θ̈ᵢ − k_g·g·cos θᵢ + (Jᵀ·F)ᵢ</text>
+  <text class="sub" x="454" y="278" text-anchor="start"></text>
+  <text class="lbl" x="454" y="300" text-anchor="start">모터축</text>
+  <text class="sub" x="454" y="322" text-anchor="start">τm = τ / (N·η),  ωm = θ̇·N</text>
+</svg><figcaption>간이 모델. 위팔 질량은 L/2에, 팔꿈치 막대와 로드 쌍 질량의 절반은 팔꿈치(L)에 붙이고, 나머지 절반은 이펙터 판에 붙입니다.</figcaption></figure>
+<h2 id="모델">모델<a class="anchor" href="#모델">#</a></h2>
+<h3 id="질량-나누기">질량 나누기<a class="anchor" href="#질량-나누기">#</a></h3>
+<div class="table-wrap"><table><thead><tr><th>기호</th><th>라이브러리</th><th>내용</th></tr></thead><tbody><tr><td>m_arm</td><td><code>upper_arm_mass</code></td><td>위팔 관 (L × 선밀도) + 허브 0.02 kg. 무게중심 L/2</td></tr><tr><td>m_elbow</td><td><code>elbow_mass</code></td><td>팔꿈치 가로 막대 (w × 로드 선밀도) + 피팅 0.01 kg. 위치 L</td></tr><tr><td>m_pair</td><td><code>forearm_pair_mass</code></td><td>로드 2개 (2l × 선밀도) + 볼조인트 컵 4개(각 0.004 kg)</td></tr><tr><td>m_p</td><td><code>moving_plate_mass</code></td><td>이펙터 판 + 툴 + 페이로드 + <strong>로드 쌍 절반 × 3</strong></td></tr></tbody></table></div>
+<h3 id="팔-쪽-팔마다-출력축-기준">팔 쪽 (팔마다, 출력축 기준)<a class="anchor" href="#팔-쪽-팔마다-출력축-기준">#</a></h3>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">I   = m_arm·L²/3 + (m_elbow + ½·m_pair)·L² + I_drive       (arm_inertia)
+k_g = m_arm·L/2  + (m_elbow + ½·m_pair)·L                  (gravity_moment)
+I_drive = N²·(J_rotor + J_gearbox)        (일체형 서보는 카탈로그의 output_inertia)</code></pre></div>
+<p>위팔은 한쪽 끝을 축으로 도는 막대(<span class="math">m·L²/3</span>), 팔꿈치 쪽 질량은 반지름 L의 점질량(<span class="math">m·L²</span>)으로 봅니다.</p>
+<h3 id="이펙터-쪽-세-팔-공통">이펙터 쪽 (세 팔 공통)<a class="anchor" href="#이펙터-쪽-세-팔-공통">#</a></h3>
+<p>이펙터 판(질량 m_p)이 가속도 a로 움직이려면 세 팔이 판에 주어야 하는 힘은</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">F = m_p·(a − g_vec),    g_vec = (0, 0, −g)     →   F = m_p·(aₓ, a_y, a_z + g)</code></pre></div>
+<p>가만히 있어도(<span class="math">a = 0</span>) 판을 떠받치려면 위로 <span class="math">m_p·g</span>가 필요합니다. 이 힘을 내는 관절 토크는 T06의 가상일 원리로 <span class="math">τ = Jᵀ·F</span>입니다.</p>
+<h3 id="관절-토크-출력축-0-팔을-아래로-미는-방향">관절 토크 (출력축, τ &gt; 0 = 팔을 아래로 미는 방향)<a class="anchor" href="#관절-토크-출력축-0-팔을-아래로-미는-방향">#</a></h3>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">τᵢ = I·θ̈ᵢ  −  k_g·g·cos θᵢ  +  (Jᵀ·m_p·(a − g_vec))ᵢ
+     관성        팔 자체 중력         이펙터 판 (중력 + 관성)</code></pre></div>
+<p>부호를 하나씩 확인합니다.</p>
+<ul><li><strong>팔 중력 항 <span class="math">−k_g·g·cos θ</span></strong>: 팔의 무게는 팔을 아래로(+θ) 돌리려 합니다. 모터는 이것을 버텨야 하므로 <strong>음(−)의 토크</strong>(위로 들어 올리는 방향)가 필요합니다. 수평(θ = 0)에서 가장 크고 팔이 수직에 가까워지면 줄어듭니다.</li><li><strong>판 항</strong>: J의 z 성분은 음수입니다(θ가 커지면 이펙터가 내려감, T06). 위쪽 힘 <span class="math">F_z = m_p·g &gt; 0</span>에 음수를 곱하므로 역시 <strong>음의 토크</strong>입니다.</li><li>결론: <strong>무게를 들고 있는 정지 상태의 토크는 음수</strong>가 정상입니다. 부호가 +로 나오면 모델이나 부호 규약을 의심하세요.</li><li><strong>관성 항 <span class="math">I·θ̈</span></strong>: 팔을 아래로 가속(θ̈ &gt; 0)하려면 + 토크.</li></ul>
+<p>라이브러리 코드(요약):</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">m = design.moving_plate_mass
+f = (m * a[0], m * a[1], m * (a[2] + G))           # force the arms must apply to the plate
+jtf = [J[0][c] * f[0] + J[1][c] * f[1] + J[2][c] * f[2] for c in range(3)]   # J^T F
+tau = [I * theta_dd[i] - k * G * math.cos(theta[i]) + jtf[i] for i in range(3)]</code></pre></div>
+<h3 id="모터축으로-옮기기">모터축으로 옮기기<a class="anchor" href="#모터축으로-옮기기">#</a></h3>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">τm = τ / (N·η)        (N: 감속비, η: 감속기 효율 — 일체형 서보는 N = 1, η = 1)
+ωm = θ̇ · N</code></pre></div>
+<p>모터 검증(<code>evaluate()</code>)은 궤적 전체에서 다음을 봅니다. 안전율(기본 1.2)을 곱해 비교합니다.</p>
+<div class="table-wrap"><table><thead><tr><th>지표</th><th>계산</th><th>기준</th><th>의미</th></tr></thead><tbody><tr><td><code>peak_ratio</code></td><td>max |τm| × 안전율 / 피크 토크</td><td>≤ 1</td><td>순간 최대 토크</td></tr><tr><td><code>rms_ratio</code></td><td>RMS(τm) × 안전율 / 정격 토크</td><td>≤ 1</td><td>발열(연속 운전)</td></tr><tr><td><code>speed_ratio</code></td><td>max ωm / 최고 속도</td><td>≤ 1</td><td>속도 한계</td></tr><tr><td><code>curve_ratio</code></td><td>max(τm × 안전율 / 그 속도에서 낼 수 있는 토크)</td><td>≤ 1</td><td>속도-토크 곡선</td></tr><tr><td><code>inertia_ratio</code></td><td>부하 관성(모터축 환산) / 로터 관성</td><td>참고값</td><td>제어 응답·안정성</td></tr></tbody></table></div>
+<p>RMS 토크는 <span class="math">√((1/T)·∫τm²dt)</span>입니다. pick &amp; place는 가감속이 반복되므로 피크는 커도 평균 발열(RMS)은 작을 수 있고, 반대로 긴 정지 유지(중력 부하)는 RMS를 올립니다. 스테퍼는 탈조(스텝 잃음)가 조용히 일어나므로 라이브러리가 곡선 여유를 50% 더 둡니다(<code>STEPPER_MARGIN = 1.5</code>).</p>
+<figure class="fig" id="fig-t08-speed-torque"><svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="모터 종류별 속도-토크 곡선 모델">
+  <defs>
+    <marker id="arr-t08-speed-torque" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-t08-speed-torque-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M80 310 L540 310" stroke-width="1.2" marker-end="url(#arr-t08-speed-torque)"/>
+  <path class="ln" d="M80 310 L80 24" stroke-width="1.2" marker-end="url(#arr-t08-speed-torque)"/>
+  <text class="sub" x="536" y="334" text-anchor="end">ω / ωmax</text>
+  <text class="sub" x="72" y="18" text-anchor="start">τ / τpeak</text>
+  <text class="tag" x="72" y="314" text-anchor="end">0</text>
+  <text class="tag" x="80" y="328" text-anchor="middle">0</text>
+  <text class="tag" x="72" y="246.5" text-anchor="end">0.25</text>
+  <text class="tag" x="190" y="328" text-anchor="middle">0.25</text>
+  <text class="tag" x="72" y="179" text-anchor="end">0.5</text>
+  <text class="tag" x="300" y="328" text-anchor="middle">0.5</text>
+  <text class="tag" x="72" y="111.5" text-anchor="end">0.75</text>
+  <text class="tag" x="410" y="328" text-anchor="middle">0.75</text>
+  <text class="tag" x="72" y="44" text-anchor="end">1</text>
+  <text class="tag" x="520" y="328" text-anchor="middle">1</text>
+  <path style="fill:none;stroke:var(--accent);stroke-width:2.4" d="M80 40 L82.2 41.3 L84.4 42.7 L86.6 44 L88.8 45.4 L91 46.7 L93.2 48.1 L95.4 49.4 L97.6 50.8 L99.8 52.1 L102 53.5 L104.2 54.8 L106.4 56.2 L108.6 57.5 L110.8 58.9 L113 60.2 L115.2 61.6 L117.4 62.9 L119.6 64.3 L121.8 65.6 L124 67 L126.2 68.3 L128.4 69.7 L130.6 71 L132.8 72.4 L135 73.7 L137.2 75.1 L139.4 76.4 L141.6 77.8 L143.8 79.1 L146 80.5 L148.2 81.8 L150.4 83.2 L152.6 84.5 L154.8 85.9 L157 87.2 L159.2 88.6 L161.4 89.9 L163.6 91.3 L165.8 92.6 L168 94 L170.2 95.3 L172.4 96.7 L174.6 98 L176.8 99.4 L179 100.7 L181.2 102.1 L183.4 103.4 L185.6 104.8 L187.8 106.1 L190 107.5 L192.2 108.8 L194.4 110.2 L196.6 111.5 L198.8 112.9 L201 114.2 L203.2 115.6 L205.4 116.9 L207.6 118.3 L209.8 119.6 L212 121 L214.2 122.3 L216.4 123.7 L218.6 125 L220.8 126.4 L223 127.7 L225.2 129.1 L227.4 130.4 L229.6 131.8 L231.8 133.1 L234 134.5 L236.2 135.8 L238.4 137.2 L240.6 138.5 L242.8 139.9 L245 141.2 L247.2 142.6 L249.4 143.9 L251.6 145.3 L253.8 146.6 L256 148 L258.2 149.3 L260.4 150.7 L262.6 152 L264.8 153.4 L267 154.7 L269.2 156.1 L271.4 157.4 L273.6 158.8 L275.8 160.1 L278 161.5 L280.2 162.8 L282.4 164.2 L284.6 165.5 L286.8 166.9 L289 168.2 L291.2 169.6 L293.4 170.9 L295.6 172.3 L297.8 173.6 L300 175 L302.2 176.3 L304.4 177.7 L306.6 179 L308.8 180.4 L311 181.7 L313.2 183.1 L315.4 184.4 L317.6 185.8 L319.8 187.1 L322 188.5 L324.2 189.8 L326.4 191.2 L328.6 192.5 L330.8 193.9 L333 195.2 L335.2 196.6 L337.4 197.9 L339.6 199.3 L341.8 200.6 L344 202 L346.2 203.3 L348.4 204.7 L350.6 206 L352.8 207.4 L355 208.7 L357.2 210.1 L359.4 211.4 L361.6 212.8 L363.8 214.1 L366 215.5 L368.2 216.8 L370.4 218.2 L372.6 219.5 L374.8 220.9 L377 222.2 L379.2 223.6 L381.4 224.9 L383.6 226.3 L385.8 227.6 L388 229 L390.2 230.3 L392.4 231.7 L394.6 233 L396.8 234.4 L399 235.7 L401.2 237.1 L403.4 238.4 L405.6 239.8 L407.8 241.1 L410 242.5 L412.2 243.8 L414.4 245.2 L416.6 246.5 L418.8 247.9 L421 249.2 L423.2 250.6 L425.4 251.9 L427.6 253.3 L429.8 254.6 L432 256 L434.2 257.3 L436.4 258.7 L438.6 260 L440.8 261.4 L443 262.7 L445.2 264.1 L447.4 265.4 L449.6 266.8 L451.8 268.1 L454 269.5 L456.2 270.8 L458.4 272.2 L460.6 273.5 L462.8 274.9 L465 276.2 L467.2 277.6 L469.4 278.9 L471.6 280.3 L473.8 281.6 L476 283 L478.2 284.3 L480.4 285.7 L482.6 287 L484.8 288.4 L487 289.7 L489.2 291.1 L491.4 292.4 L493.6 293.8 L495.8 295.1 L498 296.5 L500.2 297.8 L502.4 299.2 L504.6 300.5 L506.8 301.9 L509 303.2 L511.2 304.6 L513.4 305.9 L515.6 307.3 L517.8 308.6 L520 310 L520 310" stroke-width="2.4"/>
+  <path style="fill:none;stroke:var(--accent)" d="M560 70 L590 70" stroke-width="2.4"/>
+  <text class="sub" x="600" y="75" text-anchor="start">스마트 서보 / RC 서보</text>
+  <path style="fill:none;stroke:var(--accent)" d="M80 217.8 L146 217.8" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <path style="fill:none;stroke:var(--warn);stroke-width:2.4" d="M80 40 L82.2 41 L84.4 42.1 L86.6 43.1 L88.8 44.2 L91 45.2 L93.2 46.3 L95.4 47.3 L97.6 48.4 L99.8 49.4 L102 50.5 L104.2 51.5 L106.4 52.6 L108.6 53.6 L110.8 54.7 L113 55.7 L115.2 56.8 L117.4 57.8 L119.6 58.9 L121.8 59.9 L124 61 L126.2 62 L128.4 63.1 L130.6 64.1 L132.8 65.2 L135 66.2 L137.2 67.3 L139.4 68.3 L141.6 69.4 L143.8 70.4 L146 71.5 L148.2 72.5 L150.4 73.6 L152.6 74.6 L154.8 75.7 L157 76.7 L159.2 77.8 L161.4 78.8 L163.6 79.9 L165.8 80.9 L168 82 L170.2 83 L172.4 84.1 L174.6 85.1 L176.8 86.2 L179 87.2 L181.2 88.3 L183.4 89.3 L185.6 90.4 L187.8 91.4 L190 92.5 L192.2 93.5 L194.4 94.6 L196.6 95.6 L198.8 96.7 L201 97.7 L203.2 98.8 L205.4 99.8 L207.6 100.9 L209.8 101.9 L212 103 L214.2 104 L216.4 105.1 L218.6 106.1 L220.8 107.2 L223 108.2 L225.2 109.3 L227.4 110.3 L229.6 111.4 L231.8 112.4 L234 113.5 L236.2 114.5 L238.4 115.6 L240.6 116.6 L242.8 117.7 L245 118.7 L247.2 119.8 L249.4 120.8 L251.6 121.9 L253.8 122.9 L256 124 L258.2 125 L260.4 126.1 L262.6 127.1 L264.8 128.2 L267 129.2 L269.2 130.3 L271.4 131.3 L273.6 132.4 L275.8 133.4 L278 134.5 L280.2 135.5 L282.4 136.6 L284.6 137.6 L286.8 138.7 L289 139.7 L291.2 140.8 L293.4 141.8 L295.6 142.9 L297.8 143.9 L300 145 L302.2 146 L304.4 147.1 L306.6 148.1 L308.8 149.2 L311 150.2 L313.2 151.3 L315.4 152.3 L317.6 153.4 L319.8 154.4 L322 155.5 L324.2 156.5 L326.4 157.6 L328.6 158.6 L330.8 159.7 L333 160.7 L335.2 161.8 L337.4 162.8 L339.6 163.9 L341.8 164.9 L344 166 L346.2 167 L348.4 168.1 L350.6 169.1 L352.8 170.2 L355 171.2 L357.2 172.3 L359.4 173.3 L361.6 174.4 L363.8 175.4 L366 176.5 L368.2 177.5 L370.4 178.6 L372.6 179.6 L374.8 180.7 L377 181.7 L379.2 182.8 L381.4 183.8 L383.6 184.9 L385.8 185.9 L388 187 L390.2 188 L392.4 189.1 L394.6 190.1 L396.8 191.2 L399 192.2 L401.2 193.3 L403.4 194.3 L405.6 195.4 L407.8 196.4 L410 197.5 L412.2 198.5 L414.4 199.6 L416.6 200.6 L418.8 201.7 L421 202.7 L423.2 203.8 L425.4 204.8 L427.6 205.9 L429.8 206.9 L432 208 L434.2 209 L436.4 210.1 L438.6 211.1 L440.8 212.2 L443 213.2 L445.2 214.3 L447.4 215.3 L449.6 216.4 L451.8 217.4 L454 218.5 L456.2 219.5 L458.4 220.6 L460.6 221.6 L462.8 222.7 L465 223.7 L467.2 224.8 L469.4 225.8 L471.6 226.9 L473.8 227.9 L476 229 L478.2 230 L480.4 231.1 L482.6 232.1 L484.8 233.2 L487 234.2 L489.2 235.3 L491.4 236.3 L493.6 237.4 L495.8 238.4 L498 239.5 L500.2 240.5 L502.4 241.6 L504.6 242.6 L506.8 243.7 L509 244.7 L511.2 245.8 L513.4 246.8 L515.6 247.9 L517.8 248.9 L520 250 L520 310" stroke-width="2.4"/>
+  <path style="fill:none;stroke:var(--warn)" d="M560 100 L590 100" stroke-width="2.4"/>
+  <text class="sub" x="600" y="105" text-anchor="start">스테퍼 (끌어냄 곡선)</text>
+  <path style="fill:none;stroke:var(--warn)" d="M80 70 L146 70" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <path style="fill:none;stroke:var(--danger);stroke-width:2.4" d="M80 40 L82.2 40 L84.4 40 L86.6 40 L88.8 40 L91 40 L93.2 40 L95.4 40 L97.6 40 L99.8 40 L102 40 L104.2 40 L106.4 40 L108.6 40 L110.8 40 L113 40 L115.2 40 L117.4 40 L119.6 40 L121.8 40 L124 40 L126.2 40 L128.4 40 L130.6 40 L132.8 40 L135 40 L137.2 40 L139.4 40 L141.6 40 L143.8 40 L146 40 L148.2 40 L150.4 40 L152.6 40 L154.8 40 L157 40 L159.2 40 L161.4 40 L163.6 40 L165.8 40 L168 40 L170.2 40 L172.4 40 L174.6 40 L176.8 40 L179 40 L181.2 40 L183.4 40 L185.6 40 L187.8 40 L190 40 L192.2 40 L194.4 40 L196.6 40 L198.8 40 L201 40 L203.2 40 L205.4 40 L207.6 40 L209.8 40 L212 40 L214.2 40 L216.4 40 L218.6 40 L220.8 40 L223 40 L225.2 40 L227.4 40 L229.6 40 L231.8 40 L234 40 L236.2 40 L238.4 40 L240.6 40 L242.8 40 L245 40 L247.2 40 L249.4 40 L251.6 40 L253.8 40 L256 40 L258.2 40 L260.4 40 L262.6 40 L264.8 40 L267 40 L269.2 40 L271.4 40 L273.6 40 L275.8 40 L278 40 L280.2 40 L282.4 40 L284.6 40 L286.8 40 L289 40 L291.2 40 L293.4 40 L295.6 40 L297.8 40 L300 40 L302.2 40 L304.4 40 L306.6 40 L308.8 40 L311 40 L313.2 40 L315.4 40 L317.6 40 L319.8 40 L322 40 L324.2 40 L326.4 40 L328.6 40 L330.8 40 L333 40 L335.2 40 L337.4 40 L339.6 40 L341.8 40 L344 40 L346.2 40 L348.4 40 L350.6 40 L352.8 40 L355 40 L357.2 40 L359.4 40 L361.6 40 L363.8 40 L366 40 L368.2 40 L370.4 40 L372.6 40 L374.8 40 L377 40 L379.2 40 L381.4 40 L383.6 40 L385.8 40 L388 40 L390.2 40 L392.4 40 L394.6 40 L396.8 40 L399 40 L401.2 40 L403.4 40 L405.6 40 L407.8 40 L410 40 L412.2 40 L414.4 40 L416.6 40 L418.8 40 L421 40 L423.2 40 L425.4 40 L427.6 40 L429.8 40 L432 40 L434.2 40 L436.4 40 L438.6 40 L440.8 40 L443 40 L445.2 40 L447.4 40 L449.6 40 L451.8 40 L454 40 L456.2 40 L458.4 40 L460.6 40 L462.8 40 L465 40 L467.2 40 L469.4 40 L471.6 40 L473.8 40 L476 40 L478.2 40 L480.4 40 L482.6 40 L484.8 40 L487 40 L489.2 40 L491.4 40 L493.6 40 L495.8 40 L498 40 L500.2 40 L502.4 40 L504.6 40 L506.8 40 L509 40 L511.2 40 L513.4 40 L515.6 40 L517.8 40 L520 40 L520 310" stroke-width="2.4"/>
+  <path style="fill:none;stroke:var(--danger)" d="M560 130 L590 130" stroke-width="2.4"/>
+  <text class="sub" x="600" y="135" text-anchor="start">AC 서보 (피크 일정)</text>
+  <path style="fill:none;stroke:var(--danger)" d="M80 220.2 L146 220.2" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text class="tag" x="150.4" y="224.9" text-anchor="start">점선: 정격(연속) 토크</text>
+  <text class="sub" x="560" y="190" text-anchor="start">필요한 (ωm, τm) 점이 모두</text>
+  <text class="sub" x="560" y="210" text-anchor="start">곡선 아래에 있어야 하고,</text>
+  <text class="sub" x="560" y="230" text-anchor="start">RMS 토크는 정격 이하여야 함</text>
+  <text class="tag" x="560" y="262" text-anchor="start">곡선: dynamics.available_torque</text>
+  <text class="tag" x="560" y="280" text-anchor="start">카탈로그 대표값 (데이터시트 확인)</text>
+</svg><figcaption>라이브러리의 속도-토크 모델(<code>available_torque</code>)을 정규화해 그린 것. 스마트/RC 서보는 정지 토크에서 무부하 속도까지 직선으로 줄고, 스테퍼는 끌어냄(pull-out) 곡선을 직선화했으며, AC 서보는 최고 속도까지 피크 토크를 유지한다고 봅니다. 모든 값은 카탈로그의 교육용 대표값이므로 실제 선정 시 데이터시트를 확인하세요.</figcaption></figure>
+<h3 id="감속비와-반사-관성">감속비와 반사 관성<a class="anchor" href="#감속비와-반사-관성">#</a></h3>
+<p>감속비 N을 키우면 모터축 토크는 1/N로 줄지만, 모터 로터 관성은 출력축에서 <strong>N²배</strong>로 보입니다(반사 관성). 반대로 부하 관성은 모터축에서 1/N²로 보입니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">관성비 = (부하 관성 / N²) / J_rotor
+       (라이브러리: 부하 = 팔 관성 − 구동부 관성 + m_p·L²/3  (이펙터 판의 대략적 환산))</code></pre></div>
+<p>관성비가 너무 크면 서보 게인을 올리기 어려워 진동·오버슈트가 생기기 쉽고, 너무 작으면 모터 관성만 돌리느라 에너지를 씁니다. 권장 범위는 제조사·드라이브마다 다르므로(흔히 수 배 ~ 10배 이내를 권함) 데이터시트를 확인하세요. 일체형 서보(RC, Dynamixel)는 라이브러리가 관성비를 0으로 둡니다.</p>
+<h2 id="실습-a-정적-토크-나누어-보기">실습 A — 정적 토크 나누어 보기<a class="anchor" href="#실습-a-정적-토크-나누어-보기">#</a></h2>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+from deltarobot import DeltaDesign
+from deltarobot import dynamics as dyn
+from deltarobot import kinematics as kin
+from deltarobot.design import G
+
+d = DeltaDesign.preset(&quot;edu_dynamixel&quot;)
+print(&quot;m_arm=%.4f m_elbow=%.4f m_pair=%.4f kg&quot; % (d.upper_arm_mass, d.elbow_mass, d.forearm_pair_mass))
+print(&quot;m_p (moving plate) = %.4f kg&quot; % d.moving_plate_mass)
+print(&quot;I_arm = %.3e kg m^2 (drive part %.1e), k_g = %.5f kg m&quot; % (d.arm_inertia, d.drive_inertia, d.gravity_moment))
+
+# static torque split into the two terms of the model
+print(&quot;\n point                arm-gravity    plate (J^T F)    total        [N m]&quot;)
+for p in [(0.0, 0.0, -0.22), (0.0, 0.0, -0.28), (0.0, 0.0, -0.36), (0.12, 0.0, -0.28), (-0.12, 0.0, -0.28)]:
+    th = kin.ik(d, p)
+    tau = dyn.static_torques(d, p)
+    grav = [-d.gravity_moment * G * math.cos(t) for t in th]
+    plate = [t - g for t, g in zip(tau, grav)]
+    print(&quot; %-20s %s  %s  %s&quot; % (p, [round(v, 3) for v in grav], [round(v, 3) for v in plate],
+                                  [round(v, 3) for v in tau]))
+
+# worst static torque over the workspace and the motor side value
+worst = max(max(abs(t) for t in dyn.static_torques(d, p)) for p in kin.workspace_points(d, 0.02))
+m = d.motor_spec
+print(&quot;\nworst static |tau| over workspace = %.3f N m  (motor %s: rated %.2f, peak %.2f N m)&quot;
+      % (worst, d.motor, m[&quot;rated_torque&quot;], m[&quot;peak_torque&quot;]))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">m_arm=0.0321 m_elbow=0.0123 m_pair=0.0430 kg
+m_p (moving plate) = 0.4445 kg
+I_arm = 8.311e-04 kg m^2 (drive part 8.0e-05), k_g = 0.00647 kg m
+
+ point                arm-gravity    plate (J^T F)    total        [N m]
+ (0.0, 0.0, -0.22)    [-0.063, -0.063, -0.063]  [-0.178, -0.178, -0.178]  [-0.242, -0.242, -0.242]
+ (0.0, 0.0, -0.28)    [-0.06, -0.06, -0.06]  [-0.23, -0.23, -0.23]  [-0.289, -0.289, -0.289]
+ (0.0, 0.0, -0.36)    [-0.041, -0.041, -0.041]  [-0.204, -0.204, -0.204]  [-0.245, -0.245, -0.245]
+ (0.12, 0.0, -0.28)   [-0.063, -0.043, -0.043]  [-0.446, -0.084, -0.084]  [-0.509, -0.127, -0.127]
+ (-0.12, 0.0, -0.28)  [-0.031, -0.062, -0.062]  [0.071, -0.333, -0.333]  [0.04, -0.394, -0.394]
+
+worst static |tau| over workspace = 0.622 N m  (motor dxl_xm430_w350: rated 1.40, peak 4.10 N m)</code></pre></div>
+<p>읽는 법</p>
+<ul><li>m_p = 0.4445 kg: 판 0.06 + 그리퍼 + 페이로드 0.2 + 로드 쌍 절반 × 3. 이 무게 <span class="math">m_p·g ≈ 4.36</span> N를 세 팔이 나눠 듭니다.</li><li>중심축 위에서는 세 팔 토크가 같고 모두 <strong>음수</strong>입니다. 판 항이 팔 중력 항보다 약 3~5배 커서, 페이로드·툴 무게가 모터 부하를 좌우합니다.</li><li>중심에서 z에 따라 토크가 변합니다(−0.28에서 가장 큼). <span class="math">Jᵀ</span>가 자세에 따라 바뀌기 때문입니다. 팔 중력 항은 θ가 커질수록(cos θ↓) 줄어듭니다.</li><li>(0.12, 0, −0.28): 팔 1 쪽으로 치우치면 팔 1이 하중 대부분(−0.509)을 집니다.</li><li>(−0.12, 0, −0.28): 팔 1 반대편. 팔 1의 판 항이 <strong>양수</strong>(+0.071)입니다. 세 로드 힘의 합이 수직 하중과 평형을 이루려면 수평 성분도 상쇄돼야 해서, 멀리 떨어진 팔 1은 오히려 판을 끌어당기는(팔을 아래로 미는) 방향의 토크를 냅니다. "모든 팔이 항상 위로 든다"는 직관이 틀릴 수 있다는 예입니다.</li><li>작업영역 전체의 최대 정적 토크 0.622 N·m는 XM430 정격(1.40 N·m, 카탈로그 대표값)보다 작습니다. 하지만 동작 중에는 관성 항이 더해집니다(실습 B).</li></ul>
+<h2 id="실습-b-pick-사이클-검증-deltarobot-analyze">실습 B — pick 사이클 검증 (<code>DeltaRobot.analyze()</code>)<a class="anchor" href="#실습-b-pick-사이클-검증-deltarobot-analyze">#</a></h2>
+<p>record 백엔드(Playground 기본)는 동작을 가상 시간으로 기록합니다. <code>analyze()</code>는 기록된 프레임에서 속도·가속도를 <strong>중앙 차분</strong>으로 구하고, 위 모델로 토크를 계산한 뒤 <code>evaluate()</code>로 모터를 검증합니다. 아래 코드는 ±0.1 m를 25 mm 아치로 오가는 축소판 Adept 사이클을 속도별로 비교합니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+
+def cycle(speed, accel):
+    robot = DeltaRobot(&quot;edu_dynamixel&quot;)
+    robot.set_speed(speed, accel)                   # m/s, m/s^2 (TCP)
+    robot.move_to(-0.1, 0.0, -0.34)
+    t0 = robot.time
+    for _ in range(3):                              # Adept-like cycle, scaled down
+        robot.arch_to(0.1, 0.0, -0.34, height=0.025)
+        robot.arch_to(-0.1, 0.0, -0.34, height=0.025)
+    return (robot.time - t0) / 3, robot.analyze(safety_factor=1.2)
+
+print(&quot;speed  accel | cycle[s] | peak  rms   speed curve | ok&quot;)
+for v, a in [(0.3, 3.0), (0.5, 5.0), (0.6, 6.0), (1.5, 30.0)]:
+    tc, res = cycle(v, a)
+    print(&quot;%4.1f  %5.1f  |  %5.2f   | %4.2f  %4.2f  %4.2f  %4.2f | %s&quot; % (
+        v, a, tc, res[&quot;peak_ratio&quot;], res[&quot;rms_ratio&quot;], res[&quot;speed_ratio&quot;], res[&quot;curve_ratio&quot;], res[&quot;ok&quot;]))
+print(&quot;peak motor torque per arm at 0.6 m/s:&quot;, [round(x, 3) for x in cycle(0.6, 6.0)[1][&quot;peak_torque_motor&quot;]], &quot;N m&quot;)
+print(&quot;problems at 1.5 m/s:&quot;)
+for p in res[&quot;problems&quot;]:
+    print(&quot; -&quot;, p)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">speed  accel | cycle[s] | peak  rms   speed curve | ok
+ 0.3    3.0  |   2.00   | 0.18  0.26  0.49  0.27 | True
+ 0.5    5.0  |   1.36   | 0.27  0.31  0.74  0.78 | True
+ 0.6    6.0  |   1.20   | 0.33  0.35  0.84  1.45 | False
+경고: 관절 속도 6.64 rad/s 가 모터 한계 4.80 rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요
+ 1.5   30.0  |   0.52   | 1.11  1.17  2.06   inf | False
+peak motor torque per arm at 0.6 m/s: [1.122, 0.626, 0.626] N m
+problems at 1.5 m/s:
+ - 속도-토크 곡선 초과: 해당 속도에서 낼 수 있는 토크보다 큰 토크가 필요합니다
+ - 피크 토크 초과 (안전율 1.2 포함)
+ - RMS(연속) 토크가 정격을 넘습니다 — 과열 위험
+ - 모터 최고 속도 초과</code></pre></div>
+<p>읽는 법</p>
+<ul><li>0.3 → 0.5 m/s로 올리면 사이클(왕복 1회)이 2.00 → 1.36 s로 줄고 모든 지표가 1 이하입니다.</li><li><strong>0.6 m/s에서는 피크(0.33)·RMS(0.35)·속도(0.84)가 모두 여유 있는데도 실패</strong>합니다. <code>curve_ratio</code> = 1.45 — 스마트 서보는 빠르게 돌수록 낼 수 있는 토크가 직선으로 줄어서(그림), 최고 속도의 84%로 돌 때 남는 토크가 필요한 토크보다 작기 때문입니다. <strong>피크 토크만 보고 모터를 고르면 안 되는 이유</strong>입니다.</li><li>1.5 m/s·30 m/s²에서는 관절 속도가 모터 한계(4.8 rad/s)를 넘어 record 백엔드가 <strong>경고</strong>를 출력하고(<code>serial</code>·<code>ros2</code>는 이런 동작을 거부), 네 가지 검사가 모두 실패합니다. <code>curve_ratio</code>가 <code>inf</code>인 것은 최고 속도를 넘는 순간 낼 수 있는 토크가 0이기 때문입니다.</li><li>가운데 경로(y = 0, 팔 1 방향)를 오가므로 팔 1의 피크 토크(1.122 N·m)가 팔 2·3(0.626)보다 큽니다.</li></ul>
+<h3 id="감속비와-관성비-industrialpicker">감속비와 관성비 — industrial_picker<a class="anchor" href="#감속비와-관성비-industrialpicker">#</a></h3>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
+from deltarobot import dynamics as dyn
+
+# industrial preset: gearbox, reflected inertia and inertia ratio
+d = DeltaDesign.preset(&quot;industrial_picker&quot;)
+m = d.motor_spec
+N, eta = d.ratio, d.efficiency
+print(&quot;motor %s, gearbox %s N=%g eta=%.2f&quot; % (d.motor, d.gearbox, N, eta))
+print(&quot;rotor J = %.2e, drive inertia at output N^2 (Jm + Jg) = %.3e kg m^2&quot; % (m[&quot;rotor_inertia&quot;], d.drive_inertia))
+print(&quot;arm inertia (output side, incl. drive) = %.3e kg m^2&quot; % d.arm_inertia)
+print(&quot;inertia ratio (load / rotor, at motor) = %.1f&quot; % dyn.inertia_ratio(d))
+for n in (10, 20, 30, 50):
+    dn = d.copy(gear_ratio=n)
+    tau_out = max(abs(t) for t in dyn.static_torques(dn, (0.0, 0.0, -0.9)))
+    print(&quot;N=%2d  static tau_out=%.2f N m -&gt; tau_m=%.3f N m, inertia ratio=%.1f, max output speed=%.1f rad/s&quot;
+          % (n, tau_out, tau_out / (n * dn.efficiency), dyn.inertia_ratio(dn), m[&quot;max_speed&quot;] / n))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">motor ac_servo_400w, gearbox planetary N=20 eta=0.90
+rotor J = 2.60e-05, drive inertia at output N^2 (Jm + Jg) = 1.440e-02 kg m^2
+arm inertia (output side, incl. drive) = 2.292e-02 kg m^2
+inertia ratio (load / rotor, at motor) = 6.4
+N=10  static tau_out=2.12 N m -&gt; tau_m=0.235 N m, inertia ratio=25.8, max output speed=52.4 rad/s
+N=20  static tau_out=2.12 N m -&gt; tau_m=0.118 N m, inertia ratio=6.4, max output speed=26.2 rad/s
+N=30  static tau_out=2.12 N m -&gt; tau_m=0.078 N m, inertia ratio=2.9, max output speed=17.5 rad/s
+N=50  static tau_out=2.12 N m -&gt; tau_m=0.047 N m, inertia ratio=1.0, max output speed=10.5 rad/s</code></pre></div>
+<p>읽는 법</p>
+<ul><li>N = 20에서 모터·감속기의 반사 관성(0.0144 kg·m²)이 출력축 전체 관성(0.0229)의 60% 이상입니다. 감속기를 쓰는 설계에서는 <strong>모터 자신의 관성이 큰 부하</strong>가 됩니다.</li><li>N을 키우면 모터 토크는 1/N로, 관성비는 1/N²로 줄지만 출력축 최고 속도도 1/N로 줄어듭니다. N = 50이면 출력축 10.5 rad/s밖에 못 돌아 고속 피킹에 부족할 수 있습니다.</li><li>감속비 선택은 <strong>토크 여유 · 관성비 · 최고 속도</strong>의 절충입니다. 설계 트랙 D04에서 모터·감속기 조합을 이 기준으로 고릅니다.</li></ul>
+<h3 id="시뮬레이터-분석-탭">시뮬레이터 분석 탭<a class="anchor" href="#시뮬레이터-분석-탭">#</a></h3>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html?preset=edu_dynamixel">시뮬레이터에서 열기</a></p>
+<div class="callout callout-task"><div class="callout-title">그래프로 토크 읽기</div><div class="callout-body"><ol><li><strong>작업</strong> 탭에서 데모 "Adept 사이클"을 재생한 뒤 <strong>분석</strong> 탭을 엽니다. 모터축 토크 τ 그래프에서 가속·감속 구간의 봉우리와 정지 구간의 음(−) 토크를 찾습니다.</li><li>검증 결과(피크/RMS/속도/관성비)를 기록하고, 궤적 설정에서 속도를 올려 가며 처음 ✖가 나오는 속도를 찾습니다. 실습 B의 결과와 비교합니다.</li><li><strong>설계</strong> 탭에서 페이로드를 0.2 → 0.5 kg으로 바꾸고 다시 분석합니다. 어떤 지표가 가장 많이 변하나요?</li><li><strong>조그</strong> 탭의 정적 토크 표시가 실습 A의 값(중심, 이펙터 z = −0.28 m ⇒ TCP z = −0.35 m 근처에서 약 −0.29 N·m)과 같은지 확인합니다.</li></ol></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="1-정지-토크가-양수로-나옴-부호-반대">1) 정지 토크가 양수로 나옴 (부호 반대)<a class="anchor" href="#1-정지-토크가-양수로-나옴-부호-반대">#</a></h3>
+<ul><li>원인: 모터각 부호(아래로 +)를 반대로 쓰거나, 중력 벡터를 <span class="math">+g</span>로 넣었습니다(<code>a − g_vec</code>에서 <span class="math">g_vec = (0, 0, −g)</span>).</li><li>해결: 수평 팔이 무게를 들 때 <span class="math">τ = −k_g·g &lt; 0</span>인지 먼저 확인합니다. 라이브러리 규약은 "+ = 팔을 아래로"입니다. 실물 서보의 전류 부호는 설치 방향에 따라 또 다를 수 있습니다.</li></ul>
+<h3 id="2-runtimeerror-analyze는-record-백엔드에서-기록된-동작에만-쓸-수-있습니다">2) <code>RuntimeError: analyze()는 record 백엔드에서 기록된 동작에만 쓸 수 있습니다</code><a class="anchor" href="#2-runtimeerror-analyze는-record-백엔드에서-기록된-동작에만-쓸-수-있습니다">#</a></h3>
+<ul><li>원인: <code>websim</code>·<code>serial</code>·<code>ros2</code> 백엔드에서 <code>robot.analyze()</code>를 불렀거나, 아직 아무 동작도 하지 않았습니다.</li><li>해결: 같은 코드를 <code>DeltaRobot(..., backend=&quot;record&quot;)</code>로 먼저 돌려 검증하고(드라이런), 그다음 실제 백엔드로 실행합니다.</li></ul>
+<h3 id="3-경고-관절-속도-6-64-rad-s-가-모터-한계-4-80-rad-s감속-후를-넘습니다-setspeed로-속도를-낮추세요">3) <code>경고: 관절 속도 6.64 rad/s 가 모터 한계 4.80 rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요</code><a class="anchor" href="#3-경고-관절-속도-6-64-rad-s-가-모터-한계-4-80-rad-s감속-후를-넘습니다-setspeed로-속도를-낮추세요">#</a></h3>
+<ul><li>원인: 직교 좌표 속도(<code>set_speed</code>)가 커서 어떤 자세에서 관절 속도가 모터 최고 속도/N을 넘었습니다. 경계 근처(κ 큰 곳, T06)에서 특히 커집니다.</li><li>해결: 속도를 낮추거나 경로를 작업영역 중심 쪽으로 옮깁니다. <code>record</code>·<code>websim</code>은 경고만 하지만 <code>serial</code>·<code>ros2</code>는 <code>WorkspaceError</code>로 <strong>거부</strong>합니다.</li></ul>
+<h3 id="4-피크-rms는-통과인데-속도-토크-곡선-초과">4) 피크·RMS는 통과인데 <code>속도-토크 곡선 초과</code><a class="anchor" href="#4-피크-rms는-통과인데-속도-토크-곡선-초과">#</a></h3>
+<ul><li>원인: 고속 구간에서 모터가 낼 수 있는 토크가 줄어든 것을 고려하지 않았습니다(실습 B의 0.6 m/s).</li><li>해결: 속도를 낮추거나, 감속비를 키워 모터 속도 비율을 낮추거나, 곡선이 평평한 모터(AC 서보 등)를 고릅니다.</li></ul>
+<h3 id="5-출력축-토크와-모터축-토크를-혼동">5) 출력축 토크와 모터축 토크를 혼동<a class="anchor" href="#5-출력축-토크와-모터축-토크를-혼동">#</a></h3>
+<ul><li>원인: <code>joint_torques()</code>·<code>static_torques()</code>는 <strong>출력축</strong>(감속 후) 값입니다. <code>evaluate()</code>의 <code>peak_torque_motor</code>는 <strong>모터축</strong> 값입니다.</li><li>해결: 모터 데이터시트와 비교할 때는 <span class="math">τm = τ/(N·η)</span>로 바꿉니다. 일체형 서보(RC, Dynamixel)는 카탈로그 토크가 이미 출력축 값이므로 N = 1로 둡니다.</li></ul>
+<h3 id="6-keyerror-unknown-preset-edu-servo-choose-from-eduservo-edudynamixel-printerstepper-industrialpicker">6) <code>KeyError: &quot;unknown preset &#x27;edu-servo&#x27; (choose from edu_servo, edu_dynamixel, printer_stepper, industrial_picker)&quot;</code><a class="anchor" href="#6-keyerror-unknown-preset-edu-servo-choose-from-eduservo-edudynamixel-printerstepper-industrialpicker">#</a></h3>
+<ul><li>원인: 프리셋 이름 오타(하이픈 <code>-</code> 대신 밑줄 <code>_</code>). <code>DeltaRobot(&quot;edu-servo&quot;)</code>도 같은 오류가 납니다.</li><li>해결: 메시지에 나온 이름 중 하나를 그대로 씁니다. 값을 바꿔 비교할 때는 <code>d.copy(payload=0.5)</code>처럼 새 설계를 만들어 원래 프리셋과 나란히 둡니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>실습 A를 <code>payload</code> 0, 0.2, 0.5 kg으로 반복해 중심(z = −0.28)의 정적 토크를 표로 만들고, 페이로드 1 kg당 토크 증가량을 구하세요. <span class="math">Jᵀ</span>로 설명하세요.</li><li>실습 B의 <code>cycle()</code>을 이용해 edu_dynamixel이 <code>ok = True</code>인 최대 속도(0.05 m/s 간격)와 그때의 사이클 타임을 찾으세요. 어떤 지표가 먼저 1을 넘나요?</li><li><code>printer_stepper</code> 프리셋으로 실습 B를 돌려 보세요. 스테퍼에서 <code>curve_ratio</code> 판정이 더 엄격한 이유(<code>STEPPER_MARGIN</code>)를 설명하세요.</li><li>(심화) <code>joint_torques()</code>의 식을 참고해, 관성 항 <span class="math">I·θ̈</span>와 판 관성 항 <span class="math">Jᵀ·m_p·a</span> 중 무엇이 피크 토크에 더 크게 기여하는지 한 이동 구간에서 분해해 보세요(<code>dynamics.analyze()</code>가 돌려주는 <code>theta_dd</code>, <code>a</code> 사용).</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>A. Codourey, "Dynamic modeling of parallel robots for computed-torque control implementation," <em>The International Journal of Robotics Research</em>, 17(12), 1998 — 델타 동역학의 질량 분할 간이 모델.</li><li>R. Clavel, <em>Conception d'un robot parallèle rapide à 4 degrés de liberté</em>, 박사학위 논문, EPFL, 1991.</li><li>J.-P. Merlet, <em>Parallel Robots</em>, 2nd ed., Springer, 2006 — 병렬로봇 동역학.</li><li>B. Siciliano, O. Khatib (eds.), <em>Springer Handbook of Robotics</em>, Springer — "Parallel Mechanisms and Robots" 장(Dynamics 절).</li><li>라이브러리 소스: <code>python/deltarobot/dynamics.py</code>(<code>joint_torques</code>, <code>static_torques</code>, <code>available_torque</code>, <code>evaluate</code>, <code>inertia_ratio</code>, <code>analyze</code>), <code>python/deltarobot/design.py</code>(질량·관성 프로퍼티)</li><li>모터·감속기 값은 <code>python/deltarobot/data/catalog.json</code>의 교육용 대표값입니다. 실제 선정 시 제조사 데이터시트를 확인하세요.</li><li>이 사이트: <a href="../sim/index.html">시뮬레이터</a> · <a href="../tools/playground.html">Playground</a> · 설계 트랙 <a href="../lessons/d04.html">D04 모터·감속기 선정</a></li></ul>
+      <nav class="pager"><a class="pager-prev" href="t07.html"><span>이전 · T07</span>작업영역</a><a class="pager-next" href="d01.html"><span>다음 · D01</span>웹 시뮬레이터 사용법</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#왜-간이-모델인가">왜 간이 모델인가</a><a class="toc-l2" href="#모델">모델</a><a class="toc-l3" href="#질량-나누기">질량 나누기</a><a class="toc-l3" href="#팔-쪽-팔마다-출력축-기준">팔 쪽 (팔마다, 출력축 기준)</a><a class="toc-l3" href="#이펙터-쪽-세-팔-공통">이펙터 쪽 (세 팔 공통)</a><a class="toc-l3" href="#관절-토크-출력축-0-팔을-아래로-미는-방향">관절 토크 (출력축, τ &gt; 0 = 팔을 아래로 미는 방향)</a><a class="toc-l3" href="#모터축으로-옮기기">모터축으로 옮기기</a><a class="toc-l3" href="#감속비와-반사-관성">감속비와 반사 관성</a><a class="toc-l2" href="#실습-a-정적-토크-나누어-보기">실습 A — 정적 토크 나누어 보기</a><a class="toc-l2" href="#실습-b-pick-사이클-검증-deltarobot-analyze">실습 B — pick 사이클 검증 (`DeltaRobot.analyze()`)</a><a class="toc-l3" href="#감속비와-관성비-industrialpicker">감속비와 관성비 — industrial_picker</a><a class="toc-l3" href="#시뮬레이터-분석-탭">시뮬레이터 분석 탭</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#1-정지-토크가-양수로-나옴-부호-반대">1) 정지 토크가 양수로 나옴 (부호 반대)</a><a class="toc-l3" href="#2-runtimeerror-analyze는-record-백엔드에서-기록된-동작에만-쓸-수-있습니다">2) `RuntimeError: analyze()는 record 백엔드에서 기록된 동작에만 쓸 수 있습니다`</a><a class="toc-l3" href="#3-경고-관절-속도-6-64-rad-s-가-모터-한계-4-80-rad-s감속-후를-넘습니다-setspeed로-속도를-낮추세요">3) `경고: 관절 속도 6.64 rad/s 가 모터 한계 4.80 rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요`</a><a class="toc-l3" href="#4-피크-rms는-통과인데-속도-토크-곡선-초과">4) 피크·RMS는 통과인데 `속도-토크 곡선 초과`</a><a class="toc-l3" href="#5-출력축-토크와-모터축-토크를-혼동">5) 출력축 토크와 모터축 토크를 혼동</a><a class="toc-l3" href="#6-keyerror-unknown-preset-edu-servo-choose-from-eduservo-edudynamixel-printerstepper-industrialpicker">6) `KeyError: &quot;unknown preset &#x27;edu-servo&#x27; (choose from edu_servo, edu_dynamixel, printer_stepper, industrial_picker)&quot;`</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

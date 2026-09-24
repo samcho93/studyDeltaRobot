@@ -271,11 +271,7 @@ robot : 이 관절각 조합은 조립될 수 없습니다: no forward kinematic
 kin.fk   (effector centre): [0.0, 0.0, -0.2791]
 robot.fk (TCP)            : [0.0, 0.0, -0.3491]</code></pre></div>
 <p>읽는 법</p>
-<ul><li>모터각 한계 안의 무작위 θ 2000개에서 FK → IK로 돌아온 각의 오차가 <span class="math">10⁻¹⁵</span> 수준입니다. 부동소수점 반올림뿐이라는 뜻입니다.</li><li>edu_dynamixel에서는 한계 안의 모든 θ 조합이 조립 가능했습니다(<code>0 theta sets could not be assembled</code>). 구 중심 Cᵢ는 모두 z축에서</li></ul>
-<p><span class="math">R − r + L = 0.195</span> m 안쪽에 있는데 구 반지름 l = 0.3 m가 충분히 커서, 세 구가 언제나 만나기 때문입니다.</p>
-<ul><li>로드를 l = 0.1 m로 줄인 <code>d_bad</code>에서는 θ = (0, 0, 0)일 때 세 중심이 z축에서 0.195 m 떨어진 정삼각형을 이루고,</li></ul>
-<p>그 외접원 반지름(0.195 m)이 l보다 커서 <span class="math">h² &lt; 0</span> → <code>Unreachable</code>입니다. <code>DeltaRobot</code>은 같은 상황을 <code>WorkspaceError</code>로 알려 줍니다. (<code>설계 경고:</code> 줄은 l &lt; L인 설계를 만들 때 라이브러리가 출력하는 경고입니다.)</p>
-<ul><li><code>robot.fk()</code>는 TCP를 돌려줍니다. 이펙터 중심과 z가 정확히 툴 길이(0.07 m)만큼 다릅니다.</li></ul>
+<ul><li>모터각 한계 안의 무작위 θ 2000개에서 FK → IK로 돌아온 각의 오차가 <span class="math">10⁻¹⁵</span> 수준입니다. 부동소수점 반올림뿐이라는 뜻입니다.</li><li>edu_dynamixel에서는 한계 안의 모든 θ 조합이 조립 가능했습니다(<code>0 theta sets could not be assembled</code>). 구 중심 Cᵢ는 모두 z축에서 <span class="math">R − r + L = 0.195</span> m 안쪽에 있는데 구 반지름 l = 0.3 m가 충분히 커서, 세 구가 언제나 만나기 때문입니다.</li><li>로드를 l = 0.1 m로 줄인 <code>d_bad</code>에서는 θ = (0, 0, 0)일 때 세 중심이 z축에서 0.195 m 떨어진 정삼각형을 이루고, 그 외접원 반지름(0.195 m)이 l보다 커서 <span class="math">h² &lt; 0</span> → <code>Unreachable</code>입니다. <code>DeltaRobot</code>은 같은 상황을 <code>WorkspaceError</code>로 알려 줍니다. (<code>설계 경고:</code> 줄은 l &lt; L인 설계를 만들 때 라이브러리가 출력하는 경고입니다.)</li><li><code>robot.fk()</code>는 TCP를 돌려줍니다. 이펙터 중심과 z가 정확히 툴 길이(0.07 m)만큼 다릅니다.</li></ul>
 <div class="callout callout-check"><div class="callout-title">스스로 점검</div><div class="callout-body"><p>edu_dynamixel에서 FK 예외가 나지 않았다고 해서 모든 θ가 "좋은 자세"는 아닙니다. 예를 들어 θ = (−0.7, 1.5, 1.5)도 조립은 되지만 <code>kin.limit_report(d, kin.fk(d, (-0.7, 1.5, 1.5)))</code>를 실행해 보면 볼조인트·팔꿈치 한계 검사 결과를 확인할 수 있습니다. 결과를 해석해 보세요.</p></div></div>
 <h3 id="기구학-실험실에서-확인">기구학 실험실에서 확인<a class="anchor" href="#기구학-실험실에서-확인">#</a></h3>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/kinematics-lab.html">기구학 실험실</a></p>
@@ -287,14 +283,9 @@ robot.fk (TCP)            : [0.0, 0.0, -0.3491]</code></pre></div>
 <h3 id="2-fk-결과가-r만큼-어긋남-중심에서-0-035-m">2) FK 결과가 r만큼 어긋남 (중심에서 0.035 m)<a class="anchor" href="#2-fk-결과가-r만큼-어긋남-중심에서-0-035-m">#</a></h3>
 <ul><li>원인: 구 중심을 팔꿈치 Eᵢ 그대로 두었습니다. 그러면 구하는 점이 이펙터 중심이 아니라 <strong>볼조인트 쌍</strong>이 되며, 세 팔에 대해 서로 다른 점이라 결과가 엉뚱해집니다.</li><li>해결: <span class="math">Cᵢ = Eᵢ − r·uᵢ</span>로 옮깁니다. 이 한 줄이 델타 FK의 핵심입니다.</li></ul>
 <h3 id="3-unreachable-no-forward-kinematic-solution-for-theta">3) <code>Unreachable: no forward kinematic solution for theta=(...)</code><a class="anchor" href="#3-unreachable-no-forward-kinematic-solution-for-theta">#</a></h3>
-<ul><li>원인: <span class="math">h² &lt; 0</span> — 이 모터각 조합으로는 세 로드가 한 이펙터에 동시에 닿지 못합니다(조립 불가).</li></ul>
-<p><code>DeltaRobot.move_joints()</code>는 이것을 <code>WorkspaceError: 이 관절각 조합은 조립될 수 없습니다: ...</code>로 바꿔 알려 줍니다.</p>
-<ul><li>해결: 모터각을 독립적으로 마구 정하지 말고, 목표 위치를 정한 뒤 IK로 구합니다. l이 R − r + L에 비해 짧은 설계일수록</li></ul>
-<p>한 모터만 크게 돌릴 때 이 오류가 잘 생깁니다(edu_dynamixel처럼 l이 충분히 길면 한계 안에서는 생기지 않습니다).</p>
+<ul><li>원인: <span class="math">h² &lt; 0</span> — 이 모터각 조합으로는 세 로드가 한 이펙터에 동시에 닿지 못합니다(조립 불가). <code>DeltaRobot.move_joints()</code>는 이것을 <code>WorkspaceError: 이 관절각 조합은 조립될 수 없습니다: ...</code>로 바꿔 알려 줍니다.</li><li>해결: 모터각을 독립적으로 마구 정하지 말고, 목표 위치를 정한 뒤 IK로 구합니다. l이 R − r + L에 비해 짧은 설계일수록 한 모터만 크게 돌릴 때 이 오류가 잘 생깁니다(edu_dynamixel처럼 l이 충분히 길면 한계 안에서는 생기지 않습니다).</li></ul>
 <h3 id="4-unreachable-sphere-centres-are-collinear-zerodivisionerror">4) <code>Unreachable: sphere centres are collinear</code> / <code>ZeroDivisionError</code><a class="anchor" href="#4-unreachable-sphere-centres-are-collinear-zerodivisionerror">#</a></h3>
-<ul><li>원인: 세 중심이 한 직선 위에 있어 ey를 만들 수 없습니다(직접 구현 시 <code>j = 0</code>으로 나눔). 실제 델타 치수에서는 거의 생기지 않지만,</li></ul>
-<p>잘못된 설계값(예: R − r ≈ 0에 θ가 특수한 값)에서 나올 수 있습니다.</p>
-<ul><li>해결: <code>norm(t − i·ex)</code>가 아주 작으면 예외를 던지도록 방어 코드를 넣습니다(라이브러리처럼 <code>1e-12</code> 기준).</li></ul>
+<ul><li>원인: 세 중심이 한 직선 위에 있어 ey를 만들 수 없습니다(직접 구현 시 <code>j = 0</code>으로 나눔). 실제 델타 치수에서는 거의 생기지 않지만, 잘못된 설계값(예: R − r ≈ 0에 θ가 특수한 값)에서 나올 수 있습니다.</li><li>해결: <code>norm(t − i·ex)</code>가 아주 작으면 예외를 던지도록 방어 코드를 넣습니다(라이브러리처럼 <code>1e-12</code> 기준).</li></ul>
 <h3 id="5-각도를-도-로-넣어서-엉뚱한-위치">5) 각도를 도(°)로 넣어서 엉뚱한 위치<a class="anchor" href="#5-각도를-도-로-넣어서-엉뚱한-위치">#</a></h3>
 <ul><li>원인: <code>kin.fk(d, (20, 30, 10))</code>처럼 도 단위를 넣었습니다. 함수는 rad로 해석합니다(20 rad ≈ 1146°).</li><li>해결: <code>[math.radians(v) for v in (20, 30, 10)]</code>로 바꿉니다. <code>robot.move_joints(..., degrees=True)</code>는 변환을 대신해 줍니다.</li></ul>
 <h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
