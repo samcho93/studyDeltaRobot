@@ -1,0 +1,210 @@
+{
+  "version": 1,
+  "note": "대표값(typical values). 실제 선정 시 각 제품 데이터시트를 확인하세요.",
+  "motors": {
+    "rc_servo_mg996r": {
+      "name": "RC 서보 (MG996R급)",
+      "kind": "rc_servo",
+      "integrated_gear": true,
+      "rated_torque": 0.35,
+      "peak_torque": 1.08,
+      "max_speed": 6.0,
+      "rotor_inertia": 0.0,
+      "output_inertia": 2.0e-5,
+      "mass": 0.055,
+      "voltage": "6 V",
+      "control": "PWM 위치 제어 (50 Hz)",
+      "resolution_deg": 1.0,
+      "desc": "저렴한 교육용. 정지토크 ~11 kg·cm, 0.17 s/60°. 위치 정밀도·반복성이 낮고 피드백 없음."
+    },
+    "dxl_xm430_w350": {
+      "name": "Dynamixel XM430-W350",
+      "kind": "smart_servo",
+      "integrated_gear": true,
+      "rated_torque": 1.4,
+      "peak_torque": 4.1,
+      "max_speed": 4.8,
+      "rotor_inertia": 0.0,
+      "output_inertia": 8.0e-5,
+      "mass": 0.082,
+      "voltage": "12 V",
+      "control": "TTL 버스, 위치/속도/전류 모드",
+      "resolution_deg": 0.088,
+      "desc": "정지토크 4.1 N·m@12V, 무부하 46 rpm. 엔코더 피드백과 전류 제어를 제공하는 교육·연구용 스마트 서보."
+    },
+    "dxl_xh540_w270": {
+      "name": "Dynamixel XH540-W270",
+      "kind": "smart_servo",
+      "integrated_gear": true,
+      "rated_torque": 3.5,
+      "peak_torque": 10.6,
+      "max_speed": 4.8,
+      "rotor_inertia": 0.0,
+      "output_inertia": 2.0e-4,
+      "mass": 0.165,
+      "voltage": "12 V",
+      "control": "RS-485/TTL 버스, 위치/속도/전류 모드",
+      "resolution_deg": 0.088,
+      "desc": "정지토크 10.6 N·m@12V. 중형 교육용 델타에 적합."
+    },
+    "stepper_nema17": {
+      "name": "스테핑 모터 NEMA17 (0.45 N·m)",
+      "kind": "stepper",
+      "integrated_gear": false,
+      "rated_torque": 0.4,
+      "peak_torque": 0.45,
+      "max_speed": 104.7,
+      "torque_at_max_speed": 0.1,
+      "rotor_inertia": 6.8e-6,
+      "output_inertia": 0.0,
+      "mass": 0.35,
+      "voltage": "24 V (드라이버)",
+      "control": "STEP/DIR, 1.8°/step, 마이크로스텝",
+      "resolution_deg": 0.1125,
+      "desc": "오픈루프 — 토크가 부족하면 탈조(step loss). 속도가 오르면 토크가 떨어진다(풀아웃 곡선)."
+    },
+    "stepper_nema23": {
+      "name": "스테핑 모터 NEMA23 (1.26 N·m)",
+      "kind": "stepper",
+      "integrated_gear": false,
+      "rated_torque": 1.1,
+      "peak_torque": 1.26,
+      "max_speed": 83.8,
+      "torque_at_max_speed": 0.25,
+      "rotor_inertia": 2.8e-5,
+      "output_inertia": 0.0,
+      "mass": 1.0,
+      "voltage": "36 V (드라이버)",
+      "control": "STEP/DIR, 1.8°/step, 마이크로스텝",
+      "resolution_deg": 0.1125,
+      "desc": "NEMA17보다 토크가 크지만 로터 관성과 질량도 크다."
+    },
+    "bldc_qdd": {
+      "name": "BLDC + FOC 드라이버 (QDD급)",
+      "kind": "bldc",
+      "integrated_gear": false,
+      "rated_torque": 0.5,
+      "peak_torque": 1.5,
+      "max_speed": 262.0,
+      "rotor_inertia": 1.2e-4,
+      "output_inertia": 0.0,
+      "mass": 0.35,
+      "voltage": "24 V",
+      "control": "FOC 전류/위치 제어 (ODrive·moteus류), 절대엔코더",
+      "resolution_deg": 0.02,
+      "desc": "저감속비(6~10:1)와 조합하는 준직접구동(QDD). 백드라이브 가능, 충돌에 강함."
+    },
+    "ac_servo_200w": {
+      "name": "AC 서보 200 W",
+      "kind": "ac_servo",
+      "integrated_gear": false,
+      "rated_torque": 0.64,
+      "peak_torque": 1.91,
+      "max_speed": 523.6,
+      "rotor_inertia": 1.4e-5,
+      "output_inertia": 0.0,
+      "mass": 0.82,
+      "voltage": "AC 220 V (서보팩)",
+      "control": "펄스/EtherCAT, 고분해능 엔코더",
+      "resolution_deg": 0.0003,
+      "desc": "정격 3000 rpm, 최대 5000 rpm. 산업용 소형 델타의 전형적인 구성(감속기 10~30:1)."
+    },
+    "ac_servo_400w": {
+      "name": "AC 서보 400 W",
+      "kind": "ac_servo",
+      "integrated_gear": false,
+      "rated_torque": 1.27,
+      "peak_torque": 3.82,
+      "max_speed": 523.6,
+      "rotor_inertia": 2.6e-5,
+      "output_inertia": 0.0,
+      "mass": 1.2,
+      "voltage": "AC 220 V (서보팩)",
+      "control": "펄스/EtherCAT, 고분해능 엔코더",
+      "resolution_deg": 0.0003,
+      "desc": "정격 3000 rpm. 페이로드 1~3 kg급 산업용 델타."
+    },
+    "ac_servo_750w": {
+      "name": "AC 서보 750 W",
+      "kind": "ac_servo",
+      "integrated_gear": false,
+      "rated_torque": 2.39,
+      "peak_torque": 7.16,
+      "max_speed": 523.6,
+      "rotor_inertia": 1.04e-4,
+      "output_inertia": 0.0,
+      "mass": 2.3,
+      "voltage": "AC 220 V (서보팩)",
+      "control": "펄스/EtherCAT, 고분해능 엔코더",
+      "resolution_deg": 0.0003,
+      "desc": "정격 3000 rpm. 고속·고하중 피킹."
+    }
+  },
+  "gearboxes": {
+    "none":      { "name": "없음 (직결)",          "ratios": [1],                "efficiency": 1.0,  "backlash_arcmin": 0,  "inertia": 0.0,    "mass": 0.0 },
+    "belt":      { "name": "타이밍 벨트 감속",      "ratios": [2, 3, 4, 5],       "efficiency": 0.95, "backlash_arcmin": 6,  "inertia": 5.0e-6, "mass": 0.08 },
+    "planetary": { "name": "유성 감속기",           "ratios": [3, 5, 6, 9, 10, 15, 20, 30, 50], "efficiency": 0.9, "backlash_arcmin": 10, "inertia": 1.0e-5, "mass": 0.35 },
+    "cycloidal": { "name": "사이클로이드 감속기",    "ratios": [11, 29, 59],       "efficiency": 0.85, "backlash_arcmin": 1,  "inertia": 2.0e-5, "mass": 0.8 },
+    "harmonic":  { "name": "하모닉 드라이브",        "ratios": [30, 50, 80, 100],  "efficiency": 0.75, "backlash_arcmin": 0.5,"inertia": 1.5e-5, "mass": 0.45 }
+  },
+  "materials": {
+    "cfrp_tube":  { "name": "카본(CFRP) 튜브 Ø10×8",       "linear_density": 0.045, "desc": "가볍고 강함. 고속 델타의 표준." },
+    "al_tube":    { "name": "알루미늄 튜브 Ø12×10",         "linear_density": 0.093, "desc": "가공이 쉽고 저렴." },
+    "pla_print":  { "name": "3D 프린팅 PLA (20×10, 30%)",   "linear_density": 0.12,  "desc": "시제품·교육용. 강성이 낮아 고속에서 진동." },
+    "al_profile": { "name": "알루미늄 프로파일 20×20",      "linear_density": 0.50,  "desc": "무겁다. 위팔에만, 저속용." }
+  },
+  "tools": {
+    "suction_20": { "name": "진공 흡착컵 Ø20",       "kind": "suction", "mass": 0.03, "length": 0.045, "force": 18.8, "friction": 0.5, "ferrous_only": false, "desc": "−60 kPa 기준 이론 흡착력 18.8 N. 평평하고 매끈한 면. 이젝터/펌프 별도." },
+    "suction_40": { "name": "진공 흡착컵 Ø40",       "kind": "suction", "mass": 0.05, "length": 0.05,  "force": 75.4, "friction": 0.5, "ferrous_only": false, "desc": "−60 kPa 기준 이론 흡착력 75 N. 박스·파우치." },
+    "gripper_servo": { "name": "서보 평행 그리퍼",    "kind": "gripper", "mass": 0.12, "length": 0.07,  "force": 15.0, "friction": 0.4, "ferrous_only": false, "desc": "파지력 15 N, 마찰로 유지(2μF). 모양이 불규칙한 물체." },
+    "gripper_pneumatic": { "name": "공압 평행 그리퍼", "kind": "gripper", "mass": 0.2,  "length": 0.075, "force": 60.0, "friction": 0.4, "ferrous_only": false, "desc": "파지력 60 N. 빠른 개폐, 공압 라인 필요." },
+    "electromagnet": { "name": "전자석 Ø25",          "kind": "magnet",  "mass": 0.1,  "length": 0.04,  "force": 100.0, "friction": 0.3, "ferrous_only": true,  "desc": "강자성체(철)만. 흡착면 밀착 시 100 N." },
+    "pen": { "name": "펜 / 디스펜서",                 "kind": "pen",     "mass": 0.02, "length": 0.06,  "force": 0.0,  "friction": 0.0, "ferrous_only": false, "desc": "그리기·도포 궤적 연습. 집기 불가." }
+  },
+  "presets": {
+    "edu_servo": {
+      "name": "교육용 소형 (RC 서보)",
+      "desc": "3D 프린팅 + MG996R. 책상 위 실습용, 페이로드 50 g.",
+      "design": {
+        "base_radius": 0.08, "effector_radius": 0.03, "upper_arm": 0.1, "forearm": 0.22, "forearm_spacing": 0.04,
+        "theta_min": -0.7, "theta_max": 1.5, "ball_joint_limit": 0.6,
+        "upper_arm_material": "pla_print", "forearm_material": "al_tube",
+        "motor": "rc_servo_mg996r", "gearbox": "none", "gear_ratio": 1,
+        "tool": "suction_20", "payload": 0.05, "effector_mass": 0.04
+      }
+    },
+    "edu_dynamixel": {
+      "name": "연구·교육용 (Dynamixel)",
+      "desc": "XM430 + 카본 로드. 페이로드 200 g, 비전 연계 실습.",
+      "design": {
+        "base_radius": 0.1, "effector_radius": 0.035, "upper_arm": 0.13, "forearm": 0.3, "forearm_spacing": 0.05,
+        "theta_min": -0.7, "theta_max": 1.5, "ball_joint_limit": 0.6,
+        "upper_arm_material": "al_tube", "forearm_material": "cfrp_tube",
+        "motor": "dxl_xm430_w350", "gearbox": "none", "gear_ratio": 1,
+        "tool": "gripper_servo", "payload": 0.2, "effector_mass": 0.06
+      }
+    },
+    "printer_stepper": {
+      "name": "스테퍼 + 벨트 감속",
+      "desc": "NEMA17 + 벨트 4:1. 3D 프린터 부품으로 만드는 저가형.",
+      "design": {
+        "base_radius": 0.11, "effector_radius": 0.035, "upper_arm": 0.14, "forearm": 0.32, "forearm_spacing": 0.05,
+        "theta_min": -0.7, "theta_max": 1.5, "ball_joint_limit": 0.6,
+        "upper_arm_material": "al_tube", "forearm_material": "cfrp_tube",
+        "motor": "stepper_nema17", "gearbox": "belt", "gear_ratio": 4,
+        "tool": "electromagnet", "payload": 0.15, "effector_mass": 0.06
+      }
+    },
+    "industrial_picker": {
+      "name": "산업용 피킹 (AC 서보 400 W)",
+      "desc": "400 W + 유성 20:1, 카본 로드. 페이로드 1 kg, 고속 컨베이어 피킹.",
+      "design": {
+        "base_radius": 0.2, "effector_radius": 0.05, "upper_arm": 0.35, "forearm": 0.8, "forearm_spacing": 0.08,
+        "theta_min": -0.7, "theta_max": 1.5, "ball_joint_limit": 0.6,
+        "upper_arm_material": "cfrp_tube", "forearm_material": "cfrp_tube",
+        "motor": "ac_servo_400w", "gearbox": "planetary", "gear_ratio": 20,
+        "tool": "suction_40", "payload": 1.0, "effector_mass": 0.25
+      }
+    }
+  }
+}

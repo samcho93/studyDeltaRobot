@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deltarobot"
+version = "0.1.0"
+description = "Rotary delta robot kinematics, design analysis and control (studyDeltaRobot course)"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+websim = ["websockets>=12"]
+serial = ["pyserial>=3.5"]
+
+[project.scripts]
+delta-urdf = "deltarobot.urdf:main"
+
+[tool.setuptools]
+packages = ["deltarobot", "deltarobot.backends"]
+
+[tool.setuptools.package-data]
+deltarobot = ["data/*.json"]

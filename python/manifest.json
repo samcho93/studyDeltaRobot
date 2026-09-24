@@ -1,0 +1,18 @@
+{
+ "version": "d10e0406b4ce",
+ "files": [
+  "deltarobot/__init__.py",
+  "deltarobot/backends/__init__.py",
+  "deltarobot/backends/base.py",
+  "deltarobot/backends/record.py",
+  "deltarobot/data/catalog.json",
+  "deltarobot/design.py",
+  "deltarobot/dynamics.py",
+  "deltarobot/kinematics.py",
+  "deltarobot/playground.py",
+  "deltarobot/robot.py",
+  "deltarobot/scene.py",
+  "deltarobot/trajectory.py",
+  "deltarobot/urdf.py"
+ ]
+}
