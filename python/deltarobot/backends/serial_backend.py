@@ -20,8 +20,11 @@ from .base import RealtimeBackend, Vec
 class SerialBackend(RealtimeBackend):
     enforce_speed = True
 
-    def __init__(self, port: str = "COM3", baud: int = 115200, rate: float = 50.0):
+    def __init__(self, port: str = "COM3", baud: int = 115200, rate: float = 50.0,
+                 max_joint_speed: float = 3.49):
         super().__init__()
+        # firmware/delta_servo limits the slew rate to 200 deg/s (3.49 rad/s); refuse faster moves
+        self.max_joint_speed = max_joint_speed
         self.port, self.baud = port, baud
         self.min_period = 1.0 / rate
         self._last = -1.0

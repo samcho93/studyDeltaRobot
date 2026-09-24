@@ -66,6 +66,9 @@ class Backend:
     def check_stream(self, stream: Sequence[Tuple[float, Vec]]) -> None:
         d = self.robot.design
         limit = float(d.motor_spec["max_speed"]) / d.ratio
+        cap = getattr(self, "max_joint_speed", None)       # e.g. the firmware slew limit
+        if cap:
+            limit = min(limit, float(cap))
         w = max_joint_speed(stream, self.robot.q, self.now())
         if w > limit:
             msg = ("관절 속도 %.2f rad/s 가 모터 한계 %.2f rad/s(감속 후)를 넘습니다 — "

@@ -15,7 +15,7 @@ import threading
 import time
 from typing import Any, Dict, Optional, Set
 
-from .base import RealtimeBackend, Vec
+from .base import RealtimeBackend, Vec, safe_print
 
 ALLOWED_ORIGINS = ("https://samcho93.github.io", "http://localhost", "http://127.0.0.1",
                    "https://localhost", "https://127.0.0.1")
@@ -46,7 +46,7 @@ class WebSimBackend(RealtimeBackend):
 
     def _log(self, msg: str) -> None:
         if not self.quiet:
-            print("[websim] " + msg)
+            safe_print("[websim] " + msg)
 
     # ------------------------------------------------------------ server
     def _handler(self, ws: Any) -> None:
@@ -78,7 +78,9 @@ class WebSimBackend(RealtimeBackend):
             raise RuntimeError('websim 백엔드에는 websockets>=12 가 필요합니다: pip install "websockets>=12"') from e
 
         def process_request(connection: Any, request: Any) -> Any:
-            if not origin_allowed(request.headers.get("Origin")):
+            origin = request.headers.get("Origin")
+            if not origin_allowed(origin):
+                self._log("거부: 허용되지 않은 Origin %r (허용: %s)" % (origin, ", ".join(ALLOWED_ORIGINS)))
                 return connection.respond(403, "origin not allowed\n")
             return None
 

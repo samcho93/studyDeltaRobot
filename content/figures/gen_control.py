@@ -69,7 +69,7 @@ class Svg:
 
 # --------------------------------------------------------------------- r01
 def r01_backends():
-    s = Svg("r01-backends", 720, 365,"DeltaRobot 하나에 백엔드 네 개")
+    s = Svg("r01-backends", 720, 365, "DeltaRobot 하나에 백엔드 네 개")
     s.box(20, 120, 170, 90, hi=True)
     s.text(105, 148, "학생 코드")
     s.text(105, 170, "robot.arch_to(...)", "sub mono")
@@ -210,8 +210,8 @@ def r04_node_graph():
     s.path("M170 68 C230 68 230 165 273 165", arrow=True, hi=True, width=2)
     s.text(236, 128, "/delta/joint_command", "tag mono", "start")
     s.line(170, 198, 273, 198, arrow=True, hi=True, width=2)
-    s.text(232, 190, "joint_command", "tag mono")
-    s.text(232, 214, "tool_command", "tag mono")
+    s.text(221, 190, "joint_command", "tag mono")
+    s.text(221, 214, "tool_command", "tag mono")
     s.path("M445 175 C490 175 490 68 518 68", arrow=True, width=2)
     s.text(490, 108, "/joint_states", "tag mono", "start")
     s.line(615, 96, 615, 148, arrow=True)

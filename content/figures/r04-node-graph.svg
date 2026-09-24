@@ -27,8 +27,8 @@
   <path class="ln-hi" d="M170 68 C230 68 230 165 273 165" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
   <text class="tag mono" x="236" y="128" text-anchor="start">/delta/joint_command</text>
   <path class="ln-hi" d="M170 198 L273 198" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
-  <text class="tag mono" x="232" y="190" text-anchor="middle">joint_command</text>
-  <text class="tag mono" x="232" y="214" text-anchor="middle">tool_command</text>
+  <text class="tag mono" x="221" y="190" text-anchor="middle">joint_command</text>
+  <text class="tag mono" x="221" y="214" text-anchor="middle">tool_command</text>
   <path class="ln" d="M445 175 C490 175 490 68 518 68" stroke-width="2" marker-end="url(#arr-r04-node-graph)"/>
   <text class="tag mono" x="490" y="108" text-anchor="start">/joint_states</text>
   <path class="ln" d="M615 96 L615 148" stroke-width="1.6" marker-end="url(#arr-r04-node-graph)"/>
