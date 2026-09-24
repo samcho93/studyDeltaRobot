@@ -1,0 +1,114 @@
+/* ==========================================================================
+   studyDeltaRobot — main.css 위에 얹는 추가 스타일
+   트랙 색, 안전/설계 콜아웃, 실행 코드 배지, 강조색(하늘색)
+   ========================================================================== */
+
+:root {
+  --track-theory: #7dd3fc;
+  --track-design: #fbbf5a;
+  --track-control: #4ade9a;
+  --accent: #38bdf8;
+  --accent-dim: #0284c7;
+  --accent-soft: rgba(56, 189, 248, 0.12);
+  --on-accent: #04121c;
+  --safety:       #f87171;
+  --safety-soft:  rgba(248, 113, 113, 0.12);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --track-theory: #06638f;
+    --track-design: #8a5308;
+    --track-control: #0f7a52;
+    --accent: #0369a1;
+    --accent-dim: #075985;
+    --accent-soft: rgba(3, 105, 161, 0.09);
+    --on-accent: #ffffff;
+    --safety:       #b32b26;
+    --safety-soft:  rgba(179, 43, 38, 0.08);
+  }
+}
+:root[data-theme="light"] {
+  --track-theory: #06638f;
+  --track-design: #8a5308;
+  --track-control: #0f7a52;
+  --accent: #0369a1;
+  --accent-dim: #075985;
+  --accent-soft: rgba(3, 105, 161, 0.09);
+  --on-accent: #ffffff;
+  --safety:       #b32b26;
+  --safety-soft:  rgba(179, 43, 38, 0.08);
+}
+
+
+.nav-track { margin-top: 10px; }
+.nav-track-title {
+  font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  margin: 14px 0 2px; padding-left: 10px; border-left: 3px solid currentColor;
+}
+.track-theory  { color: var(--track-theory); }
+.track-design  { color: var(--track-design); }
+.track-control { color: var(--track-control); }
+
+.track-pill {
+  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .04em;
+  padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; margin-right: 6px;
+}
+
+.requires { margin-top: 10px; font-size: 13px; color: var(--text-faint); }
+.requires a { font-family: var(--mono); font-weight: 700; margin-left: 6px; }
+
+.track-block { margin-bottom: 48px; }
+.curriculum .track-h { border-left: 4px solid currentColor; padding-left: 12px; margin-bottom: 4px; }
+.track-desc { color: var(--text-dim); margin: 0 0 20px; font-size: 14px; }
+
+/* --- 홈: 흐름도 --- */
+.hero-flow {
+  display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+  padding: 22px; border-radius: var(--radius); border: 1px solid var(--border-soft); background: var(--bg-elev);
+}
+.flow-step { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg-elev-2); border: 1px solid var(--border-soft); }
+.flow-step b { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 13px; flex: none; }
+.flow-step span { display: flex; flex-direction: column; font-weight: 700; font-size: 14.5px; }
+.flow-step small { font-weight: 500; color: var(--text-faint); font-family: var(--mono); font-size: 11.5px; }
+.flow-step.hot b { background: var(--safety-soft); color: var(--safety); }
+.flow-arrow { text-align: center; color: var(--text-faint); line-height: 1; }
+
+/* --- 콜아웃 추가 --- */
+.callout-safety { border-color: var(--safety); border-left-width: 4px; background: var(--safety-soft); }
+.callout-safety .callout-title { color: var(--safety); }
+.callout-safety .callout-title::before { content: "\26A0  "; }
+.callout-design { border-left-color: var(--track-design); }
+.callout-design .callout-title { color: var(--track-design); }
+.callout-mission { border-left-color: var(--task); background: var(--task-soft); }
+.callout-mission .callout-title { color: var(--task); }
+
+.check-item { display: inline-flex; gap: 8px; align-items: baseline; cursor: pointer; }
+.check-item input { accent-color: var(--accent); }
+.lesson-body li:has(> .check-item) { list-style: none; margin-left: -20px; }
+
+.math { font-family: "Cambria Math", "STIX Two Math", serif; font-style: italic; white-space: nowrap; }
+
+/* --- 코드 블록 배지/실행 버튼 --- */
+.code-head { gap: 8px; }
+.code-actions { display: inline-flex; gap: 6px; margin-left: auto; }
+.code-badge { font-size: 10.5px; font-weight: 800; letter-spacing: .04em; padding: 1px 7px; border-radius: 999px; }
+.badge-robot { color: #fca5a5; border: 1px solid #b91c1c; background: rgba(185, 28, 28, .18); }
+.badge-run { color: #86efac; border: 1px solid #15803d; background: rgba(21, 128, 61, .18); }
+.code-robot { border-color: #7f1d1d; }
+.run-btn {
+  font-family: inherit; font-size: 11.5px; font-weight: 700;
+  padding: 3px 10px; border-radius: 5px; cursor: pointer;
+  border: 1px solid #15803d; background: #14532d; color: #dcfce7;
+}
+.run-btn:hover { background: #166534; }
+
+
+.side-tools { display: grid; grid-template-columns: 1fr 1fr; }
+
+
+/* long URLs / identifiers must not widen the page on phones */
+.lesson-body p, .lesson-body li, .callout-body { overflow-wrap: anywhere; }
+.lesson-head h1 { overflow-wrap: anywhere; flex-wrap: wrap; row-gap: 2px; }
+
+.brand-mark { font-size: 17px; }
+.lesson-body figure.fig svg { max-width: 100%; height: auto; }

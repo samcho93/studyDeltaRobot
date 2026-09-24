@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>studyDeltaRobot · 델타로봇 인터랙티브 강의</title>
+<meta name="description" content="델타로봇의 기구학·설계·시뮬레이션·URDF·Python·ROS 2를 브라우저에서 배우는 한국어 강의.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/delta.css">
+<script src="assets/js/theme.js"></script>
+</head>
+<body class="home">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="tools/playground.html">Python Playground</a><a class="side-tool" href="tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Delta Robot &middot; 기구학 &middot; 설계 &middot; 시뮬레이션 &middot; Python &middot; ROS 2</div>
+    <h1>studyDeltaRobot</h1>
+    <p class="hero-lede">
+      고속 피킹 로봇의 대명사인 <b>델타로봇</b>을 이론부터 설계·제어까지 브라우저에서 배우는 인터랙티브 강의입니다.
+      역기구학·순기구학·야코비안을 직접 유도하고, <b>암 길이·모터·감속기·엔드이펙터를 골라 바로 시뮬레이션</b>하며
+      토크·속도·작업영역을 검증합니다. 설계값으로 <b>URDF</b>를 만들고, 같은 <code>deltarobot</code> 파이썬 코드로
+      웹 시뮬레이터 &rarr; ROS 2 &rarr; 실물(아두이노)까지 움직입니다. 총 27개 챕터.
+    </p>
+    <div class="hero-cta">
+      <a class="btn primary" href="lessons/t01.html">T01부터 시작</a>
+      <a class="btn" href="sim/index.html">3D 시뮬레이터</a>
+      <a class="btn" href="tools/playground.html">Python Playground</a>
+      <a class="btn" href="tools/urdf-viewer.html">URDF 뷰어</a>
+      <a class="btn" href="tools/kinematics-lab.html">기구학 실험실</a>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+      <div class="progress-text"><span id="progText">0 / 27 챕터 완료</span>
+      <button class="link-btn" id="resetProg" type="button">진행률 초기화</button></div>
+    </div>
+  </div>
+  <div class="hero-art">
+    <div class="hero-flow">
+      <div class="flow-step"><b>1</b><span>이론·기구학<small>IK · FK · Jacobian · 작업영역</small></span></div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-step"><b>2</b><span>설계 &amp; 시뮬레이션<small>암 길이 · 모터 · 감속기 · 툴 &rarr; 토크 검증</small></span></div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-step"><b>3</b><span>Python &middot; URDF<small>deltarobot · Playground · URDF 생성</small></span></div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-step hot"><b>4</b><span>ROS 2 &middot; 실물<small>RViz · web_bridge · Arduino serial</small></span></div>
+    </div>
+    <div class="hero-art-cap">같은 설계 파일, 같은 파이썬 코드 — 시뮬 &rarr; ROS 2 &rarr; 실물</div>
+  </div>
+</header>
+
+<section class="facts">
+  <div class="fact"><div class="fact-n">3</div><div class="fact-l">자유도 (병진 x·y·z)</div></div>
+  <div class="fact"><div class="fact-n">9</div><div class="fact-l">종 모터 + 5종 감속기 카탈로그</div></div>
+  <div class="fact"><div class="fact-n">6</div><div class="fact-l">종 엔드이펙터 (흡착·그리퍼·전자석·펜)</div></div>
+  <div class="fact"><div class="fact-n">0</div><div class="fact-l">설치 없이 시작 (브라우저)</div></div>
+</section>
+
+<section class="curriculum">
+  <h2>커리큘럼</h2>
+  <div class="track-block" data-track="theory"><h2 class="track-h track-theory">기초 이론·기구학</h2><p class="track-desc">병렬로봇으로서의 델타로봇 구조, 좌표계, 역기구학·순기구학, 야코비안과 특이점, 작업영역, 동역학과 모터 토크.</p><section class="part"><header class="part-head"><div class="part-no">T-1</div><div><h3>델타로봇 이해</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/t01.html" data-slug="t01"><div class="lc-no">T01</div><div class="lc-main"><div class="lc-title">델타로봇 개요와 응용</div><div class="lc-sum">Clavel의 발명부터 식품·제약 피킹, 3D 프린터까지 — 병렬로봇이 빠른 이유와 직렬로봇과의 차이를 봅니다.</div><div class="lc-meta"><span class="lc-min">40분 · 초급</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/t02.html" data-slug="t02"><div class="lc-no">T02</div><div class="lc-main"><div class="lc-title">구조와 자유도</div><div class="lc-sum">베이스·위팔·평행사변형 아래팔·이펙터로 이루어진 구조와 Grübler 식으로 자유도가 3인 이유를 이해합니다.</div><div class="lc-meta"><span class="lc-min">50분 · 초급</span><span class="tag">URDF 뷰어</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/t03.html" data-slug="t03"><div class="lc-no">T03</div><div class="lc-main"><div class="lc-title">좌표계와 설계 파라미터</div><div class="lc-sum">R, r, L, l, φᵢ, θᵢ의 정의와 부호 규약을 정하고, 시뮬레이터에서 각 파라미터가 형상에 주는 영향을 확인합니다.</div><div class="lc-meta"><span class="lc-min">50분 · 초급</span><span class="tag">시뮬레이터</span><span class="tag">기구학 실험실</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section><section class="part"><header class="part-head"><div class="part-no">T-2</div><div><h3>기구학</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/t04.html" data-slug="t04"><div class="lc-no">T04</div><div class="lc-main"><div class="lc-title">역기구학 (IK)</div><div class="lc-sum">구와 원의 교차로 모터각을 구하는 닫힌 해를 유도하고 Python으로 구현합니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span><span class="tag">기구학 실험실</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/t05.html" data-slug="t05"><div class="lc-no">T05</div><div class="lc-main"><div class="lc-title">순기구학 (FK)</div><div class="lc-sum">세 구의 교점(삼변측량)으로 이펙터 위치를 구하고, 두 해 중 하나를 고르는 기준을 봅니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span><span class="tag">기구학 실험실</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/t06.html" data-slug="t06"><div class="lc-no">T06</div><div class="lc-main"><div class="lc-title">야코비안·속도·특이점</div><div class="lc-sum">속도 관계 v = J θ̇를 유도하고 조건수로 민첩성을 평가하며, 두 종류의 특이점을 시뮬레이터에서 찾아봅니다.</div><div class="lc-meta"><span class="lc-min">90분 · 고급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section><section class="part"><header class="part-head"><div class="part-no">T-3</div><div><h3>작업영역과 동역학</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/t07.html" data-slug="t07"><div class="lc-no">T07</div><div class="lc-main"><div class="lc-title">작업영역</div><div class="lc-sum">관절 한계·볼조인트 각·팔꿈치 각이 작업영역을 어떻게 깎는지 보고, 실제로 쓸 수 있는 작업 실린더를 계산합니다.</div><div class="lc-meta"><span class="lc-min">60분 · 중급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/t08.html" data-slug="t08"><div class="lc-no">T08</div><div class="lc-main"><div class="lc-title">동역학과 모터 토크</div><div class="lc-sum">질량을 나누어 붙이는 간이 모델로 중력·관성 토크와 τ = Jᵀ F를 계산하고, 피크·RMS 토크의 의미를 이해합니다.</div><div class="lc-meta"><span class="lc-min">90분 · 고급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section></div><div class="track-block" data-track="design"><h2 class="track-h track-design">설계·시뮬레이션</h2><p class="track-desc">암 길이·모터·감속기·엔드이펙터를 골라 시뮬레이터에서 바로 검증하고, URDF를 만들고, 세 가지 응용 설계를 완성합니다.</p><section class="part"><header class="part-head"><div class="part-no">D-1</div><div><h3>시뮬레이터와 요구사항</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/d01.html" data-slug="d01"><div class="lc-no">D01</div><div class="lc-main"><div class="lc-title">웹 시뮬레이터 사용법</div><div class="lc-sum">설계·조그·작업·분석·연결 탭의 기능과 그래프 읽는 법, 설계 공유(URL/JSON)를 익힙니다.</div><div class="lc-meta"><span class="lc-min">45분 · 초급</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d02.html" data-slug="d02"><div class="lc-no">D02</div><div class="lc-main"><div class="lc-title">설계 요구사항 정의</div><div class="lc-sum">페이로드, 작업 실린더(D×H), 사이클 타임(Adept 사이클), 정밀도를 수치 요구사항으로 정리합니다.</div><div class="lc-meta"><span class="lc-min">50분 · 초급</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section><section class="part"><header class="part-head"><div class="part-no">D-2</div><div><h3>설계 요소 선정</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/d03.html" data-slug="d03"><div class="lc-no">D03</div><div class="lc-main"><div class="lc-title">암 길이·반지름 선정</div><div class="lc-sum">L, l, R−r 비율이 작업영역·속도·강성·토크에 주는 영향을 파라미터 스윕으로 비교합니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d04.html" data-slug="d04"><div class="lc-no">D04</div><div class="lc-main"><div class="lc-title">모터·감속기 선정</div><div class="lc-sum">RC 서보·스마트 서보·스테퍼·BLDC·AC 서보와 감속기를 피크/RMS 토크, 속도, 관성비로 고릅니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d05.html" data-slug="d05"><div class="lc-no">D05</div><div class="lc-main"><div class="lc-title">엔드이펙터 선택</div><div class="lc-sum">진공 흡착·그리퍼·전자석·펜의 유지력 계산과 가속도에 따른 안전율, 툴 길이(TCP)의 영향을 다룹니다.</div><div class="lc-meta"><span class="lc-min">60분 · 중급</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d06.html" data-slug="d06"><div class="lc-no">D06</div><div class="lc-main"><div class="lc-title">궤적 계획</div><div class="lc-sum">사다리꼴·S-커브·5차 다항식·사이클로이드 프로파일과 pick &amp; place 아치 궤적이 토크와 진동에 주는 영향을 비교합니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d07.html" data-slug="d07"><div class="lc-no">D07</div><div class="lc-main"><div class="lc-title">URDF 모델링</div><div class="lc-sum">닫힌 사슬을 트리로 표현하는 방법(가상 이펙터 관절 + 수동 관절 mimic)과 설계값으로 URDF를 생성·검증합니다.</div><div class="lc-meta"><span class="lc-min">60분 · 중급</span><span class="tag">URDF 뷰어</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section><section class="part"><header class="part-head"><div class="part-no">D-3</div><div><h3>설계 응용실습</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/d08.html" data-slug="d08"><div class="lc-no">D08</div><div class="lc-main"><div class="lc-title">응용실습 ① 탁상형 교육용 델타</div><div class="lc-sum">RC 서보와 3D 프린팅 부품으로 사탕(10 g)을 색깔별로 분류하는 책상 위 델타를 설계하고 검증합니다.</div><div class="lc-meta"><span class="lc-min">120분 · 중급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span><span class="tag">URDF 뷰어</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d09.html" data-slug="d09"><div class="lc-no">D09</div><div class="lc-main"><div class="lc-title">응용실습 ② 컨베이어 고속 피킹 셀</div><div class="lc-sum">0.5 kg 제품을 분당 60회 옮기는 컨베이어 피킹 셀을 AC 서보·감속기·흡착컵으로 설계하고 사이클을 검증합니다.</div><div class="lc-meta"><span class="lc-min">150분 · 고급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d10.html" data-slug="d10"><div class="lc-no">D10</div><div class="lc-main"><div class="lc-title">응용실습 ③ 펜 드로잉·디스펜싱 델타</div><div class="lc-sum">A5 영역에 글자·도형을 그리는 정밀 델타 — 분해능·백래시·속도 균일성을 기준으로 스테퍼+벨트를 설계합니다.</div><div class="lc-meta"><span class="lc-min">120분 · 중급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/d11.html" data-slug="d11"><div class="lc-no">D11</div><div class="lc-main"><div class="lc-title">설계 캡스톤: 요구사항 → 검증 보고서</div><div class="lc-sum">팀별 요구사항을 받아 설계안을 만들고, 시뮬레이터·Python 분석 결과로 설계 검증 보고서를 작성합니다.</div><div class="lc-meta"><span class="lc-min">180분 · 고급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span><span class="tag">URDF 뷰어</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section></div><div class="track-block" data-track="control"><h2 class="track-h track-control">Python·ROS 2·실물</h2><p class="track-desc">deltarobot 파이썬 라이브러리로 제어 프로그램을 짜고, 같은 코드를 웹 시뮬·ROS 2·아두이노 실물로 옮깁니다.</p><section class="part"><header class="part-head"><div class="part-no">R-1</div><div><h3>Python 제어</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/r01.html" data-slug="r01"><div class="lc-no">R01</div><div class="lc-main"><div class="lc-title">deltarobot 라이브러리와 Playground</div><div class="lc-sum">DeltaRobot 클래스, 백엔드 구조, 좌표·단위 규약을 익히고 브라우저 Playground에서 첫 동작을 실행합니다.</div><div class="lc-meta"><span class="lc-min">60분 · 초급</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/r02.html" data-slug="r02"><div class="lc-no">R02</div><div class="lc-main"><div class="lc-title">Python pick &amp; place 프로그래밍</div><div class="lc-sum">부품 목록 읽기, 아치 궤적, 툴 제어, 예외 처리로 색깔 분류 프로그램을 작성하고 모터 부하를 분석합니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span><span class="tag">Python Playground</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/r03.html" data-slug="r03"><div class="lc-no">R03</div><div class="lc-main"><div class="lc-title">PC Python ↔ 웹 시뮬 실시간 연결</div><div class="lc-sum">pip으로 라이브러리를 설치하고 websim 백엔드로 PC의 파이썬이 웹 시뮬레이터를 실시간으로 움직이게 합니다.</div><div class="lc-meta"><span class="lc-min">60분 · 중급</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section><section class="part"><header class="part-head"><div class="part-no">R-2</div><div><h3>ROS 2 연동</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/r04.html" data-slug="r04"><div class="lc-no">R04</div><div class="lc-main"><div class="lc-title">ROS 2 환경과 delta_robot 패키지</div><div class="lc-sum">ROS 2 워크스페이스를 만들고 delta_robot 패키지를 빌드해 노드·토픽 구조를 살펴봅니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/r05.html" data-slug="r05"><div class="lc-no">R05</div><div class="lc-main"><div class="lc-title">ROS 2: URDF·RViz·joint_states</div><div class="lc-sum">설계값으로 생성한 URDF를 robot_state_publisher와 RViz로 띄우고, 수동 관절을 계산해 닫힌 사슬을 표시합니다.</div><div class="lc-meta"><span class="lc-min">90분 · 중급</span><span class="tag">URDF 뷰어</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/r06.html" data-slug="r06"><div class="lc-no">R06</div><div class="lc-main"><div class="lc-title">ROS 2: 토픽·서비스 제어와 웹 브리지</div><div class="lc-sum">goal 토픽·tool 서비스·deltarobot ros2 백엔드로 로봇을 움직이고, web_bridge로 웹 시뮬레이터를 ROS 2 화면으로 씁니다.</div><div class="lc-meta"><span class="lc-min">120분 · 고급</span><span class="tag">시뮬레이터</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section><section class="part"><header class="part-head"><div class="part-no">R-3</div><div><h3>실물과 캡스톤</h3></div></header><div class="part-list"><a class="lesson-card" href="lessons/r07.html" data-slug="r07"><div class="lc-no">R07</div><div class="lc-main"><div class="lc-title">실물: 아두이노 펌웨어·캘리브레이션</div><div class="lc-sum">RC 서보 델타를 조립하고 영점·방향을 캘리브레이션한 뒤, serial 백엔드로 같은 파이썬 코드를 실물에서 실행합니다.</div><div class="lc-meta"><span class="lc-min">150분 · 고급</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a><a class="lesson-card" href="lessons/r08.html" data-slug="r08"><div class="lc-no">R08</div><div class="lc-main"><div class="lc-title">캡스톤: 컨베이어 트래킹 분류</div><div class="lc-sum">움직이는 컨베이어 위 부품의 위치를 예측해 따라 잡는 트래킹 pick &amp; place를 시뮬 → ROS 2 → 실물 순으로 완성합니다.</div><div class="lc-meta"><span class="lc-min">240분 · 고급</span><span class="tag">시뮬레이터</span><span class="tag">Python Playground</span></div></div><div class="lc-check" aria-hidden="true"></div></a></div></section></div>
+</section>
+
+<footer class="site-foot">
+  <p>폴리텍 AI응용소프트웨어과 강의 자료. 모터·감속기·툴 사양은 교육용 대표값이며 실제 선정 시 제조사 데이터시트를 확인하세요.
+  실물 실습은 반드시 교수 입회 하에 진행하세요.</p>
+  <p class="foot-links">
+    <a href="https://github.com/samcho93/studyDeltaRobot" target="_blank" rel="noopener">이 사이트 저장소</a>
+    <a href="https://docs.ros.org/en/humble/" target="_blank" rel="noopener">ROS 2 Humble 문서</a>
+    <a href="https://pyodide.org" target="_blank" rel="noopener">Pyodide</a>
+  </p>
+</footer>
+
+</main>
+<script src="assets/js/site.js"></script>
+
+</body>
+</html>
