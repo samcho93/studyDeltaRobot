@@ -167,7 +167,7 @@ class DeltaDriver(Node):
     def _publish(self, q: core.Vec) -> None:
         stamp = self.get_clock().now().to_msg()
         try:
-            names, pos = core.joint_state_lists(self.design, q)
+            names, pos = core.joint_state_lists(self.design, q, 1 if self.tool else 0)
             tcp: Optional[core.Vec] = core.tcp_from_joints(self.design, q)
         except kin.Unreachable:
             names, pos, tcp = list(core.JOINTS), list(q), None

@@ -123,6 +123,9 @@ python -m deltarobot.urdf --preset edu_dynamixel -o delta.urdf
 python -m deltarobot.urdf --design my_design.json -o delta.urdf
 ```
 
+`deltarobot.urdf.joint_state(design, theta, tool=0)` — URDF의 모든 독립 관절값(모터 3 + 수동 6 + 가상 이펙터 3,
+그리퍼 툴이면 `gripper_finger_a`: 열림 0 / 닫힘 −`GRIPPER_STROKE`(0.006 m)). JS: `jointState(d, theta, tool)`.
+
 ## 10. 웹 도구 화면
 
 ### 시뮬레이터 `sim/index.html`

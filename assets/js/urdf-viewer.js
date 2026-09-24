@@ -72,7 +72,9 @@ function load() {
   robot.traverse((o) => { if (o.isMesh) { o.castShadow = true; } });
   const links = Object.keys(robot.links).length, joints = Object.values(robot.joints);
   $('nLinks').textContent = String(links);
-  $('nJoints').textContent = `${joints.length} (능동 3 · 수동 ${joints.filter((j) => j.name.startsWith('elbow')).length} · 가상 3 · 고정 ${joints.filter((j) => j.jointType === 'fixed').length})`;
+  const grip = joints.filter((j) => j.name.startsWith('gripper')).length;
+  $('nJoints').textContent = `${joints.length} (능동 3 · 수동 ${joints.filter((j) => j.name.startsWith('elbow')).length} · 가상 3${grip ? ' · 그리퍼 ' + grip : ''} · 고정 ${joints.filter((j) => j.jointType === 'fixed').length})`;
+  $('toolWrap').hidden = !grip;
   buildSliders();
   paintTree();
   const h = design.homeTheta;
@@ -103,10 +105,10 @@ function apply() {
   const p = tryFk(design, q);
   sliders.forEach((s, i) => { s.rng.value = (q[i] * DEG).toFixed(1); s.val.textContent = (q[i] * DEG).toFixed(1) + '°'; });
   if (!p) { $('closure').textContent = '순기구학 해 없음'; return false; }
-  const js = jointState(design, q);
+  const js = jointState(design, q, $('optTool').checked ? 1 : 0);
   const passive = $('optPassive').checked;
   for (const [name, v] of Object.entries(js)) {
-    const isActive = name.startsWith('motor');
+    const isActive = name.startsWith('motor') || name.startsWith('gripper');
     robot.setJointValue(name, isActive || passive ? v : 0);
   }
   robot.updateMatrixWorld(true);
@@ -128,7 +130,7 @@ function apply() {
   $('closure').textContent = (err * 1000).toFixed(3) + ' mm' + (passive ? '' : '  ← 사슬이 풀림');
   $('closure').style.color = err > 0.001 ? 'var(--danger)' : '';
   $('passiveTable').innerHTML = '<tr><th>관절</th><th>값</th></tr>' + Object.entries(js).filter(([n]) => !n.startsWith('motor')).map(([n, v]) =>
-    `<tr><td>${n}</td><td>${n.startsWith('effector') ? (v * 1000).toFixed(1) + ' mm' : (v * DEG).toFixed(2) + '°'}</td></tr>`).join('');
+    `<tr><td>${n}</td><td>${n.startsWith('effector') || n.startsWith('gripper') ? (v * 1000).toFixed(1) + ' mm' : (v * DEG).toFixed(2) + '°'}</td></tr>`).join('');
   return true;
 }
 
@@ -208,6 +210,7 @@ function axesVisible() {
 
 src.addEventListener('change', load);
 $('optPassive').addEventListener('change', apply);
+$('optTool').addEventListener('change', apply);
 $('optAxes').addEventListener('change', axesVisible);
 $('optJointAxes').addEventListener('change', jointAxes);
 $('btnFit').addEventListener('click', fit);

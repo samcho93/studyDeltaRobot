@@ -397,7 +397,8 @@ export class DeltaView {
     this.scene.add(robot);
     this.robot = {
       group: robot, meshGroup, urdf: robot, arms, eff: robot.links.effector,
-      toolMeshes: byLink('tool_link'), size: this.robot.size, kind: 'urdf',
+      toolMeshes: [...byLink('tool_link'), ...byLink('gripper_finger_a_link'), ...byLink('gripper_finger_b_link')],
+      size: this.robot.size, kind: 'urdf',
       tool: { kind: d.toolSpec.kind, on: [] },
     };
     this.urdfError = null;
@@ -416,10 +417,10 @@ export class DeltaView {
 
   poseUrdf(q, tool, bad) {
     const r = this.robot;
-    const js = jointState(this.d, q);
+    const js = jointState(this.d, q, tool ? 1 : 0);
     for (const name in js) r.urdf.setJointValue(name, js[name]);
     r.arms.forEach((arm, i) => arm.meshes.forEach((m) => { m.material = bad && bad[i] ? this.mat.armBad : m.userData.baseMat; }));
-    const on = tool && r.tool.kind !== 'pen';
+    const on = tool && r.tool.kind !== 'pen' && r.tool.kind !== 'gripper';   // gripper shows closing fingers
     r.toolMeshes.forEach((m) => { m.material = on ? this.mat.toolOn : m.userData.baseMat; });
   }
 

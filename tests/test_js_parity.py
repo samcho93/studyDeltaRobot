@@ -24,6 +24,8 @@ CASES = {
                   "points": [[0.02, -0.03, -0.19], [-0.04, 0.03, -0.21], [0.3, 0.0, -0.1], [0.0, 0.0, -0.3]]},
     "industrial": {"preset": "industrial_picker", "thetas": [[0.4, 0.2, 0.6], [0.1, 0.9, 0.3], [1.4, 1.4, 1.4]],
                    "points": [[0.1, 0.05, -0.8], [-0.2, -0.1, -0.75], [0.6, 0.6, -0.5], [0.0, 0.0, -0.95]]},
+    "gripper": {"preset": "edu_dynamixel", "thetas": [[0.3, 0.4, 0.5], [0.35, 0.35, 0.35], [0.1, 0.9, 0.2]],
+                "points": [[0.0, 0.0, -0.3], [0.03, -0.02, -0.31], [0.2, 0.2, -0.2], [0.0, 0.0, -0.4]]},
     "stepper": {"preset": "printer_stepper", "thetas": [[0.35, 0.35, 0.35], [0.8, 0.1, 0.4], [0.0, 1.0, 0.5]],
                 "points": [[0.0, 0.0, -0.3], [0.05, 0.05, -0.32], [-0.1, 0.02, -0.28], [0.0, 0.2, -0.4]]},
 }
@@ -85,6 +87,7 @@ def py_results(c):
     r["scene_conv"] = scene.default_scene(d, "conveyor")
     r["urdf"] = urdf.generate(d)
     r["jstate"] = urdf.joint_state(d, c["thetas"][0])
+    r["jstate_tool"] = urdf.joint_state(d, c["thetas"][0], 1)
     frames = [{"t": k * 0.01, "q": [0.3 + 0.2 * math.sin(3 * k * 0.01), 0.35, 0.4 - 0.1 * k * 0.01], "tool": 0}
               for k in range(41)]
     r["evaluate"] = dyn.evaluate(d, dyn.analyze(d, frames))

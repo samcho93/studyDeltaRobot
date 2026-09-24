@@ -40,6 +40,7 @@ for (const [name, c] of Object.entries(cases)) {
   r.scene_conv = scene.defaultScene(d, 'conveyor');
   r.urdf = urdf.generate(d);
   r.jstate = urdf.jointState(d, c.thetas[0]);
+  r.jstate_tool = urdf.jointState(d, c.thetas[0], 1);
   const frames = [];
   for (let k = 0; k <= 40; k++) { const t = k * 0.01; frames.push({ t, q: [0.3 + 0.2 * Math.sin(3 * t), 0.35, 0.4 - 0.1 * t], tool: 0 }); }
   r.evaluate = dyn.evaluate(d, dyn.analyze(d, frames));

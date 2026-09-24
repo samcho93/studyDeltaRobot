@@ -171,3 +171,21 @@ def test_websim_origin_filter():
     assert origin_allowed(None)
     assert not origin_allowed("https://evil.example")
     assert not origin_allowed("http://localhost.evil.example")
+
+
+def test_urdf_gripper_fingers_close_symmetrically():
+    np = pytest.importorskip("numpy")
+    d = DeltaDesign.preset("edu_dynamixel")          # servo parallel gripper
+    assert d.tool_spec["kind"] == "gripper"
+    root = ET.fromstring(urdf.generate(d).split("\n", 1)[1])
+    joints = {j.get("name"): j for j in root.findall("joint")}
+    a, b = joints["gripper_finger_a"], joints["gripper_finger_b"]
+    assert a.get("type") == b.get("type") == "prismatic"
+    assert b.find("mimic").get("joint") == "gripper_finger_a"
+    th = (0.35, 0.35, 0.35)
+    for tool, gap in ((0, 2 * urdf.GRIPPER_FINGER_X), (1, 2 * (urdf.GRIPPER_FINGER_X - urdf.GRIPPER_STROKE))):
+        v = urdf.joint_state(d, th, tool)["gripper_finger_a"]
+        xa = float(a.find("origin").get("xyz").split()[0]) + float(a.find("axis").get("xyz").split()[0]) * v
+        xb = float(b.find("origin").get("xyz").split()[0]) + float(b.find("axis").get("xyz").split()[0]) * v
+        assert abs(xa + xb) < 1e-12 and abs((xa - xb) - gap) < 1e-12
+    assert "gripper_finger_a" not in urdf.joint_state(DeltaDesign.preset("edu_servo"), th)   # suction cup

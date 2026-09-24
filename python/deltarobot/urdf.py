@@ -26,6 +26,8 @@ from . import kinematics as kin
 from .design import DeltaDesign
 
 HALF_PI = math.pi / 2
+GRIPPER_STROKE = 0.006     # finger travel per side [m]; open = 0, closed = -GRIPPER_STROKE
+GRIPPER_FINGER_X = 0.015   # finger offset from the tool axis when open [m]
 
 
 def f(v: float) -> str:
@@ -170,15 +172,24 @@ def generate(design: DeltaDesign, name: str = "delta_robot") -> str:
         x += _cyl((0, 0, -(tl - 0.008) / 2), (0, 0, 0), 0.006, tl - 0.008, "tool")
         x += _cyl((0, 0, -tl + 0.004), (0, 0, 0), cup, 0.008, "tool")
     elif kind == "gripper":
-        x += _box((0, 0, -0.015), (0.06, 0.03, 0.03), "tool")
-        x += _box((0.015, 0, -(tl + 0.03) / 2), (0.006, 0.02, tl - 0.03), "tool")
-        x += _box((-0.015, 0, -(tl + 0.03) / 2), (0.006, 0.02, tl - 0.03), "tool")
+        x += _box((0, 0, -0.015), (0.06, 0.03, 0.03), "tool")      # fingers are child links (below)
     elif kind == "magnet":
         x += _cyl((0, 0, -tl / 2), (0, 0, 0), 0.0125, tl, "tool")
     else:
         x += _cyl((0, 0, -tl / 2), (0, 0, 0), 0.004, tl, "tool")
     x += _inertial(max(1e-3, float(tool["mass"])), (0, 0, -tl / 2), 1e-5, 1e-5, 1e-5)
     x.append('  </link>')
+    if kind == "gripper":
+        # parallel fingers: finger a slides along +x (negative = closing), finger b mirrors it
+        grip = float(tool["force"])
+        for k, sgn in (("a", 1.0), ("b", -1.0)):
+            x += _joint("gripper_finger_%s" % k, "prismatic", "tool_link", "gripper_finger_%s_link" % k,
+                        (sgn * GRIPPER_FINGER_X, 0, 0), (0, 0, 0), (sgn, 0, 0),
+                        (-GRIPPER_STROKE, 0, grip, 0.05), "" if k == "a" else "gripper_finger_a")
+            x.append('  <link name="gripper_finger_%s_link">' % k)
+            x += _box((0, 0, -(tl + 0.03) / 2), (0.006, 0.02, tl - 0.03), "tool")
+            x += _inertial(0.01, (0, 0, -(tl + 0.03) / 2), 1e-6, 1e-6, 1e-6)
+            x.append('  </link>')
     x += _joint("tcp_joint", "fixed", "tool_link", "tcp", (0, 0, -tl + 0.005))
     x.append('  <link name="tcp"/>')
     x.append('</robot>')
@@ -188,8 +199,8 @@ def generate(design: DeltaDesign, name: str = "delta_robot") -> str:
 ACTIVE = ["motor1_joint", "motor2_joint", "motor3_joint"]
 
 
-def joint_state(design: DeltaDesign, theta: Sequence[float]) -> Dict[str, float]:
-    """All independent (non-mimic) joint values for the given motor angles."""
+def joint_state(design: DeltaDesign, theta: Sequence[float], tool: int = 0) -> Dict[str, float]:
+    """All independent (non-mimic) joint values for the given motor angles (and tool state)."""
     p = kin.fk(design, theta)
     out: Dict[str, float] = {}
     for i in range(3):
@@ -199,6 +210,8 @@ def joint_state(design: DeltaDesign, theta: Sequence[float]) -> Dict[str, float]
         out["elbow%da_pitch" % (i + 1)] = pitch
         out["elbow%da_yaw" % (i + 1)] = yaw
     out["effector_x"], out["effector_y"], out["effector_z"] = p
+    if design.tool_spec["kind"] == "gripper":
+        out["gripper_finger_a"] = -GRIPPER_STROKE if tool else 0.0
     return out
 
 

@@ -58,9 +58,9 @@ def tcp_from_joints(design: DeltaDesign, q: Sequence[float]) -> Vec:
     return (p[0], p[1], p[2] - design.tool_length)
 
 
-def joint_state_lists(design: DeltaDesign, q: Sequence[float]) -> Tuple[List[str], List[float]]:
-    """Names / positions for /joint_states: active + passive + virtual effector joints."""
-    js = durdf.joint_state(design, q)
+def joint_state_lists(design: DeltaDesign, q: Sequence[float], tool: int = 0) -> Tuple[List[str], List[float]]:
+    """Names / positions for /joint_states: active + passive + virtual effector (+ gripper finger) joints."""
+    js = durdf.joint_state(design, q, tool)
     names = list(js)
     return names, [float(js[n]) for n in names]
 

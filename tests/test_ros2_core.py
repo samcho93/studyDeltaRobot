@@ -66,10 +66,14 @@ def test_joint_speed_limit(servo):
 def test_joint_state_lists_match_urdf(dxl):
     q = (0.3, 0.5, 0.2)
     names, pos = core.joint_state_lists(dxl, q)
-    assert len(names) == len(pos) == 12
+    # 3 motors + 6 passive (a rods) + 3 virtual effector + 1 gripper finger (edu_dynamixel has a gripper)
+    assert len(names) == len(pos) == 13
     assert names[:3] == list(core.JOINTS) and pos[:3] == list(q)
-    assert names[-3:] == ["effector_x", "effector_y", "effector_z"]
-    assert pos[-3:] == pytest.approx(list(kin.fk(dxl, q)))
+    assert names[9:12] == ["effector_x", "effector_y", "effector_z"]
+    assert pos[9:12] == pytest.approx(list(kin.fk(dxl, q)))
+    assert names[12] == "gripper_finger_a" and pos[12] == 0.0
+    _, closed = core.joint_state_lists(dxl, q, 1)
+    assert closed[12] < 0
     # every name is a movable, non-mimic joint of the generated URDF
     root = ET.fromstring(durdf.generate(dxl))
     free = {j.get("name") for j in root.iter("joint")

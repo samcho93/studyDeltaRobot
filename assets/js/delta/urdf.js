@@ -2,6 +2,8 @@
 import { PHI, fk, passiveAngles } from './kinematics.js';
 
 const HALF_PI = Math.PI / 2;
+export const GRIPPER_STROKE = 0.006;    // finger travel per side [m]; open = 0, closed = -GRIPPER_STROKE
+const GRIPPER_FINGER_X = 0.015;
 
 export function f(v) {
   let s = Number(v).toFixed(6);
@@ -117,9 +119,7 @@ export function generate(d, name = 'delta_robot') {
     x.push(...cyl([0, 0, -(tl - 0.008) / 2], [0, 0, 0], 0.006, tl - 0.008, 'tool'));
     x.push(...cyl([0, 0, -tl + 0.004], [0, 0, 0], cup, 0.008, 'tool'));
   } else if (kind === 'gripper') {
-    x.push(...box([0, 0, -0.015], [0.06, 0.03, 0.03], 'tool'));
-    x.push(...box([0.015, 0, -(tl + 0.03) / 2], [0.006, 0.02, tl - 0.03], 'tool'));
-    x.push(...box([-0.015, 0, -(tl + 0.03) / 2], [0.006, 0.02, tl - 0.03], 'tool'));
+    x.push(...box([0, 0, -0.015], [0.06, 0.03, 0.03], 'tool'));      // fingers are child links (below)
   } else if (kind === 'magnet') {
     x.push(...cyl([0, 0, -tl / 2], [0, 0, 0], 0.0125, tl, 'tool'));
   } else {
@@ -127,6 +127,17 @@ export function generate(d, name = 'delta_robot') {
   }
   x.push(...inertial(Math.max(1e-3, Number(tool.mass)), [0, 0, -tl / 2], 1e-5, 1e-5, 1e-5));
   x.push('  </link>');
+  if (kind === 'gripper') {
+    const grip = Number(tool.force);
+    for (const [k, sgn] of [['a', 1], ['b', -1]]) {
+      x.push(...joint(`gripper_finger_${k}`, 'prismatic', 'tool_link', `gripper_finger_${k}_link`,
+        [sgn * GRIPPER_FINGER_X, 0, 0], [0, 0, 0], [sgn, 0, 0], [-GRIPPER_STROKE, 0, grip, 0.05], k === 'a' ? '' : 'gripper_finger_a'));
+      x.push(`  <link name="gripper_finger_${k}_link">`);
+      x.push(...box([0, 0, -(tl + 0.03) / 2], [0.006, 0.02, tl - 0.03], 'tool'));
+      x.push(...inertial(0.01, [0, 0, -(tl + 0.03) / 2], 1e-6, 1e-6, 1e-6));
+      x.push('  </link>');
+    }
+  }
   x.push(...joint('tcp_joint', 'fixed', 'tool_link', 'tcp', [0, 0, -tl + 0.005]));
   x.push('  <link name="tcp"/>');
   x.push('</robot>');
@@ -135,7 +146,7 @@ export function generate(d, name = 'delta_robot') {
 
 export const ACTIVE = ['motor1_joint', 'motor2_joint', 'motor3_joint'];
 
-export function jointState(d, theta) {
+export function jointState(d, theta, tool = 0) {
   const p = fk(d, theta);
   const out = {};
   for (let i = 0; i < 3; i++) out[`motor${i + 1}_joint`] = theta[i];
@@ -144,5 +155,6 @@ export function jointState(d, theta) {
     out[`elbow${i + 1}a_yaw`] = yaw;
   });
   out.effector_x = p[0]; out.effector_y = p[1]; out.effector_z = p[2];
+  if (d.toolSpec.kind === 'gripper') out.gripper_finger_a = tool ? -GRIPPER_STROKE : 0;
   return out;
 }
