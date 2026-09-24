@@ -70,6 +70,7 @@
         <label class="chk"><input type="checkbox" id="optPath" checked> 경로</label>
         <label class="chk"><input type="checkbox" id="optTrail"> TCP 궤적</label>
         <label class="chk"><input type="checkbox" id="optFrames"> 관절 좌표·방향</label>
+        <label class="chk"><input type="checkbox" id="optJoy" checked> 조이스틱</label>
         <label class="chk" title="설계값으로 생성한 URDF(URDF 뷰어·ROS 2 RViz와 같은 모델)로 로봇을 그립니다"><input type="checkbox" id="optUrdf" checked> URDF 모델</label>
       </div>
       <div class="drop-hint">드래그 회전 &middot; 휠 확대 &middot; 우클릭 드래그 이동</div>
@@ -86,6 +87,7 @@
       </select>
     </div>
 
+    <div class="joy-host" id="joyHost"></div>
     <div class="fallback-note" id="noGL" hidden></div>
     <div class="d-toast" id="toast" role="status" hidden></div>
   </section>

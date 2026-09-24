@@ -283,3 +283,47 @@ a { color: var(--link); }
 .s-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
 .pose-readout, .view-chips, .chk, .d-player { box-shadow: var(--shadow); }
+
+/* ---------------------------------------------------------------- 조이스틱 (assets/js/joystick.js) */
+.joy-host { position: absolute; right: 14px; bottom: 70px; z-index: 7; }
+.joy {
+  width: 214px; padding: 8px 10px 10px; border-radius: 14px; user-select: none;
+  background: var(--overlay-strong); backdrop-filter: blur(6px); border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.joy-head { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 6px; }
+.joy-head b { flex: 1; }
+.joy-gp { font-size: 11px; color: var(--ok); font-weight: 700; }
+.joy-hide { border: none; background: transparent; color: var(--text-faint); cursor: pointer; font-size: 13px; padding: 0 2px; }
+.joy.folded .joy-body, .joy.folded .joy-foot { display: none; }
+.joy.folded { width: auto; }
+.joy.folded .joy-head { margin: 0; }
+.joy-body { display: flex; gap: 10px; align-items: center; justify-content: center; }
+.joy-pad, .joy-z { position: relative; touch-action: none; cursor: grab; border: 1px solid var(--border); background:
+  radial-gradient(circle, var(--accent-soft) 0 30%, transparent 31%), var(--bg-elev-2); }
+.joy-pad { width: 110px; height: 110px; border-radius: 50%; }
+.joy-pad::before, .joy-pad::after { content: ''; position: absolute; background: var(--border); }
+.joy-pad::before { left: 50%; top: 10%; bottom: 10%; width: 1px; }
+.joy-pad::after { top: 50%; left: 10%; right: 10%; height: 1px; }
+.joy-z { width: 34px; height: 110px; border-radius: 17px; background: var(--bg-elev-2); }
+.joy-z::before { content: ''; position: absolute; left: 10%; right: 10%; top: 50%; height: 1px; background: var(--border); }
+.joy-pad.on, .joy-z.on { cursor: grabbing; border-color: var(--accent); }
+.joy-knob, .joy-zknob {
+  position: absolute; left: 50%; top: 50%; margin: -19px 0 0 -19px; width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #f0a04b); box-shadow: 0 2px 8px rgba(79, 70, 229, .45); pointer-events: none;
+  transition: transform .06s linear;
+}
+.joy-zknob { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+.joy-ax { position: absolute; font: 700 10px var(--mono); color: var(--text-faint); pointer-events: none; }
+.joy-ax-x { right: 6px; top: 50%; transform: translateY(-120%); }
+.joy-ax-y { top: 4px; left: 50%; transform: translateX(8%); }
+.joy-ax-z { top: 4px; left: 50%; transform: translateX(-50%); }
+.joy-foot { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.joy-speed { flex: 1; display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-dim); font-weight: 600; min-width: 0; }
+.joy-speed input { flex: 1; min-width: 0; accent-color: var(--accent); }
+.joy-speed output { font: 600 10.5px var(--mono); color: var(--accent); white-space: nowrap; }
+.joy-btn {
+  font: inherit; font-size: 12px; font-weight: 700; padding: 5px 9px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--accent); background: var(--accent); color: #fff; white-space: nowrap;
+}
+.joy-btn:hover { filter: brightness(1.07); }
+@media (max-width: 980px) { .joy-host { bottom: 64px; right: 8px; } .joy { width: 196px; } .joy-pad { width: 96px; height: 96px; } .joy-z { height: 96px; } }

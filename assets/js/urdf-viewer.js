@@ -6,6 +6,7 @@ import { Design, loadCatalog } from './delta/design.js';
 import { tryFk, PHI, limitReport, workspaceBounds } from './delta/kinematics.js';
 import { generate, jointState } from './delta/urdf.js';
 import { overlayArrow, rotationArrow, textSprite } from '../../sim/render.js';
+import { Joystick, stepTcp } from './joystick.js';
 
 const $ = (id) => document.getElementById(id);
 const DEG = 180 / Math.PI;
@@ -308,8 +309,39 @@ $('btnDownload').addEventListener('click', () => {
 $('btnCopy').addEventListener('click', () => navigator.clipboard.writeText(urdfText).then(() => { $('btnCopy').textContent = '복사됨'; }));
 
 load();
+
+// ------------------------------------------------------------------ joystick: move the effector with IK
+const joy = new Joystick($('joyHost'), {
+  buttonLabel: '툴 ON/OFF', speed: 80, minSpeed: 5, maxSpeed: 400, step: 5,
+  onButton: () => { $('optTool').checked = !$('optTool').checked; apply(false); },
+});
+$('optJoy').addEventListener('change', () => { $('joyHost').hidden = !$('optJoy').checked; });
+let lastJoy = performance.now();
+function joyStep() {
+  const now = performance.now();
+  const dt = Math.min(0.1, (now - lastJoy) / 1000);
+  lastJoy = now;
+  if ($('joyHost').hidden) return;
+  const v = joy.value();
+  if (!v.x && !v.y && !v.z) return;
+  wiggle = false; $('btnWiggle').textContent = '자동 움직이기';
+  const p = tryFk(design, q);
+  if (!p) return;
+  const res = stepTcp([p[0], p[1], p[2] - design.toolLength], v, joy.speed(), dt, (t) => {
+    const rep = limitReport(design, [t[0], t[1], t[2] + design.toolLength]);
+    if (!rep.ok) return false;
+    q = rep.theta.slice();
+    return true;
+  });
+  apply();
+  $('tcpMsg').className = 'u-msg' + (res === 'blocked' || res === 'slide' ? ' bad' : '');
+  $('tcpMsg').textContent = res === 'blocked' ? '작업영역 경계 — 더 갈 수 없습니다' : res === 'slide' ? '작업영역 경계를 따라 이동 중' :
+    'θ = ' + q.map((t) => (t * DEG).toFixed(1) + '°').join(', ');
+}
+
 const t0 = performance.now();
 (function loop() {
+  joyStep();
   if (wiggle) {
     const t = (performance.now() - t0) / 1000, h = design.homeTheta;
     q = [h + 0.3 * Math.sin(t * 1.3), h + 0.3 * Math.sin(t * 1.3 + 2.1), h + 0.3 * Math.sin(t * 1.3 + 4.2)];

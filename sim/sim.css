@@ -80,6 +80,7 @@
 .embed .sim-top, .embed .sim-panel { display: none; }
 .embed .sim-layout { grid-template-columns: 1fr; }
 .embed .stage-bl .drop-hint { display: none; }
+.embed .joy-host { display: none; }
 
 @media (max-width: 980px) {
   .dsim.sim-page { height: auto; overflow: auto; }

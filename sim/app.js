@@ -9,6 +9,7 @@ import { DeltaView } from './render.js';
 import { TimeChart } from './charts.js';
 import { buildProgram, PROGRAMS, runAdept } from './programs.js';
 import { Planner } from './planner.js';
+import { Joystick, stepTcp } from '../assets/js/joystick.js';
 
 const LS_KEY = 'studydelta.design.v1';
 const LS_OPTS = 'studydelta.sim.opts.v1';
@@ -85,6 +86,7 @@ async function boot() {
   setupPlayer();
   setupLink();
   setupOverlays();
+  setupJoystick();
   applyDesign(new Design(init.design), { fit: true });
   requestAnimationFrame(loop);
   if (EMBED) setupEmbed();
@@ -599,6 +601,45 @@ document.addEventListener('keydown', (e) => {
   paintJog();
 });
 
+// ------------------------------------------------------------------ joystick (screen widget + gamepad)
+let joy = null, joyWasActive = false;
+function setupJoystick() {
+  if (EMBED) return;
+  joy = new Joystick($('joyHost'), {
+    buttonLabel: '집기', speed: 80, minSpeed: 5, maxSpeed: 400, step: 5,
+    onButton: () => { if (S.sceneState && S.sceneState.held) $('btnPlace').click(); else $('btnPick').click(); },
+  });
+  const show = () => { $('joyHost').hidden = !$('optJoy').checked; };
+  $('optJoy').addEventListener('change', show);
+  show();
+}
+/** Joystick control step (called every frame). Returns true if it moved the robot. */
+function joystickStep(dt) {
+  if (!joy || S.live || busy || $('joyHost').hidden) return false;
+  const v = joy.value();
+  const active = v.x !== 0 || v.y !== 0 || v.z !== 0;
+  if (!active) {
+    if (joyWasActive) { joyWasActive = false; paintJog(); }
+    return false;
+  }
+  if (!joyWasActive) { pause(); startJogMode(); S.anim = null; joyWasActive = true; }
+  const tcp = currentTcp();
+  if (!tcp) return false;
+  const res = stepTcp(tcp, v, joy.speed(), dt, (p) => {
+    const rep = K.limitReport(S.design, [p[0], p[1], p[2] + S.design.toolLength]);
+    if (!rep.ok) return false;
+    S.q = rep.theta;
+    return true;
+  });
+  S.jogBad = null;
+  const msg = $('jogMsg');
+  if (res === 'blocked' || res === 'slide') {
+    msg.className = 'd-msg bad';
+    msg.textContent = res === 'blocked' ? '작업영역 경계 — 더 갈 수 없습니다' : '작업영역 경계를 따라 미끄러지는 중';
+  } else if (msg.textContent.startsWith('작업영역 경계')) { msg.className = 'd-msg ok'; msg.textContent = ''; }
+  return true;
+}
+
 // ------------------------------------------------------------------ task
 function buildTaskForm() {
   $('sceneKind').innerHTML = Object.entries(SCENE_KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
@@ -994,6 +1035,7 @@ let lastFrame = performance.now(), lastChart = 0, lastTrail = null;
 function loop(now) {
   const dt = Math.min(0.1, (now - lastFrame) / 1000);
   lastFrame = now;
+  const joyMoved = joystickStep(dt);
   let tSim = S.jogTime;
   if (S.live) {
     tSim = S.liveT || 0;
@@ -1028,7 +1070,8 @@ function loop(now) {
     if (S.timeline && S.playing) paintPlayer();
     if (activeTab === 'analysis') drawCharts();
     if (activeTab === 'task' && S.timeline && S.playing) paintTaskInfo();
-    if (activeTab === 'jog' && (S.live || S.anim || (S.timeline && !S.jogMode))) paintJog();
+    if (activeTab === 'jog' && (S.live || S.anim || joyMoved || (S.timeline && !S.jogMode))) paintJog();
+    if (joy) joy.setButtonLabel(S.sceneState && S.sceneState.held ? '놓기' : '집기');
   }
   view.render();
   requestAnimationFrame(loop);
