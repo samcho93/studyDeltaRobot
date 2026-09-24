@@ -1023,6 +1023,8 @@ function setupEmbed() {
       try { acceptTimeline(m.timeline); } catch (e) { postParent({ type: 'sim-error', error: String(e.message || e) }); }
     } else if (m.type === 'get-design') {
       postParent({ type: 'sim-design', design: S.design.toDict(), scene: S.sceneData });
+    } else if (m.type === 'replay') {
+      if (S.timeline) { S.t = 0; S.lastT = 0; resetPlayback(); play(); }
     } else if (m.type === 'stop') {
       pause();
     }
@@ -1068,6 +1070,7 @@ function loop(now) {
   if (now - lastChart > 100) {
     lastChart = now;
     if (S.timeline && S.playing) paintPlayer();
+    if (EMBED && S.timeline) postParent({ type: 'sim-progress', t: S.t, duration: S.timeline.duration, playing: S.playing });
     if (activeTab === 'analysis') drawCharts();
     if (activeTab === 'task' && S.timeline && S.playing) paintTaskInfo();
     if (activeTab === 'jog' && (S.live || S.anim || joyMoved || (S.timeline && !S.jogMode))) paintJog();

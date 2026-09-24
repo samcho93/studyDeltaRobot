@@ -55,6 +55,10 @@ window.addEventListener('message', (ev) => {
     simReady = true;
     simHello = { design: m.design, scene: m.scene };
     if (pendingTimeline) { frame.contentWindow.postMessage({ type: 'timeline', timeline: pendingTimeline }, '*'); pendingTimeline = null; }
+  } else if (m.type === 'sim-progress') {
+    $('playBar').hidden = false;
+    $('playT').textContent = (m.playing ? '▶ 재생 ' : '■ 끝 ') + m.t.toFixed(1) + ' / ' + m.duration.toFixed(1) + ' s';
+    $('playFill').style.width = (100 * Math.min(1, m.t / Math.max(1e-6, m.duration))).toFixed(1) + '%';
   } else if (m.type === 'sim-analysis') {
     paintSummary(m.eval, m.duration);
   } else if (m.type === 'sim-error') {
@@ -64,7 +68,16 @@ window.addEventListener('message', (ev) => {
 function sendTimeline(tl) {
   if (simReady) frame.contentWindow.postMessage({ type: 'timeline', timeline: tl }, '*');
   else pendingTimeline = tl;
+  $('playBar').hidden = false;
+  // make sure the student actually sees the playback (narrow layouts put it off-screen)
+  const r = frame.getBoundingClientRect();
+  if (r.bottom < 60 || r.top > window.innerHeight - 60) frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
+$('btnReplay').addEventListener('click', () => {
+  if (frame.contentWindow) frame.contentWindow.postMessage({ type: 'replay' }, '*');
+  const r = frame.getBoundingClientRect();
+  if (r.bottom < 60 || r.top > window.innerHeight - 60) frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
 function paintSummary(ev, duration) {
   if (!ev) { $('summary').innerHTML = `<span class="hint">총 ${Number(duration || 0).toFixed(2)} s 재생 중</span>`; return; }
   const li = (ok, label, v) => `<li class="${ok ? 'ok' : 'bad'}"><b>${ok ? '✔' : '✖'}</b>${label} <code>${v}</code></li>`;
@@ -149,7 +162,7 @@ function finish(m) {
   if (m.status === 'ok') {
     setStatus('완료 (' + sec + ' s)', 'ok');
     if (m.timeline && m.timeline.frames && m.timeline.frames.length > 1) {
-      out(`■ 완료 — 기록된 동작 ${m.timeline.duration.toFixed(2)} s (프레임 ${m.timeline.frames.length}개) → 시뮬레이터에서 재생`, 'ok');
+      out(`■ 완료 — 기록된 동작 ${m.timeline.duration.toFixed(2)} s (프레임 ${m.timeline.frames.length}개) → 시뮬레이터에서 재생합니다 (↺ 다시 재생으로 반복)`, 'ok');
       sendTimeline(m.timeline);
     } else {
       out('■ 완료 (로봇 동작 없음)', 'ok');

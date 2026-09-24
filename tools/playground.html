@@ -59,12 +59,17 @@
   .d-check li.ok b { color: var(--accent); } .d-check li.bad b { color: var(--danger); }
   .tool-nav { display: flex; flex-wrap: wrap; gap: 6px; }
   .tool-nav a[aria-current="page"] { color: var(--accent); border-color: var(--accent-dim); }
+  .pg-play { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-elev); border-top: 1px solid var(--border); font-size: 12.5px; }
+  .pg-play-t { font-family: var(--mono); color: var(--accent); white-space: nowrap; min-width: 118px; }
+  .pg-play-bar { flex: 1; height: 6px; border-radius: 6px; background: var(--bg-elev-2); border: 1px solid var(--border); overflow: hidden; }
+  .pg-play-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #f5b041); }
   @media (max-width: 900px) {
     .pg { height: auto; overflow: auto; }
-    .pg-main { grid-template-columns: 1fr; }
+    .pg-main { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+    .pg-right { order: -1; }                 /* narrow screens: the simulator comes first */
     .pg-left { border-right: 0; }
     .pg-editor { min-height: 320px; }
-    .pg-right iframe { height: 58vh; flex: none; }
+    .pg-right iframe { height: 46vh; min-height: 260px; flex: none; }
     .sim-top { flex-wrap: wrap; }
     .sim-top-actions { margin-left: 0; flex-wrap: wrap; }
   }
@@ -101,6 +106,11 @@
   </section>
   <section class="pg-right">
     <iframe id="simFrame" src="../sim/index.html?embed=1" title="델타로봇 시뮬레이터 (재생)"></iframe>
+    <div class="pg-play" id="playBar" hidden>
+      <span class="pg-play-t" id="playT">재생 준비</span>
+      <div class="pg-play-bar"><i id="playFill"></i></div>
+      <button class="s-btn" id="btnReplay" type="button">↺ 다시 재생</button>
+    </div>
     <div class="pg-summary" id="summary">
       <span class="hint">코드를 실행하면 기록된 동작이 위 시뮬레이터에서 재생되고, 모터 검증 결과가 여기에 표시됩니다.
       설계·장면은 <a href="../sim/index.html">시뮬레이터</a>에서 마지막으로 고른 값을 씁니다.</span>
