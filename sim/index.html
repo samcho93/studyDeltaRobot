@@ -163,6 +163,21 @@
         <button class="s-btn" id="btnGoal" type="button" disabled title="연결된 ROS 2 web_bridge로 /delta/goal 전송">ROS goal 보내기</button>
       </div>
       <p class="d-msg" id="jogMsg"></p>
+      <h3 class="sub-title">집기 · 옮기기</h3>
+      <p class="hint" style="margin-top:0">3D 화면에서 <b>부품을 클릭</b>해 고르거나 가까운 부품을 자동으로 고릅니다.
+        그리퍼는 부품 높이 가운데, 흡착·전자석은 윗면을 잡습니다. 잡은 부품은 조그로 움직이면 함께 따라옵니다.</p>
+      <div class="panel-actions" style="margin-top:0">
+        <button class="s-btn primary" id="btnPick" type="button">가까운 부품 집기</button>
+        <button class="s-btn" id="btnPlace" type="button">여기에 놓기</button>
+      </div>
+      <div class="panel-actions" id="binBtns" style="margin-top:0"></div>
+      <div class="field-grid two">
+        <label>조그 한 번 (mm)
+          <select id="jogStep" class="d-select"><option value="1">1</option><option value="5" selected>5</option><option value="10">10</option><option value="20">20</option></select></label>
+        <label>이동 시간 (s) <input type="number" id="jogDur" min="0.1" max="3" step="0.1" value="0.6"></label>
+      </div>
+      <p class="hint">키보드(조그 탭에서): <kbd>←</kbd><kbd>→</kbd> x, <kbd>↑</kbd><kbd>↓</kbd> y, <kbd>Q</kbd>/<kbd>E</kbd> 또는
+        <kbd>PgUp</kbd>/<kbd>PgDn</kbd> z(위/아래), <kbd>G</kbd> 집기/놓기 전환.</p>
       <h3 class="sub-title">상태</h3>
       <table class="servo-table" id="jogTable"></table>
       <p class="hint">조건수 = σmax/σmin (야코비안). 1에 가까울수록 모든 방향으로 고르게 움직이고, 커질수록 특이점에 가깝습니다.

@@ -279,6 +279,8 @@ function applyDesign(d, o = {}) {
   $('subTitle').textContent = `${S.presetName ? S.cat.presets[S.presetName].name : '사용자 설계'} · ${d.motorSpec.name} · ${d.toolSpec.name}`;
   lsSet(LS_KEY, { preset: S.presetName, design: d.toDict(), scene: S.sceneKind });
   paintWorkspaceInfo();
+  selectedPart = null;
+  if ($('binBtns')) paintBins();
   if (EMBED) postParent({ type: 'sim-design', design: d.toDict(), scene: S.sceneData });
   if (S.ws && S.ws.readyState === 1 && !o.fromLink) S.ws.send(JSON.stringify({ type: 'scene', scene: S.sceneData }));
   return true;
@@ -368,12 +370,22 @@ function enterJog() {
   }
   if (S.live) return;
   pause();
+  startJogMode();
+  paintBins();
   paintJog();
+}
+/** Jog owns the pose (a loaded timeline no longer overrides it) until ▶ is pressed again. */
+function startJogMode() {
+  if (S.jogMode) return;
+  S.jogMode = true;
+  if (S.timeline) S.jogTime = S.t;         // keep conveyor parts where the playback left them
 }
 function currentTcp() { const p = K.tryFk(S.design, S.q); return p ? [p[0], p[1], p[2] - S.design.toolLength] : null; }
 function jogXYZ(i, v) {
   if (S.live) { toast('PC가 로봇을 제어 중입니다', true); return; }
   pause();
+  startJogMode();
+  S.anim = null;
   const tcp = currentTcp() || [0, 0, -0.3];
   tcp[i] = v;
   const rep = K.limitReport(S.design, [tcp[0], tcp[1], tcp[2] + S.design.toolLength]);
@@ -389,6 +401,8 @@ function jogXYZ(i, v) {
 function jogQ(i, v) {
   if (S.live) return;
   pause();
+  startJogMode();
+  S.anim = null;
   const q = S.q.slice(); q[i] = v;
   if (!K.tryFk(S.design, q)) { $('jogMsg').className = 'd-msg bad'; $('jogMsg').textContent = '이 모터각 조합으로는 조립할 수 없습니다 (순기구학 해 없음)'; return; }
   S.q = q;
@@ -425,6 +439,8 @@ function paintJog(skipXyz = null, skipQ = null) {
 $('btnHome').addEventListener('click', () => {
   if (S.live) return;
   pause();
+  startJogMode();
+  S.anim = null;
   const h = S.design.homeTheta; S.q = [h, h, h]; S.jogBad = null;
   $('jogMsg').textContent = '';
   paintJog();
@@ -432,6 +448,7 @@ $('btnHome').addEventListener('click', () => {
 $('btnJogTool').addEventListener('click', () => {
   if (S.live) return;
   pause();
+  startJogMode();
   const tcp = currentTcp();
   if (!S.tool) {
     S.tool = 1;
@@ -442,6 +459,143 @@ $('btnJogTool').addEventListener('click', () => {
     const id = S.sceneState.release(tcp, S.jogTime);
     if (id) toast(`부품 ${id}를 놓았습니다`);
   }
+  paintJog();
+});
+
+// ------------------------------------------------------------------ jog: pick & place helpers
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+/** Smoothly move the TCP in a straight line (IK every frame). Resolves true when it arrived. */
+function animateTcp(to, dur) {
+  const from = currentTcp();
+  if (!from) return Promise.resolve(false);
+  const rep = K.limitReport(S.design, [to[0], to[1], to[2] + S.design.toolLength]);
+  if (!rep.ok) {
+    $('jogMsg').className = 'd-msg bad';
+    $('jogMsg').textContent = '갈 수 없는 위치: ' + (rep.theta ? rep.problems.join(', ') : '팔 길이로 닿지 않음');
+    return Promise.resolve(false);
+  }
+  return new Promise((resolve) => { S.anim = { from, to, t0: performance.now(), dur: Math.max(0.05, dur) * 1000, resolve }; });
+}
+function stepAnim(now) {
+  const a = S.anim;
+  if (!a) return;
+  const u = Math.min(1, (now - a.t0) / a.dur);
+  const s = u * u * (3 - 2 * u);                       // smooth start / stop
+  const p = [0, 1, 2].map((k) => a.from[k] + (a.to[k] - a.from[k]) * s);
+  const rep = K.limitReport(S.design, [p[0], p[1], p[2] + S.design.toolLength]);
+  if (rep.theta) S.q = rep.theta;
+  if (u >= 1) { S.anim = null; S.jogBad = null; a.resolve(true); }
+}
+const jogDur = () => Math.min(3, Math.max(0.1, Number($('jogDur').value) || 0.6));
+function pickZ(part) { return S.design.toolSpec.kind === 'gripper' ? part.z + 0.5 * part.part.h : part.z + part.part.h; }
+let busy = false, selectedPart = null;
+function visibleParts() { return S.sceneState.visible(S.jogTime); }
+async function pickPart(id) {
+  if (busy || S.live) return;
+  const tool = S.design.toolSpec;
+  if (tool.kind === 'pen') { toast('펜 툴은 부품을 집을 수 없습니다 — 설계 탭에서 그리퍼·흡착컵을 고르세요', true); return; }
+  if (S.sceneState.held) { toast('이미 ' + S.sceneState.held.id + '를 잡고 있습니다 — 먼저 놓으세요', true); return; }
+  pause(); startJogMode();
+  const tcp = currentTcp();
+  let cands = visibleParts().filter((v) => !tool.ferrous_only || v.part.material === 'steel');
+  if (id) cands = cands.filter((v) => v.part.id === id);
+  if (!cands.length) { toast(tool.ferrous_only ? '전자석으로 잡을 수 있는 철(steel) 부품이 없습니다' : '잡을 부품이 없습니다', true); return; }
+  cands.sort((a, b) => Math.hypot(a.x - tcp[0], a.y - tcp[1]) - Math.hypot(b.x - tcp[0], b.y - tcp[1]));
+  const target = cands[0];
+  busy = true;
+  view.highlightPart(target.part.id);
+  try {
+    const up = 0.03, z = pickZ(target);
+    const conv = target.part.mode === 'conveyor' ? S.sceneData.conveyor.speed : 0;
+    const lead = conv * jogDur() * 2;                   // conveyor parts keep moving while we approach
+    if (!await animateTcp([target.x + lead, target.y, Math.max(tcp[2], z + up)], jogDur())) return;
+    const now = visibleParts().find((v) => v.part.id === target.part.id);
+    if (!now) { toast('부품이 사라졌습니다', true); return; }
+    if (!await animateTcp([now.x + conv * jogDur() * 0.6, now.y, z], jogDur() * 0.6)) return;
+    S.tool = 1;
+    const got = S.sceneState.grab(currentTcp(), S.jogTime, tool);
+    await sleep(150);
+    if (!got) { S.tool = 0; toast('잡지 못했습니다 — 위치가 조금 어긋났습니다. 다시 시도하세요', true); }
+    await animateTcp([currentTcp()[0], currentTcp()[1], z + up], jogDur() * 0.6);
+    if (got) toast(`부품 ${got} 를 잡았습니다 — 방향키/슬라이더로 옮기거나 상자 버튼을 누르세요`);
+  } finally {
+    busy = false;
+    selectedPart = null;
+    $('btnPick').textContent = '가까운 부품 집기';
+    view.highlightPart(null);
+    paintJog();
+  }
+}
+async function placeAt(x, y, surface) {
+  if (busy || S.live) return;
+  const held = S.sceneState.held;
+  if (!held) { toast('잡고 있는 부품이 없습니다', true); return; }
+  pause(); startJogMode();
+  busy = true;
+  try {
+    const up = 0.03, tcp = currentTcp();
+    const zDrop = surface + held.h + 0.004;
+    const zTop = Math.max(tcp[2], zDrop + up);
+    if (!await animateTcp([tcp[0], tcp[1], zTop], jogDur() * 0.5)) return;
+    if (!await animateTcp([x, y, zTop], jogDur())) return;
+    if (!await animateTcp([x, y, zDrop], jogDur() * 0.6)) return;
+    S.tool = 0;
+    const id = S.sceneState.release(currentTcp(), S.jogTime);
+    await sleep(120);
+    await animateTcp([x, y, zTop], jogDur() * 0.6);
+    const sc = S.sceneState.score();
+    toast(`부품 ${id} 를 놓았습니다` + (sc.total ? ` — 상자 안 ${sc.total}개 (색 일치 ${sc.correct})` : ''));
+  } finally {
+    busy = false;
+    paintJog();
+  }
+}
+function paintBins() {
+  const bins = S.sceneData.bins || [];
+  const name = { red: '빨강', blue: '파랑', green: '초록' };
+  $('binBtns').innerHTML = bins.map((b) => `<button class="s-btn" type="button" data-bin="${b.id}">상자 ${b.id}(${name[b.color] || b.color})로 옮기기</button>`).join('');
+  $('binBtns').querySelectorAll('button').forEach((btn) => btn.addEventListener('click', () => {
+    const b = bins.find((x) => x.id === btn.dataset.bin);
+    placeAt(b.x, b.y, S.sceneData.surface_z + 0.003);
+  }));
+}
+function surfaceUnder(x, y) {
+  for (const b of S.sceneData.bins || []) if (Math.abs(x - b.x) <= b.w / 2 && Math.abs(y - b.y) <= b.d / 2) return S.sceneData.surface_z + 0.003;
+  return S.sceneData.surface_z;
+}
+$('btnPick').addEventListener('click', () => pickPart(selectedPart));
+$('btnPlace').addEventListener('click', () => { const t = currentTcp(); if (t) placeAt(t[0], t[1], surfaceUnder(t[0], t[1])); });
+// click a part in the 3D view to choose it
+$('viewport').addEventListener('click', (e) => {
+  if (activeTab !== 'jog' || busy) return;
+  const id = view.pickPart(e.clientX, e.clientY);
+  if (!id) return;
+  selectedPart = id;
+  view.highlightPart(id);
+  $('btnPick').textContent = `부품 ${id} 집기`;
+  $('jogMsg').className = 'd-msg ok';
+  $('jogMsg').textContent = `부품 ${id} 선택 — [부품 ${id} 집기]를 누르세요`;
+});
+// keyboard jog (jog tab only, not while typing)
+document.addEventListener('keydown', (e) => {
+  if (activeTab !== 'jog' || S.live || busy || e.target.matches('input, textarea, select')) return;
+  const st = Number($('jogStep').value) / 1000;
+  const d = { ArrowLeft: [-st, 0, 0], ArrowRight: [st, 0, 0], ArrowUp: [0, st, 0], ArrowDown: [0, -st, 0],
+    q: [0, 0, st], Q: [0, 0, st], PageUp: [0, 0, st], e: [0, 0, -st], E: [0, 0, -st], PageDown: [0, 0, -st] }[e.key];
+  if (e.key === 'g' || e.key === 'G') {
+    e.preventDefault();
+    if (S.sceneState.held) $('btnPlace').click(); else $('btnPick').click();
+    return;
+  }
+  if (!d) return;
+  e.preventDefault();
+  pause(); startJogMode(); S.anim = null;
+  const t = currentTcp();
+  const to = [t[0] + d[0], t[1] + d[1], t[2] + d[2]];
+  const rep = K.limitReport(S.design, [to[0], to[1], to[2] + S.design.toolLength]);
+  if (!rep.ok) { $('jogMsg').className = 'd-msg bad'; $('jogMsg').textContent = '더 갈 수 없습니다: ' + (rep.theta ? rep.problems.join(', ') : '닿지 않음'); return; }
+  S.q = rep.theta;
+  $('jogMsg').className = 'd-msg ok'; $('jogMsg').textContent = '도달 가능';
   paintJog();
 });
 
@@ -566,6 +720,7 @@ function frameAt(t) {
   return [0, 1, 2].map((k) => a.q[k] + (b.q[k] - a.q[k]) * u);
 }
 function play() {
+  if (S.jogMode) { S.jogMode = false; S.anim = null; S.lastT = 0; resetPlayback(); }
   if (!S.timeline) { toast('재생할 동작이 없습니다 — 작업 탭에서 프로그램을 실행하세요'); return; }
   if (S.t >= S.timeline.duration) { S.t = 0; S.lastT = 0; resetPlayback(); }
   S.playing = true; paintPlayer();
@@ -842,7 +997,7 @@ function loop(now) {
   let tSim = S.jogTime;
   if (S.live) {
     tSim = S.liveT || 0;
-  } else if (S.timeline) {
+  } else if (S.timeline && !S.jogMode) {
     if (S.playing) {
       S.t += dt * S.rate;
       if (S.t >= S.timeline.duration) { S.t = S.timeline.duration; S.playing = false; paintPlayer(); }
@@ -852,8 +1007,9 @@ function loop(now) {
   } else {
     S.jogTime += dt;
     tSim = S.jogTime;
+    stepAnim(now);
   }
-  const bad = S.jogBad && !S.timeline && !S.live ? [0, 1, 2].map((i) => S.jogBad.problems.some((p) => p.endsWith(String(i + 1)))) : null;
+  const bad = S.jogBad && (!S.timeline || S.jogMode) && !S.live ? [0, 1, 2].map((i) => S.jogBad.problems.some((p) => p.endsWith(String(i + 1)))) : null;
   const res = view.setPose(S.q, S.tool, S.sceneState, tSim, bad);
   if (res) {
     const draws = S.design.toolSpec.kind === 'pen' || S.sceneKind === 'drawing';
@@ -864,7 +1020,7 @@ function loop(now) {
     }
     $('hudTcp').textContent = res.tcp.map((v) => (v * 1000).toFixed(1).padStart(7)).join(' ') + ' mm';
     $('hudQ').textContent = S.q.map((v) => (v * DEG).toFixed(1).padStart(6)).join(' ') + ' °';
-    $('hudT').textContent = S.live ? `PC ${tSim.toFixed(2)} s` : S.timeline ? `${S.t.toFixed(2)} / ${S.timeline.duration.toFixed(2)} s` : '조그';
+    $('hudT').textContent = S.live ? `PC ${tSim.toFixed(2)} s` : S.timeline && !S.jogMode ? `${S.t.toFixed(2)} / ${S.timeline.duration.toFixed(2)} s` : '조그';
     $('hudTool').textContent = (S.tool ? 'ON' : 'off') + (S.sceneState && S.sceneState.held ? ' · ' + S.sceneState.held.id : '');
   }
   if (now - lastChart > 100) {
@@ -872,7 +1028,7 @@ function loop(now) {
     if (S.timeline && S.playing) paintPlayer();
     if (activeTab === 'analysis') drawCharts();
     if (activeTab === 'task' && S.timeline && S.playing) paintTaskInfo();
-    if (activeTab === 'jog' && (S.live || S.timeline)) paintJog();
+    if (activeTab === 'jog' && (S.live || S.anim || (S.timeline && !S.jogMode))) paintJog();
   }
   view.render();
   requestAnimationFrame(loop);

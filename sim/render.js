@@ -404,6 +404,25 @@ export class DeltaView {
     this.urdfError = null;
   }
 
+  /** Part id under the mouse (client coordinates), or null. */
+  pickPart(clientX, clientY) {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(ndc, this.camera);
+    const meshes = [...this.partMeshes.values()].filter((m) => m.visible);
+    const hit = ray.intersectObjects(meshes, false)[0];
+    if (!hit) return null;
+    for (const [id, m] of this.partMeshes) if (m === hit.object) return id;
+    return null;
+  }
+
+  highlightPart(id) {
+    for (const [pid, m] of this.partMeshes) {
+      if (m.material && m.material.emissive) m.material.emissive.setHex(pid === id ? 0x4f46e5 : 0x000000);
+    }
+  }
+
   /** Update robot pose, tool state, and parts (sceneState: SceneState or null). */
   setPose(q, tool, sceneState, t, bad = false) {
     const d = this.d;
