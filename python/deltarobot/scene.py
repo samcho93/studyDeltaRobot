@@ -26,7 +26,8 @@ PART_SIZE = 0.03
 
 
 def _round(v: float) -> float:
-    return round(v, 4)
+    """Same as JS Math.round(v * 1e4) / 1e4 (half up, not banker's rounding)."""
+    return math.floor(v * 1e4 + 0.5) / 1e4
 
 
 def default_scene(design, kind: str = "pick_place") -> Dict[str, Any]:

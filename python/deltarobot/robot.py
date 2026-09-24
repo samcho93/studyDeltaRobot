@@ -85,6 +85,12 @@ class DeltaRobot:
             raise ValueError("설계 오류: " + "; ".join(hard))
         if scene is None:
             scene = hello.get("scene")
+        if scene is None:
+            from .scene import default_scene
+            scene = default_scene(self.design, "pick_place")
+        elif isinstance(scene, str):
+            from .scene import default_scene
+            scene = default_scene(self.design, scene)
         self.scene = Scene(scene)
         self.speed = 0.25 * (self.design.upper_arm + self.design.forearm) / 0.43   # m/s
         self.accel = 10.0 * self.speed                                              # m/s^2
@@ -247,6 +253,14 @@ class DeltaRobot:
     @property
     def holding(self) -> Optional[str]:
         return self.scene.held["id"] if self.scene.held else None
+
+    # ------------------------------------------------------------ scene shortcuts
+    def parts(self) -> List[Dict[str, Any]]:
+        """Parts visible right now (conveyor parts move with time)."""
+        return self.scene.parts(self.time)
+
+    def bins(self) -> List[Dict[str, Any]]:
+        return self.scene.bins()
 
     # ------------------------------------------------------------ analysis
     def analyze(self, safety_factor: float = 1.2) -> Dict[str, Any]:
