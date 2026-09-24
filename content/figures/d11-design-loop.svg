@@ -1,0 +1,39 @@
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="설계 캡스톤 흐름: 요구사항에서 검증 보고서까지">
+  <defs>
+    <marker id="arr-d11-design-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d11-design-loop-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="16" y="70" width="108" height="96" rx="10"/>
+  <text class="lbl" x="70.0" y="98.0" text-anchor="middle">① 요구사항</text>
+  <text class="sub" x="70.0" y="122.0" text-anchor="middle">페이로드 · D×H</text>
+  <text class="sub" x="70.0" y="142.0" text-anchor="middle">사이클 · 정밀도</text>
+  <path class="ln" d="M124.0 118.0 L139.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="140" y="70" width="108" height="96" rx="10"/>
+  <text class="lbl" x="194.0" y="98.0" text-anchor="middle">② 치수</text>
+  <text class="sub" x="194.0" y="122.0" text-anchor="middle">R r L l (D03)</text>
+  <text class="sub" x="194.0" y="142.0" text-anchor="middle">작업 실린더</text>
+  <path class="ln" d="M248.0 118.0 L263.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="264" y="70" width="108" height="96" rx="10"/>
+  <text class="lbl" x="318.0" y="98.0" text-anchor="middle">③ 구동</text>
+  <text class="sub" x="318.0" y="122.0" text-anchor="middle">모터 · 감속기 (D04)</text>
+  <text class="sub" x="318.0" y="142.0" text-anchor="middle">관성비 · 분해능</text>
+  <path class="ln" d="M372.0 118.0 L387.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="388" y="70" width="108" height="96" rx="10"/>
+  <text class="lbl" x="442.0" y="98.0" text-anchor="middle">④ 툴·궤적</text>
+  <text class="sub" x="442.0" y="122.0" text-anchor="middle">유지력 (D05)</text>
+  <text class="sub" x="442.0" y="142.0" text-anchor="middle">프로파일 (D06)</text>
+  <path class="ln" d="M496.0 118.0 L511.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box-hi" x="512" y="70" width="108" height="96" rx="10"/>
+  <text class="lbl" x="566.0" y="98.0" text-anchor="middle">⑤ 검증</text>
+  <text class="sub" x="566.0" y="122.0" text-anchor="middle">analyze() · 설계 검증</text>
+  <text class="sub" x="566.0" y="142.0" text-anchor="middle">응용 프로그램</text>
+  <path class="ln" d="M620.0 118.0 L635.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="636" y="70" width="108" height="96" rx="10"/>
+  <text class="lbl" x="690.0" y="98.0" text-anchor="middle">⑥ 보고서</text>
+  <text class="sub" x="690.0" y="122.0" text-anchor="middle">표 · 그래프</text>
+  <text class="sub" x="690.0" y="142.0" text-anchor="middle">URDF · JSON</text>
+  <path class="ln-hi" d="M566.0 166 L566.0 216 L194.0 216 L194.0 170" stroke-width="1.8" marker-end="url(#arr-d11-design-loop-hi)"/>
+  <text class="tag" x="380.0" y="208.0" text-anchor="middle">✖ 항목이 있으면 원인 단계로 돌아가 반복 (반복 기록도 보고서에 남김)</text>
+  <text class="sub" x="380.0" y="40.0" text-anchor="middle">모든 수치는 시뮬레이터·deltarobot 실행 결과로 뒷받침</text>
+  <text class="tag" x="380.0" y="262.0" text-anchor="middle">제출물: 설계 JSON + 검증 코드 + 보고서(요구 대비 결과표) + 발표</text>
+</svg>

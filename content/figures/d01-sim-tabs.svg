@@ -1,0 +1,39 @@
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="시뮬레이터 다섯 탭과 설계 반복 흐름">
+  <defs>
+    <marker id="arr-d01-sim-tabs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d01-sim-tabs-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="10" y="60" width="132" height="120" rx="10"/>
+  <text class="lbl" x="76.0" y="88.0" text-anchor="middle">설계</text>
+  <text class="sub" x="76.0" y="115.0" text-anchor="middle">프리셋 · R r L l w</text>
+  <text class="sub" x="76.0" y="135.0" text-anchor="middle">모터 · 감속기 · 툴</text>
+  <text class="sub" x="76.0" y="155.0" text-anchor="middle">[설계 검증]</text>
+  <path class="ln" d="M142.0 120.0 L161.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box" x="162" y="60" width="132" height="120" rx="10"/>
+  <text class="lbl" x="228.0" y="88.0" text-anchor="middle">조그</text>
+  <text class="sub" x="228.0" y="115.0" text-anchor="middle">TCP x/y/z 슬라이더</text>
+  <text class="sub" x="228.0" y="135.0" text-anchor="middle">θ1~θ3 슬라이더</text>
+  <text class="sub" x="228.0" y="155.0" text-anchor="middle">조건수 · 한계 표시</text>
+  <path class="ln" d="M294.0 120.0 L313.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box" x="314" y="60" width="132" height="120" rx="10"/>
+  <text class="lbl" x="380.0" y="88.0" text-anchor="middle">작업</text>
+  <text class="sub" x="380.0" y="115.0" text-anchor="middle">장면 · 데모 프로그램</text>
+  <text class="sub" x="380.0" y="135.0" text-anchor="middle">프로파일 · 속도 · 가속도</text>
+  <text class="sub" x="380.0" y="155.0" text-anchor="middle">재생 · 배속</text>
+  <path class="ln" d="M446.0 120.0 L465.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box-hi" x="466" y="60" width="132" height="120" rx="10"/>
+  <text class="lbl" x="532.0" y="88.0" text-anchor="middle">분석</text>
+  <text class="sub" x="532.0" y="115.0" text-anchor="middle">θ · ω · τ 그래프</text>
+  <text class="sub" x="532.0" y="135.0" text-anchor="middle">피크/RMS/속도/관성비</text>
+  <text class="sub" x="532.0" y="155.0" text-anchor="middle">사이클 · 작업영역</text>
+  <path class="ln" d="M598.0 120.0 L617.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box" x="618" y="60" width="132" height="120" rx="10"/>
+  <text class="lbl" x="684.0" y="88.0" text-anchor="middle">연결</text>
+  <text class="sub" x="684.0" y="115.0" text-anchor="middle">PC Python (websim)</text>
+  <text class="sub" x="684.0" y="135.0" text-anchor="middle">JSON · URDF 내려받기</text>
+  <text class="sub" x="684.0" y="155.0" text-anchor="middle">공유 링크</text>
+  <text class="tag" x="380.0" y="36.0" text-anchor="middle">상단: 비상정지 · 테마 · 도구 링크      URL: ?preset= · ?scene= · #design=</text>
+  <path class="ln-hi" d="M532.0 180 L532.0 230 L76.0 230 L76.0 184" stroke-width="1.8" marker-end="url(#arr-d01-sim-tabs-hi)"/>
+  <text class="tag" x="304.0" y="222.0" text-anchor="middle">✖ 가 있으면 설계 탭으로 돌아가 수정 → 다시 검증</text>
+  <text class="sub" x="380.0" y="272.0" text-anchor="middle">설계값은 브라우저에 저장되어 URDF 뷰어 · Playground가 같은 설계를 씁니다</text>
+</svg>
