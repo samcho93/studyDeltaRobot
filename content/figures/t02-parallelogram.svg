@@ -1,35 +1,35 @@
-<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="평행사변형 아래팔이 이펙터의 방향을 유지하는 원리">
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="평행사변형 아래팔이 이펙터의 방향을 유지하는 원리">
   <defs>
     <marker id="arr-t02-parallelogram" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
     <marker id="arr-t02-parallelogram-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
   </defs>
   <text class="sub" x="40" y="30" text-anchor="start">위: 팔꿈치 막대(위팔 끝)   아래: 이펙터 쪽 막대</text>
-  <path style="fill:none;stroke:var(--text-dim)" d="M70 60 L160 60" stroke-width="6" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M70 60 L70 250" stroke-width="2.2"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M160 60 L160 250" stroke-width="2.2"/>
-  <path class="ln-hi" d="M70 250 L160 250" stroke-width="6" stroke-linecap="round"/>
-  <circle class="hi" cx="70" cy="60" r="5"/>
-  <circle class="hi" cx="160" cy="60" r="5"/>
-  <circle class="hi" cx="160" cy="250" r="5"/>
-  <circle class="hi" cx="70" cy="250" r="5"/>
-  <text class="sub" x="115" y="284" text-anchor="middle">θ만 바뀐 자세</text>
+  <path style="fill:none;stroke:var(--text-dim)" d="M60 60 L150 60" stroke-width="6" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M60 60 L60 250" stroke-width="2.2"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M150 60 L150 250" stroke-width="2.2"/>
+  <path class="ln-hi" d="M60 250 L150 250" stroke-width="6" stroke-linecap="round"/>
+  <circle class="hi" cx="60" cy="60" r="5"/>
+  <circle class="hi" cx="150" cy="60" r="5"/>
+  <circle class="hi" cx="150" cy="250" r="5"/>
+  <circle class="hi" cx="60" cy="250" r="5"/>
+  <text class="sub" x="105" y="280" text-anchor="middle">기본 자세</text>
   <path style="fill:none;stroke:var(--text-dim)" d="M300 60 L390 60" stroke-width="6" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M300 60 L380.3 232.2" stroke-width="2.2"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M390 60 L470.3 232.2" stroke-width="2.2"/>
-  <path class="ln-hi" d="M380.3 232.2 L470.3 232.2" stroke-width="6" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M300 60 L365 238.5" stroke-width="2.2"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M390 60 L455 238.5" stroke-width="2.2"/>
+  <path class="ln-hi" d="M365 238.5 L455 238.5" stroke-width="6" stroke-linecap="round"/>
   <circle class="hi" cx="300" cy="60" r="5"/>
   <circle class="hi" cx="390" cy="60" r="5"/>
-  <circle class="hi" cx="470.3" cy="232.2" r="5"/>
-  <circle class="hi" cx="380.3" cy="232.2" r="5"/>
-  <text class="sub" x="385.1" y="266.2" text-anchor="middle">로드가 옆으로 기운 자세</text>
-  <path style="fill:none;stroke:var(--text-dim)" d="M560 60 L650 60" stroke-width="6" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M560 60 L465 224.5" stroke-width="2.2"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M650 60 L555 224.5" stroke-width="2.2"/>
-  <path class="ln-hi" d="M465 224.5 L555 224.5" stroke-width="6" stroke-linecap="round"/>
-  <circle class="hi" cx="560" cy="60" r="5"/>
-  <circle class="hi" cx="650" cy="60" r="5"/>
-  <circle class="hi" cx="555" cy="224.5" r="5"/>
-  <circle class="hi" cx="465" cy="224.5" r="5"/>
-  <text class="sub" x="557.5" y="258.5" text-anchor="middle">반대로 기운 자세</text>
-  <text class="lbl" x="380" y="290" text-anchor="middle">마주 보는 두 변은 항상 평행 → 이펙터 쪽 막대는 팔꿈치 막대와 같은 방향을 유지</text>
+  <circle class="hi" cx="455" cy="238.5" r="5"/>
+  <circle class="hi" cx="365" cy="238.5" r="5"/>
+  <text class="sub" x="410" y="268.5" text-anchor="middle">로드가 한쪽으로 기운 자세</text>
+  <path style="fill:none;stroke:var(--text-dim)" d="M590 60 L680 60" stroke-width="6" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M590 60 L525 238.5" stroke-width="2.2"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M680 60 L615 238.5" stroke-width="2.2"/>
+  <path class="ln-hi" d="M525 238.5 L615 238.5" stroke-width="6" stroke-linecap="round"/>
+  <circle class="hi" cx="590" cy="60" r="5"/>
+  <circle class="hi" cx="680" cy="60" r="5"/>
+  <circle class="hi" cx="615" cy="238.5" r="5"/>
+  <circle class="hi" cx="525" cy="238.5" r="5"/>
+  <text class="sub" x="570" y="268.5" text-anchor="middle">반대쪽으로 기운 자세</text>
+  <text class="lbl" x="380" y="316" text-anchor="middle">마주 보는 두 변은 항상 평행 → 이펙터 쪽 막대는 팔꿈치 막대와 같은 방향을 유지</text>
 </svg>

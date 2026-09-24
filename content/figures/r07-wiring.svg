@@ -11,7 +11,7 @@
   <rect class="box" x="20" y="220" width="170" height="90" rx="10"/>
   <text class="lbl" x="105" y="248" text-anchor="middle">PC</text>
   <text class="sub mono" x="105" y="268" text-anchor="middle">backend="serial"</text>
-  <text class="tag mono" x="105" y="288" text-anchor="middle">port="COM3" / /dev/ttyACM0</text>
+  <text class="tag mono" x="105" y="288" text-anchor="middle">port="COM3" 등</text>
   <path class="ln" d="M105 218 L105 142" stroke-width="2" marker-end="url(#arr-r07-wiring)" marker-start="url(#arr-r07-wiring)"/>
   <text class="tag" x="112" y="185" text-anchor="start">USB</text>
   <rect class="box" x="270" y="220" width="170" height="90" rx="10"/>

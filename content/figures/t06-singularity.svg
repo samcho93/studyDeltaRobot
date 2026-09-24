@@ -18,7 +18,7 @@
   <text class="sub" x="40" y="336" text-anchor="start">그 방향으로는 움직일 수 없음 (작업영역 경계)</text>
   <text class="lbl" x="570" y="30" text-anchor="middle">2형 (병렬·순기구학) 특이점</text>
   <path class="ln" d="M440 160 L700 160" stroke-width="1" stroke-dasharray="5 4"/>
-  <text class="tag" x="705" y="164" text-anchor="start">세 로드가 한 평면</text>
+  <text class="tag" x="700" y="182" text-anchor="end">세 로드가 한 평면</text>
   <circle class="box" cx="420" cy="70" r="8"/>
   <path class="ln-hi" d="M420 70 L450 160" stroke-width="6" stroke-linecap="round"/>
   <path style="fill:none;stroke:var(--text-dim)" d="M450 160 L540 160" stroke-width="2.2"/>
@@ -30,7 +30,8 @@
   <path style="fill:none;stroke:var(--accent-dim)" d="M535 160 L605 160" stroke-width="7" stroke-linecap="round"/>
   <path style="fill:none;stroke:var(--danger)" d="M570 152 L570 100" stroke-width="1.6" marker-end="url(#arr-t06-singularity)"/>
   <path style="fill:none;stroke:var(--danger)" d="M570 168 L570 220" stroke-width="1.6" marker-end="url(#arr-t06-singularity)"/>
-  <text class="tag" x="582" y="224" text-anchor="start">모터를 고정해도 위아래로 움직임</text>
+  <text class="tag" x="560" y="216" text-anchor="end">모터를 고정해도</text>
+  <text class="tag" x="560" y="232" text-anchor="end">위아래로 움직임</text>
   <text class="sub" x="440" y="300" text-anchor="start">s₁, s₂, s₃ 가 한 평면에 놓임 → det Jx = 0</text>
   <text class="sub" x="440" y="318" text-anchor="start">순기구학의 두 해(위·아래)가 합쳐지는 곳 (h = 0)</text>
   <text class="sub" x="440" y="336" text-anchor="start">강성 상실, 작은 힘에도 큰 모터 토크 필요</text>

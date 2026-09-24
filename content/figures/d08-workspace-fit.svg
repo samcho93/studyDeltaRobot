@@ -17,25 +17,27 @@
   <text class="tag" x="74.0" y="84.0" text-anchor="end">-100</text>
   <path class="ln" d="M80.0 40.0 L80.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
   <text class="tag" x="80.0" y="356.0" text-anchor="middle">0</text>
-  <path class="ln" d="M202.2 40.0 L202.2 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
-  <text class="tag" x="202.2" y="356.0" text-anchor="middle">50</text>
-  <path class="ln" d="M324.4 40.0 L324.4 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
-  <text class="tag" x="324.4" y="356.0" text-anchor="middle">100</text>
-  <path class="ln" d="M446.7 40.0 L446.7 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
-  <text class="tag" x="446.7" y="356.0" text-anchor="middle">150</text>
+  <path class="ln" d="M180.0 40.0 L180.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="180.0" y="356.0" text-anchor="middle">50</text>
+  <path class="ln" d="M280.0 40.0 L280.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="280.0" y="356.0" text-anchor="middle">100</text>
+  <path class="ln" d="M380.0 40.0 L380.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="380.0" y="356.0" text-anchor="middle">150</text>
+  <path class="ln" d="M480.0 40.0 L480.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="480.0" y="356.0" text-anchor="middle">200</text>
   <path class="ln" d="M80.0 340.0 L520.0 340.0" stroke-width="1.2"/>
   <path class="ln" d="M80.0 40.0 L80.0 340.0" stroke-width="1.2"/>
   <text class="sub" x="300.0" y="374.0" text-anchor="middle">반지름 [mm]</text>
   <text class="sub" x="80.0" y="30.0" text-anchor="start">이펙터 중심 z [mm]</text>
-  <path d="M104.6 64.0 L144.2 70.0 L175.2 76.0 L216.9 82.0 L297.1 88.0 L300.3 94.0 L300.3 100.0 L300.3 106.0 L300.3 112.0 L300.3 118.0 L300.3 124.0 L300.3 130.0 L300.3 136.0 L300.3 142.0 L293.9 148.0 L284.3 154.0 L272.5 160.0 L260.7 166.0 L246.8 172.0 L231.9 178.0 L214.8 184.0 L195.5 190.0 L173.0 196.0 L147.4 202.0 L115.3 208.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
-  <rect x="80.0" y="94.0" width="220.3" height="42.0" style="fill:var(--accent);fill-opacity:0.15;stroke:var(--accent)" stroke-width="1.2"/>
+  <path d="M100.1 64.0 L132.5 70.0 L157.9 76.0 L192.0 82.0 L257.6 88.0 L260.2 94.0 L260.2 100.0 L260.2 106.0 L260.2 112.0 L260.2 118.0 L260.2 124.0 L260.2 130.0 L260.2 136.0 L260.2 142.0 L255.0 148.0 L247.1 154.0 L237.5 160.0 L227.9 166.0 L216.5 172.0 L204.2 178.0 L190.2 184.0 L174.5 190.0 L156.1 196.0 L135.1 202.0 L108.9 208.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="94.0" width="180.2" height="42.0" style="fill:var(--accent);fill-opacity:0.15;stroke:var(--accent)" stroke-width="1.2"/>
   <text class="tag" x="560.0" y="80.0" text-anchor="start">v0: R70 r30 L80 l160</text>
   <text x="560.0" y="98.0" text-anchor="start" font-size="12" style="fill:var(--accent)">D × H = 180 × 42 mm</text>
-  <path d="M128.0 108.0 L166.9 116.0 L216.4 124.0 L292.0 132.0 L383.1 140.0 L383.1 148.0 L383.1 156.0 L383.1 164.0 L383.1 172.0 L383.1 180.0 L383.1 188.0 L383.1 196.0 L383.1 204.0 L369.7 212.0 L354.2 220.0 L337.2 228.0 L318.8 236.0 L297.6 244.0 L275.0 252.0 L248.2 260.0 L218.5 268.0 L183.2 276.0 L140.1 284.0 L81.4 292.0" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
-  <rect x="80.0" y="140.0" width="303.1" height="40.0" style="fill:var(--danger);fill-opacity:0.15;stroke:var(--danger)" stroke-width="1.2"/>
-  <text class="tag" x="560.0" y="150.0" text-anchor="start">v1: edu_servo 치수 R80 r30 L100 l220</text>
-  <text x="560.0" y="168.0" text-anchor="start" font-size="12" style="fill:var(--danger)">D × H = 248 × 40 mm</text>
-  <rect x="80.0" y="140.0" width="244.4" height="40.0" style="fill:var(--danger);fill-opacity:0;stroke:var(--danger)" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <path d="M119.3 108.0 L151.1 116.0 L191.6 124.0 L253.4 132.0 L328.0 140.0 L328.0 148.0 L328.0 156.0 L328.0 164.0 L328.0 172.0 L328.0 180.0 L328.0 188.0 L328.0 196.0 L328.0 204.0 L317.0 212.0 L304.3 220.0 L290.4 228.0 L275.4 236.0 L258.1 244.0 L239.6 252.0 L217.6 260.0 L193.3 268.0 L164.4 276.0 L129.1 284.0 L81.2 292.0" style="stroke:var(--task);fill:none;fill-opacity:1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="140.0" width="248.0" height="40.0" style="fill:var(--task);fill-opacity:0.15;stroke:var(--task)" stroke-width="1.2"/>
+  <text class="tag" x="560.0" y="150.0" text-anchor="start">v1: R80 r30 L100 l220</text>
+  <text x="560.0" y="168.0" text-anchor="start" font-size="12" style="fill:var(--task)">D × H = 248 × 40 mm</text>
+  <rect x="80.0" y="140.0" width="200.0" height="40.0" style="fill:var(--danger);fill-opacity:0;stroke:var(--danger)" stroke-width="1.6" stroke-dasharray="6 4"/>
   <text x="560.0" y="240.0" text-anchor="start" font-size="12" style="fill:var(--danger)">요구: D 200 × H 40 mm (점선)</text>
   <text class="tag" x="560.0" y="262.0" text-anchor="start">칠한 사각형 = 각 설계의</text>
   <text class="tag" x="560.0" y="278.0" text-anchor="start">H = 40 mm 작업 실린더 (반단면)</text>

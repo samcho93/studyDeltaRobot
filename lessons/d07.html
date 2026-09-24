@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D07. URDF 모델링 · studyDeltaRobot</title>
+<meta name="description" content="닫힌 사슬을 트리로 표현하는 방법(가상 이펙터 관절 + 수동 관절 mimic)과 설계값으로 URDF를 생성·검증합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-design">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" class="active" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="d07" data-track="design">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-design">설계·시뮬레이션</span> D-2 설계 요소 선정 &middot; 약 60분 &middot; 중급</div>
+    <h1><span class="lesson-no">D07</span>URDF 모델링</h1>
+    <p class="lede">닫힌 사슬을 트리로 표현하는 방법(가상 이펙터 관절 + 수동 관절 mimic)과 설계값으로 URDF를 생성·검증합니다.</p>
+    <div class="requires">선수 챕터: <a href="t02.html">T02</a> <a href="t05.html">T05</a> <a href="d01.html">D01</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../tools/urdf-viewer.html">URDF 뷰어</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>URDF가 <strong>트리</strong>만 표현할 수 있어 델타로봇 같은 <strong>닫힌 사슬</strong>을 그대로 적을 수 없는 이유를 설명할 수 있습니다.</li><li><code>deltarobot.urdf</code>가 쓰는 표현(능동 모터 관절 + 수동 팔꿈치 pitch/yaw 관절 + b 로드 mimic + 가상 prismatic 이펙터 관절)을 트리로 그릴 수 있습니다.</li><li>설계값으로 URDF를 생성하고(CLI·Python·시뮬레이터), <code>joint_state()</code>로 수동 관절 값을 계산해 URDF 뷰어에서 검증할 수 있습니다.</li></ul>
+<h2 id="닫힌-사슬과-urdf">닫힌 사슬과 URDF<a class="anchor" href="#닫힌-사슬과-urdf">#</a></h2>
+<p>URDF(Unified Robot Description Format)는 링크(link)와 관절(joint)로 로봇을 적는 XML 형식입니다. 각 링크는 <strong>부모 관절이 하나뿐</strong>이어야 하므로 전체 구조가 반드시 <strong>트리</strong>가 됩니다. 그런데 델타로봇의 이펙터는 세 팔 모두에 매달려 있어 부모가 셋입니다(T02의 닫힌 사슬).</p>
+<p>해결 방법은 두 가지를 섞는 것입니다.</p>
+<ol><li><strong>사슬을 끊는다</strong> — 각 팔은 아래팔 끝(볼조인트)에서 끝나고, 이펙터와 연결하지 않습니다.</li><li><strong>이펙터를 따로 매단다</strong> — 베이스에서 x·y·z 세 개의 <strong>가상 prismatic 관절</strong>로 이펙터를 매답니다.</li><li><strong>값으로 닫는다</strong> — 모터각 θ₁~θ₃가 정해지면 순기구학으로 이펙터 위치와 모든 수동 관절 각도를 계산해 넣습니다. 계산이 맞으면 끊어진 사슬이 <strong>닫혀 보입니다.</strong></li></ol>
+<h2 id="deltarobot-urdf-의-트리">deltarobot.urdf 의 트리<a class="anchor" href="#deltarobot-urdf-의-트리">#</a></h2>
+<figure class="fig" id="fig-d07-urdf-tree"><svg viewBox="0 0 760 515" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="deltarobot.urdf 가 만드는 트리 구조">
+  <defs>
+    <marker id="arr-d07-urdf-tree" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d07-urdf-tree-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="300" y="20" width="160" height="40" rx="10"/>
+  <text class="lbl" x="380.0" y="45.0" text-anchor="middle">base_link</text>
+  <text class="lbl" x="170.0" y="112.0" text-anchor="middle">motor1_joint</text>
+  <text class="tag" x="170.0" y="128.0" text-anchor="middle">revolute · 능동</text>
+  <path class="ln" d="M170.0 132.0 L170.0 150.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <rect class="box" x="90" y="150" width="160" height="36" rx="10"/>
+  <text class="lbl" x="170.0" y="173.0" text-anchor="middle">upper_arm1</text>
+  <path class="ln" d="M170.0 187.0 L170.0 205.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="lbl" x="170.0" y="222.0" text-anchor="middle">elbow1a_pitch</text>
+  <text class="tag" x="170.0" y="238.0" text-anchor="middle">revolute · 수동</text>
+  <path class="ln" d="M170.0 242.0 L170.0 260.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <rect class="box" x="90" y="260" width="160" height="36" rx="10"/>
+  <text class="lbl" x="170.0" y="283.0" text-anchor="middle">elbow1a_link</text>
+  <path class="ln" d="M170.0 297.0 L170.0 315.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="lbl" x="170.0" y="332.0" text-anchor="middle">elbow1a_yaw</text>
+  <text class="tag" x="170.0" y="348.0" text-anchor="middle">revolute · 수동</text>
+  <path class="ln" d="M170.0 352.0 L170.0 370.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <rect class="box" x="90" y="370" width="160" height="36" rx="10"/>
+  <text class="lbl" x="170.0" y="393.0" text-anchor="middle">forearm1a</text>
+  <path class="ln" d="M340 60 L340 75 L170 75 L170 94" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="tag" x="380.0" y="505.0" text-anchor="middle">왼쪽: 팔 1 의 a 로드.  b 로드는 elbow1b_pitch/yaw 가 a 를 mimic (평행사변형)</text>
+  <rect class="box" x="262" y="250" width="150" height="70" rx="10"/>
+  <text class="lbl" x="337.0" y="275.0" text-anchor="middle">× 3 팔</text>
+  <text class="tag" x="337.0" y="295.0" text-anchor="middle">motor2 · motor3 도</text>
+  <text class="tag" x="337.0" y="310.0" text-anchor="middle">같은 모양</text>
+  <text class="lbl" x="570.0" y="102.0" text-anchor="middle">effector_x</text>
+  <text class="tag" x="570.0" y="117.0" text-anchor="middle">prismatic · 가상</text>
+  <path class="ln" d="M570.0 120.0 L570.0 130.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <rect class="box" x="490" y="132" width="160" height="32" rx="10"/>
+  <text class="lbl" x="570.0" y="153.0" text-anchor="middle">effector_x_link</text>
+  <path class="ln" d="M570.0 166.0 L570.0 176.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="lbl" x="570.0" y="194.0" text-anchor="middle">effector_y</text>
+  <text class="tag" x="570.0" y="209.0" text-anchor="middle">prismatic · 가상</text>
+  <path class="ln" d="M570.0 212.0 L570.0 222.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <rect class="box" x="490" y="224" width="160" height="32" rx="10"/>
+  <text class="lbl" x="570.0" y="245.0" text-anchor="middle">effector_y_link</text>
+  <path class="ln" d="M570.0 258.0 L570.0 268.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="lbl" x="570.0" y="286.0" text-anchor="middle">effector_z</text>
+  <text class="tag" x="570.0" y="301.0" text-anchor="middle">prismatic · 가상</text>
+  <path class="ln" d="M570.0 304.0 L570.0 314.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <rect class="box-hi" x="490" y="316" width="160" height="32" rx="10"/>
+  <text class="lbl" x="570.0" y="337.0" text-anchor="middle">effector</text>
+  <path class="ln" d="M570.0 350.0 L570.0 360.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="lbl" x="570.0" y="378.0" text-anchor="middle">tool_joint → tool_link</text>
+  <text class="tag" x="570.0" y="393.0" text-anchor="middle">fixed</text>
+  <path class="ln" d="M570.0 396.0 L570.0 406.0" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="lbl" x="570.0" y="424.0" text-anchor="middle">tcp_joint → tcp</text>
+  <text class="tag" x="570.0" y="439.0" text-anchor="middle">fixed</text>
+  <path class="ln" d="M420 60 L420 75 L570 75 L570 84" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
+  <text class="sub" x="380.0" y="482.0" text-anchor="middle">edu_dynamixel: 링크 21 · 관절 20 (revolute 15, prismatic 3, fixed 2) · mimic 6</text>
+</svg><figcaption><code>urdf.generate()</code>가 만드는 트리. 왼쪽은 팔 1의 a 로드(팔 2·3과 b 로드도 같은 모양), 오른쪽은 가상 이펙터 사슬. 오른쪽 위 숫자는 <code>edu_dynamixel</code>로 생성한 URDF에서 센 값입니다.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>관절</th><th>종류</th><th>값을 정하는 방법</th></tr></thead><tbody><tr><td><code>motor{i}_joint</code> (i = 1, 2, 3)</td><td>revolute, <strong>능동</strong></td><td>모터각 θᵢ (위팔 수평 0, 아래로 +)</td></tr><tr><td><code>elbow{i}a_pitch</code>, <code>elbow{i}a_yaw</code></td><td>revolute, 수동</td><td><code>kinematics.passive_angles()</code> — 아래팔 방향을 위팔 기준 pitch·yaw로 분해</td></tr><tr><td><code>elbow{i}b_pitch</code>, <code>elbow{i}b_yaw</code></td><td>revolute, 수동, <strong>mimic</strong></td><td>a 로드와 같은 값(평행사변형이라 두 로드는 항상 평행)</td></tr><tr><td><code>effector_x</code>, <code>effector_y</code>, <code>effector_z</code></td><td>prismatic, <strong>가상</strong></td><td>순기구학 <code>fk()</code>로 구한 이펙터 중심 위치</td></tr><tr><td><code>tool_joint</code>, <code>tcp_joint</code></td><td>fixed</td><td>툴 길이만큼 아래 (TCP)</td></tr></tbody></table></div>
+<p>아래팔 좌표계는 <code>Rz(φᵢ)·Ry(θᵢ)·Ry(pitch)·Rz(yaw)</code>이고 x축이 로드 방향입니다. 그래서 pitch는 <strong>위팔에 대한</strong> 상대각이고, yaw는 로드가 팔 평면 밖으로 벌어진 각도(볼조인트 각도)와 같습니다.</p>
+<p>생성된 URDF에서 몇 개의 관절을 직접 봅시다(<code>edu_dynamixel</code>).</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
+from deltarobot import urdf
+
+text = urdf.generate(DeltaDesign.preset(&quot;edu_dynamixel&quot;))
+lines = text.splitlines()
+print(lines[1])
+for name in (&#x27;&quot;motor1_joint&quot;&#x27;, &#x27;&quot;elbow1b_pitch&quot;&#x27;, &#x27;&quot;effector_z&quot;&#x27;):
+    i = next(k for k, s in enumerate(lines) if &quot;&lt;joint name=&quot; + name in s)
+    j = next(k for k in range(i, len(lines)) if &quot;&lt;/joint&gt;&quot; in lines[k])
+    print(&quot;\n&quot;.join(lines[i:j + 1]))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">&lt;!-- generated by deltarobot.urdf — R=0.1 r=0.035 L=0.13 l=0.3 w=0.05 motor=dxl_xm430_w350 tool=gripper_servo --&gt;
+  &lt;joint name=&quot;motor1_joint&quot; type=&quot;revolute&quot;&gt;
+    &lt;parent link=&quot;base_link&quot;/&gt;
+    &lt;child link=&quot;upper_arm1&quot;/&gt;
+    &lt;origin xyz=&quot;0.1 0 0&quot; rpy=&quot;0 0 0&quot;/&gt;
+    &lt;axis xyz=&quot;0 1 0&quot;/&gt;
+    &lt;limit lower=&quot;-0.7&quot; upper=&quot;1.5&quot; effort=&quot;4.1&quot; velocity=&quot;4.8&quot;/&gt;
+  &lt;/joint&gt;
+  &lt;joint name=&quot;elbow1b_pitch&quot; type=&quot;revolute&quot;&gt;
+    &lt;parent link=&quot;upper_arm1&quot;/&gt;
+    &lt;child link=&quot;elbow1b_link&quot;/&gt;
+    &lt;origin xyz=&quot;0.13 -0.025 0&quot; rpy=&quot;0 0 0&quot;/&gt;
+    &lt;axis xyz=&quot;0 1 0&quot;/&gt;
+    &lt;limit lower=&quot;-3.141593&quot; upper=&quot;3.141593&quot; effort=&quot;0&quot; velocity=&quot;0&quot;/&gt;
+    &lt;mimic joint=&quot;elbow1a_pitch&quot; multiplier=&quot;1&quot; offset=&quot;0&quot;/&gt;
+  &lt;/joint&gt;
+  &lt;joint name=&quot;effector_z&quot; type=&quot;prismatic&quot;&gt;
+    &lt;parent link=&quot;effector_y_link&quot;/&gt;
+    &lt;child link=&quot;effector&quot;/&gt;
+    &lt;origin xyz=&quot;0 0 0&quot; rpy=&quot;0 0 0&quot;/&gt;
+    &lt;axis xyz=&quot;0 0 1&quot;/&gt;
+    &lt;limit lower=&quot;-0.43&quot; upper=&quot;0&quot; effort=&quot;0&quot; velocity=&quot;0&quot;/&gt;
+  &lt;/joint&gt;</code></pre></div>
+<ul><li>모터 관절은 베이스 반지름 R = 0.1 m 위치에서 <strong>y축</strong>을 중심으로 돕니다. y축 둘레 +회전은 x축(위팔)을 아래(−z)로 내리므로 "아래로 +" 규약과 맞습니다.</li><li><code>limit</code>의 <code>effort</code>·<code>velocity</code>는 설계에서 옵니다: effort = 피크 토크 × 감속비 × 효율, velocity = 최고 속도 / 감속비 (XM430 직결이라 4.1 N·m, 4.8 rad/s).</li><li>b 로드는 팔꿈치 축에서 −w/2(= −0.025 m) 옮긴 곳에 붙고, <code>&lt;mimic&gt;</code>으로 a 로드 값을 따라갑니다.</li><li><code>effector_z</code>의 범위는 −(L + l) = −0.43 m ~ 0입니다.</li></ul>
+<p>각 링크의 <code>&lt;inertial&gt;</code>에는 설계의 질량(<code>upper_arm_mass</code>, <code>forearm_pair_mass/2</code>, <code>effector_mass</code>, 툴 질량)이 들어가고, <code>&lt;visual&gt;</code>은 원기둥·구·상자로 단순하게 그립니다. 재질·치수를 바꾸면 URDF도 그대로 따라 바뀝니다.</p>
+<h2 id="수동-관절-값-계산-jointstate">수동 관절 값 계산: joint_state()<a class="anchor" href="#수동-관절-값-계산-jointstate">#</a></h2>
+<p><code>urdf.joint_state(design, theta)</code>는 <strong>mimic이 아닌 모든 관절</strong>의 값을 돌려줍니다. ROS 2 드라이버(R05)와 URDF 뷰어가 이 계산을 합니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import re
+from deltarobot import DeltaDesign
+from deltarobot import urdf
+
+d = DeltaDesign.preset(&quot;edu_dynamixel&quot;)
+text = urdf.generate(d)
+joints = re.findall(r&#x27;&lt;joint name=&quot;([^&quot;]+)&quot; type=&quot;([^&quot;]+)&quot;&#x27;, text)
+print(&quot;링크 %d개, 관절 %d개, mimic %d개&quot; % (
+    len(re.findall(r&quot;&lt;link name=&quot;, text)), len(joints), text.count(&quot;&lt;mimic &quot;)))
+for kind in (&quot;revolute&quot;, &quot;prismatic&quot;, &quot;fixed&quot;):
+    names = [n for n, t in joints if t == kind]
+    print(&quot;  %-9s %2d: %s ...&quot; % (kind, len(names), &quot;, &quot;.join(names[:4])))
+
+h = d.home_theta
+state = urdf.joint_state(d, (h, h + 0.2, h))          # 팔 2만 0.2 rad 더 내림
+for k in (&quot;motor1_joint&quot;, &quot;motor2_joint&quot;, &quot;elbow1a_pitch&quot;, &quot;elbow1a_yaw&quot;,
+          &quot;elbow2a_pitch&quot;, &quot;elbow2a_yaw&quot;, &quot;effector_x&quot;, &quot;effector_y&quot;, &quot;effector_z&quot;):
+    print(&quot;  %-14s % .4f&quot; % (k, state[k]))
+print(&quot;  (joint_state 는 %d개 값 — b 로드는 mimic 이라 없음)&quot; % len(state))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">링크 21개, 관절 20개, mimic 6개
+  revolute  15: motor1_joint, elbow1a_pitch, elbow1a_yaw, elbow1b_pitch ...
+  prismatic  3: effector_x, effector_y, effector_z ...
+  fixed      2: tool_joint, tcp_joint ...
+  motor1_joint    0.3500
+  motor2_joint    0.5500
+  elbow1a_pitch   1.8387
+  elbow1a_yaw    -0.0802
+  elbow2a_pitch   1.7666
+  elbow2a_yaw    -0.0000
+  effector_x      0.0139
+  effector_y     -0.0240
+  effector_z     -0.2883
+  (joint_state 는 12개 값 — b 로드는 mimic 이라 없음)</code></pre></div>
+<ul><li>관절 20개 = 능동 3 + 수동 12(팔 3 × 로드 2 × pitch·yaw) + 가상 3 + 고정 2. 이 중 mimic 6개를 빼면 <strong>독립 값은 14개</strong>이고, 고정 2개를 빼면 <code>joint_state()</code>의 12개입니다.</li><li>팔 2만 내렸더니 이펙터가 아래로 내려가면서 팔 2 방향(φ = 120°: −x, +y)의 <strong>반대쪽</strong>(+x, −y)으로 움직였습니다. 위팔이 내려가면 팔꿈치 반지름 R + L cos θ가 줄어 팔꿈치가 <strong>중심 쪽으로</strong> 들어오고, 길이가 일정한 로드가 이펙터를 반대쪽으로 밀기 때문입니다 — T05의 순기구학을 떠올려 보세요.</li><li>팔 2의 yaw는 0입니다. 이펙터가 팔 2의 평면(φ = 120°) 안에서만 움직였기 때문입니다. 팔 1은 평면 밖으로 밀려 yaw = −0.08 rad(볼조인트 각도 4.6°)가 생겼습니다.</li></ul>
+<div class="callout callout-warn"><div class="callout-title">수동 관절 값을 계산하지 않으면</div><div class="callout-body"><p>URDF만 로드하고 수동 관절을 0으로 두면 아래팔이 위팔과 일직선으로 뻗고 이펙터는 베이스 원점에 붙어 <strong>사슬이 산산이 흩어져</strong> 보입니다. URDF 뷰어의 [수동 관절 계산 끄기] 토글로 직접 확인하세요. RViz에서도 <code>joint_states</code>에 수동 관절 값을 넣어 주는 노드(R05)가 반드시 필요합니다.</p></div></div>
+<h2 id="urdf-만들기-세-가지-방법">URDF 만들기 — 세 가지 방법<a class="anchor" href="#urdf-만들기-세-가지-방법">#</a></h2>
+<ol><li><strong>시뮬레이터</strong> — 연결 탭의 <strong>URDF 내려받기</strong>. 지금 설계 그대로 파일이 됩니다.</li><li><strong>PC 명령줄</strong> (저장소 루트에서 <code>pip install -e python</code> 후)</li></ol>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">python -m deltarobot.urdf --preset edu_dynamixel -o delta.urdf
+python -m deltarobot.urdf --design my_design.json -o delta.urdf     # 시뮬레이터에서 내보낸 설계 JSON
+python -m deltarobot.urdf --preset industrial_picker --name picker -o picker.urdf</code></pre></div>
+<p><code>-o</code>를 빼면 URDF를 화면(표준 출력)으로 내보냅니다. 한국어 Windows 콘솔에서 <code>&gt; 파일</code>로 돌리면 첫 줄 주석의 <code>—</code> 문자 때문에 인코딩 오류가 날 수 있으니 <strong>항상</strong> <code>-o</code> 옵션을 쓰세요.</p>
+<ol><li><strong>Python</strong> — <code>urdf.generate(design, name=&quot;delta_robot&quot;)</code>는 문자열을 돌려줍니다(파일 쓰기는 직접). 위의 Playground 예제가 이 방법입니다.</li></ol>
+<p>URDF 뷰어와 Python이 <strong>똑같은 텍스트</strong>를 만들도록 JS 구현(<code>assets/js/delta/urdf.js</code>)과 Python 구현을 테스트로 맞춰 두었습니다.</p>
+<p class="cta-row"><a class="ghost-btn cta" href="../tools/urdf-viewer.html">URDF 뷰어 열기</a></p>
+<h2 id="실습-urdf-뷰어">실습 (URDF 뷰어)<a class="anchor" href="#실습-urdf-뷰어">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">실습 A — 닫힌 사슬이 닫혀 보이는 원리</div><div class="callout-body"><ol><li>시뮬레이터에서 <code>edu_dynamixel</code>을 고른 뒤 URDF 뷰어를 엽니다(현재 설계가 자동으로 넘어옵니다).</li><li>θ1~θ3 슬라이더를 움직여 수동 관절이 자동으로 계산되는 것을 봅니다. 링크 트리에서 <code>effector_x/y/z</code> 값이 바뀌는지 확인합니다.</li><li>[수동 관절 계산 끄기]를 켜고 같은 슬라이더를 움직입니다. 어떤 링크가 어디로 가는지 기록합니다.</li><li>URDF 텍스트 보기에서 <code>motor1_joint</code>의 <code>limit</code>을 찾아 설계 탭의 모터각 한계·모터와 비교합니다.</li><li>설계 탭에서 모터를 <code>ac_servo_400w</code> + 유성 20:1로 바꾸고 URDF를 다시 열어 <code>effort</code>·<code>velocity</code>가 어떻게 바뀌었는지 확인합니다.</li></ol></div></div>
+<div class="callout callout-check"><div class="callout-title">스스로 확인</div><div class="callout-body"><ul><li><code>joint_state()</code>가 돌려주는 12개 값 중 모터 관절이 아닌 9개는 각각 무엇인가요?</li><li>b 로드의 pitch·yaw가 a 로드와 같다는 가정이 성립하려면 어떤 기구 조건이 필요하나요?</li><li>가상 prismatic 관절에 <code>effort=&quot;0&quot;</code>이 들어간 이유는 무엇일까요? 이 관절로 로봇을 "제어"할 수 있나요?</li></ul></div></div>
+<div class="callout callout-mission"><div class="callout-title">팀 미션 — 우리 설계의 URDF 검증</div><div class="callout-body"><p>D08~D10 중 하나의 최종 설계를 URDF로 만들고 (1) 링크·관절 개수, (2) 세 가지 자세(홈, 작업 실린더 가장자리 두 곳)에서의 <code>joint_state()</code> 값, (3) URDF 뷰어 캡처(수동 관절 계산 켬/끔)를 한 장의 검증표로 제출하세요. 이펙터 위치는 <code>robot.effector</code>와 비교해 1 mm 이내여야 합니다.</p></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>증상·메시지</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td>뷰어에서 팔이 흩어져 보임</td><td>수동 관절 계산이 꺼짐, 또는 ROS에서 joint_states에 수동 관절이 빠짐</td><td>[수동 관절 계산 끄기] 해제, R05의 드라이버 사용</td></tr><tr><td><code>KeyError: &quot;unknown preset &#x27;edu_servo2&#x27; (choose from edu_servo, edu_dynamixel, printer_stepper, industrial_picker)&quot;</code></td><td><code>--preset</code> 이름 오타</td><td>메시지의 목록에서 선택</td></tr><tr><td><code>--design</code>으로 읽었는데 설계가 기본값</td><td>JSON에 필드 이름이 다르거나 없음</td><td>시뮬레이터 연결 탭에서 내보낸 JSON 사용 (<code>DeltaDesign.load</code>는 <code>design</code> 키 아래도 읽음)</td></tr><tr><td><code>joint_state()</code>에서 <code>Unreachable: no forward kinematic solution ...</code></td><td>조립될 수 없는 모터각 조합</td><td><code>robot.move_joints()</code>처럼 한계 안의 값, 또는 <code>ik()</code>로 얻은 값 사용</td></tr><tr><td><code>UnicodeEncodeError: &#x27;cp949&#x27; codec can&#x27;t encode character &#x27;—&#x27; ...</code></td><td>Windows에서 <code>python -m deltarobot.urdf ... &gt; 파일</code> (표준 출력 리디렉션)</td><td><code>-o delta.urdf</code> 옵션 사용, 또는 <code>set PYTHONIOENCODING=utf-8</code></td></tr><tr><td>이펙터가 TCP보다 위에 표시됨</td><td>URDF의 <code>effector</code>는 이펙터 중심, <code>tcp</code> 링크가 툴 끝</td><td>TCP 위치는 <code>tcp</code> 링크로 확인</td></tr><tr><td>뷰어와 Python URDF가 다름</td><td>설계가 서로 다름(localStorage 설계 vs 코드 프리셋)</td><td>같은 설계 JSON으로 생성해 비교</td></tr></tbody></table></div>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li><code>urdf.generate()</code> 결과에서 모든 <code>&lt;inertial&gt;</code>의 질량을 더해 보고, <code>design.moving_plate_mass</code>와 팔 질량 합과 비교하세요. 어디가 다르고 왜 그런가요?</li><li><code>joint_state()</code>로 계산한 값에서 <strong>로드 끝(볼조인트)의 위치</strong>를 직접 계산해(위팔 → pitch → yaw → 길이 l), <code>kinematics.ball_joint()</code>와 같은지 확인하는 코드를 작성하세요.</li><li>URDF의 한계를 쓰지 않고 트리를 만드는 다른 방법(예: 이펙터를 팔 1에 매달고 팔 2·3을 끊기)의 장단점을 이 강의의 방법과 비교하세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>ROS Wiki, URDF XML 명세 — joint (<code>mimic</code> 포함): https://wiki.ros.org/urdf/XML/joint</li><li>ROS 2 Humble 문서, URDF 튜토리얼: https://docs.ros.org/en/humble/Tutorials/Intermediate/URDF/URDF-Main.html</li><li>gkjohnson/urdf-loaders (three.js URDF 로더): https://github.com/gkjohnson/urdf-loaders</li><li>T02 구조와 자유도, T05 순기구학, R05 ROS 2: URDF·RViz·joint_states (이 강의).</li></ul>
+      <nav class="pager"><a class="pager-prev" href="d06.html"><span>이전 · D06</span>궤적 계획</a><a class="pager-next" href="d08.html"><span>다음 · D08</span>응용실습 ① 탁상형 교육용 델타</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#닫힌-사슬과-urdf">닫힌 사슬과 URDF</a><a class="toc-l2" href="#deltarobot-urdf-의-트리">deltarobot.urdf 의 트리</a><a class="toc-l2" href="#수동-관절-값-계산-jointstate">수동 관절 값 계산: joint_state()</a><a class="toc-l2" href="#urdf-만들기-세-가지-방법">URDF 만들기 — 세 가지 방법</a><a class="toc-l2" href="#실습-urdf-뷰어">실습 (URDF 뷰어)</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

@@ -2,10 +2,20 @@
 
 from __future__ import annotations
 
+import sys
 import time
 from typing import Any, Dict, List, Sequence, Tuple
 
 Vec = Tuple[float, float, float]
+
+
+def safe_print(msg: str) -> None:
+    """print() that never crashes on consoles without UTF-8 (e.g. Korean Windows cp949)."""
+    try:
+        print(msg)
+    except UnicodeEncodeError:
+        enc = getattr(sys.stdout, "encoding", None) or "ascii"
+        print(msg.encode(enc, errors="replace").decode(enc, errors="replace"))
 
 
 def max_joint_speed(stream: Sequence[Tuple[float, Vec]], q0: Sequence[float], t0: float) -> float:
@@ -65,7 +75,7 @@ class Backend:
                 raise WorkspaceError(msg)
             if "speed" not in self._warned:
                 self._warned.add("speed")
-                print("경고: " + msg)
+                safe_print("경고: " + msg)
 
     # motion
     def stream(self, stream: List[Tuple[float, Vec]], tool: int) -> None:

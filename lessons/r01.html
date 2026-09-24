@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R01. deltarobot 라이브러리와 Playground · studyDeltaRobot</title>
+<meta name="description" content="DeltaRobot 클래스, 백엔드 구조, 좌표·단위 규약을 익히고 브라우저 Playground에서 첫 동작을 실행합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-control">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" class="active" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="r01" data-track="control">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-control">Python·ROS 2·실물</span> R-1 Python 제어 &middot; 약 60분 &middot; 초급</div>
+    <h1><span class="lesson-no">R01</span>deltarobot 라이브러리와 Playground</h1>
+    <p class="lede">DeltaRobot 클래스, 백엔드 구조, 좌표·단위 규약을 익히고 브라우저 Playground에서 첫 동작을 실행합니다.</p>
+    <div class="requires">선수 챕터: <a href="t04.html">T04</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../tools/playground.html">Python Playground</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li><code>deltarobot</code> 패키지의 모듈 구성과 <code>DeltaRobot</code> 클래스가 하는 일(경로 계획 → IK·한계 검사 → 모터각 스트림)을 설명합니다.</li><li>백엔드 네 가지(<code>record</code>, <code>websim</code>, <code>ros2</code>, <code>serial</code>)의 역할과 차이를 구분합니다.</li><li>좌표·단위 규약, 특히 <strong>TCP(툴 끝)와 이펙터 중심</strong>의 차이를 코드로 확인합니다.</li><li>브라우저 Playground에서 첫 프로그램을 실행하고, <code>record</code> 백엔드의 <strong>가상 시간</strong>이 어떻게 흐르는지 이해합니다.</li></ul>
+<h2 id="라이브러리-한눈에-보기">라이브러리 한눈에 보기<a class="anchor" href="#라이브러리-한눈에-보기">#</a></h2>
+<p><code>deltarobot</code>은 이 강의의 모든 계산을 담당하는 순수 파이썬 패키지입니다. 의존성이 없어서 브라우저(Pyodide)와 PC, ROS 2 노드에서 <strong>같은 코드</strong>가 돌아갑니다.</p>
+<div class="table-wrap"><table><thead><tr><th>모듈</th><th>역할</th><th>주요 이름</th></tr></thead><tbody><tr><td><code>design.py</code></td><td>설계 파라미터와 카탈로그</td><td><code>DeltaDesign</code>, <code>DeltaDesign.preset()</code>, <code>catalog()</code></td></tr><tr><td><code>kinematics.py</code></td><td>역·순기구학, 야코비안, 작업영역 (<strong>이펙터 중심</strong> 기준)</td><td><code>ik</code>, <code>fk</code>, <code>jacobian</code>, <code>limit_report</code>, <code>Unreachable</code></td></tr><tr><td><code>dynamics.py</code></td><td>모터 토크 계산과 검증</td><td><code>joint_torques</code>, <code>analyze</code>, <code>evaluate</code></td></tr><tr><td><code>trajectory.py</code></td><td>속도 프로파일과 경로</td><td><code>Profile</code>, <code>line_path</code>, <code>arch_path</code>, <code>sample_path</code></td></tr><tr><td><code>scene.py</code></td><td>작업대·부품·상자·컨베이어</td><td><code>Scene</code>, <code>default_scene</code></td></tr><tr><td><code>robot.py</code></td><td>학생이 쓰는 고수준 API (<strong>TCP</strong> 기준)</td><td><code>DeltaRobot</code>, <code>WorkspaceError</code>, <code>EmergencyStop</code></td></tr><tr><td><code>urdf.py</code></td><td>설계값으로 URDF 생성</td><td><code>generate</code>, <code>joint_state</code></td></tr><tr><td><code>backends/</code></td><td>모터각 스트림을 보낼 곳</td><td><code>record</code>, <code>websim</code>, <code>serial</code>, <code>ros2</code></td></tr><tr><td><code>data/catalog.json</code></td><td>모터·감속기·재질·툴·프리셋 카탈로그 (JS 시뮬레이터와 공용)</td><td></td></tr></tbody></table></div>
+<p>PC에서는 저장소 루트에서 <code>pip install -e python</code>으로 설치하고, Playground에서는 설치 없이 <code>import deltarobot</code>이 됩니다.</p>
+<h3 id="deltarobot이-하는-일">DeltaRobot이 하는 일<a class="anchor" href="#deltarobot이-하는-일">#</a></h3>
+<p><code>robot.arch_to(...)</code> 한 줄은 내부에서 네 단계를 거칩니다.</p>
+<ol><li><strong>경로 계획</strong> — 현재 위치에서 목표까지 직선(<code>move_to</code>) 또는 아치(<code>arch_to</code>) 경로를 만듭니다.</li><li><strong>속도 프로파일 샘플링</strong> — 기본 <code>scurve</code> 프로파일로 10 ms 간격의 점을 뽑습니다.</li><li><strong>IK와 한계 검사</strong> — 모든 점에서 모터각을 구하고, 모터각·볼조인트각·팔꿈치각 한계를 검사합니다. 하나라도 넘으면 로봇을 움직이기 <strong>전에</strong> <code>WorkspaceError</code>를 냅니다.</li><li><strong>스트림 전송</strong> — <code>(시각, (θ1, θ2, θ3))</code> 목록을 백엔드로 넘깁니다.</li></ol>
+<figure class="fig" id="fig-r01-backends"><svg viewBox="0 0 720 365" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeltaRobot 하나에 백엔드 네 개">
+  <defs>
+    <marker id="arr-r01-backends" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r01-backends-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="20" y="120" width="170" height="90" rx="10"/>
+  <text class="lbl" x="105" y="148" text-anchor="middle">학생 코드</text>
+  <text class="sub mono" x="105" y="170" text-anchor="middle">robot.arch_to(...)</text>
+  <text class="sub mono" x="105" y="190" text-anchor="middle">robot.tool_on()</text>
+  <rect class="box" x="230" y="90" width="190" height="150" rx="10"/>
+  <text class="lbl" x="325" y="116" text-anchor="middle">DeltaRobot</text>
+  <text class="sub" x="325" y="140" text-anchor="middle">① 경로 계획 (아치·직선)</text>
+  <text class="sub" x="325" y="160" text-anchor="middle">② 속도 프로파일 샘플링</text>
+  <text class="sub" x="325" y="180" text-anchor="middle">③ IK + 한계 검사</text>
+  <text class="sub" x="325" y="200" text-anchor="middle">④ 모터각 스트림 (10 ms)</text>
+  <text class="tag mono dg" x="325" y="224" text-anchor="middle">WorkspaceError</text>
+  <path class="ln-hi" d="M190 165 L228 165" stroke-width="2" marker-end="url(#arr-r01-backends-hi)"/>
+  <path class="ln-hi" d="M420 165 C450 165 450 50 480 50" stroke-width="1.6" marker-end="url(#arr-r01-backends-hi)"/>
+  <rect class="box-hi" x="482" y="20" width="218" height="62" rx="8"/>
+  <text class="lbl mono" x="496" y="42" text-anchor="start">record</text>
+  <text class="sub" x="496" y="60" text-anchor="start">가상 시간 · Playground</text>
+  <text class="tag mono" x="496" y="76" text-anchor="start">frames → 시뮬 재생</text>
+  <path class="ln" d="M420 165 C450 165 450 125 480 125" stroke-width="1.6" marker-end="url(#arr-r01-backends)"/>
+  <rect class="box" x="482" y="95" width="218" height="62" rx="8"/>
+  <text class="lbl mono" x="496" y="117" text-anchor="start">websim</text>
+  <text class="sub" x="496" y="135" text-anchor="start">PC → 웹 시뮬 실시간</text>
+  <text class="tag mono" x="496" y="151" text-anchor="start">ws://127.0.0.1:8765</text>
+  <path class="ln" d="M420 165 C450 165 450 200 480 200" stroke-width="1.6" marker-end="url(#arr-r01-backends)"/>
+  <rect class="box" x="482" y="170" width="218" height="62" rx="8"/>
+  <text class="lbl mono" x="496" y="192" text-anchor="start">ros2</text>
+  <text class="sub" x="496" y="210" text-anchor="start">delta_driver 노드</text>
+  <text class="tag mono" x="496" y="226" text-anchor="start">/delta/joint_command</text>
+  <path class="ln" d="M420 165 C450 165 450 275 480 275" stroke-width="1.6" marker-end="url(#arr-r01-backends)"/>
+  <rect class="box" x="482" y="245" width="218" height="62" rx="8"/>
+  <text class="lbl mono" x="496" y="267" text-anchor="start">serial</text>
+  <text class="sub" x="496" y="285" text-anchor="start">아두이노 펌웨어</text>
+  <text class="tag mono" x="496" y="301" text-anchor="start">J d1 d2 d3 (115200)</text>
+  <text class="tag" x="360" y="330" text-anchor="middle">backend= 인자만 바꾸면 같은 코드가 시뮬 → PC → ROS 2 → 실물로</text>
+  <text class="sub" x="360" y="350" text-anchor="middle">serial·ros2는 모터 속도 초과를 거부, record·websim은 경고만</text>
+</svg><figcaption><code>DeltaRobot</code>은 경로를 계획하고 한계를 검사한 뒤, 모터각 스트림을 선택한 백엔드로 보냅니다.</figcaption></figure>
+<h3 id="백엔드">백엔드<a class="anchor" href="#백엔드">#</a></h3>
+<div class="table-wrap"><table><thead><tr><th>이름</th><th>용도</th><th>시간</th><th>주요 옵션</th><th>속도 초과 시</th></tr></thead><tbody><tr><td><code>record</code> (<code>auto</code>)</td><td>Playground, PC 드라이런·분석</td><td><strong>가상</strong></td><td><code>time_limit=600</code>, <code>verbose=False</code></td><td>경고만</td></tr><tr><td><code>websim</code></td><td>PC 파이썬 → 웹 시뮬레이터 실시간 (R03)</td><td>실시간</td><td><code>host</code>, <code>port=8765</code>, <code>wait_connect=60</code></td><td>경고만</td></tr><tr><td><code>ros2</code></td><td>ROS 2 <code>delta_driver</code> 노드 (R06)</td><td>실시간</td><td><code>node_name</code></td><td><code>WorkspaceError</code>로 거부</td></tr><tr><td><code>serial</code></td><td>아두이노 펌웨어 (R07)</td><td>실시간</td><td><code>port=&quot;COM3&quot;</code>, <code>baud=115200</code>, <code>rate=50</code></td><td><code>WorkspaceError</code>로 거부</td></tr></tbody></table></div>
+<p>실물로 가는 백엔드(<code>serial</code>, <code>ros2</code>)만 속도 초과를 <strong>거부</strong>합니다. 그래서 Playground에서 경고가 한 번이라도 나왔다면 실물에서는 그 동작이 실행되지 않습니다. 경고를 없애고 넘어가는 습관을 들이세요.</p>
+<h2 id="좌표-단위-규약">좌표·단위 규약<a class="anchor" href="#좌표-단위-규약">#</a></h2>
+<ul><li>단위는 <strong>m, rad, kg, s</strong>입니다. 3 cm는 <code>0.03</code>이고, 각도를 도(°)로 쓰려면 <code>move_joints(..., degrees=True)</code>처럼 명시합니다.</li><li>원점은 베이스 중심(모터축이 놓인 평면), <strong>z는 위쪽</strong>이라 작업 공간은 z &lt; 0입니다.</li><li>팔 1·2·3의 방위각은 0°, 120°, 240°이고 팔 1이 +x 방향입니다.</li><li>모터각 θ는 위팔이 수평일 때 0, <strong>아래로 내려가면 +</strong>입니다.</li><li><code>DeltaRobot</code>의 위치 인자와 <code>robot.position</code>은 <strong>TCP(툴 끝)</strong> 좌표입니다. <code>deltarobot.kinematics</code>의 함수와 <code>robot.effector</code>는 <strong>이펙터 중심</strong> 좌표입니다. 둘의 차이는 툴 길이만큼입니다: TCP = 이펙터 중심 − (0, 0, tool.length).</li></ul>
+<figure class="fig" id="fig-r01-tcp"><svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TCP와 이펙터 중심, 좌표 규약">
+  <defs>
+    <marker id="arr-r01-tcp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r01-tcp-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="170" y="40" width="240" height="16" rx="4"/>
+  <text class="tag" x="290" y="32" text-anchor="middle">베이스 (z = 0, 모터축 평면)</text>
+  <path class="ln-hi" d="M200 48 L170 110" stroke-width="5"/>
+  <path class="ln-hi" d="M380 48 L410 110" stroke-width="5"/>
+  <path class="ln" d="M170 110 L262 200" stroke-width="2"/>
+  <path class="ln" d="M410 110 L318 200" stroke-width="2"/>
+  <rect class="box" x="250" y="196" width="80" height="12" rx="3"/>
+  <circle class="hi" cx="290" cy="202" r="4"/>
+  <path class="ln" d="M290 208 L290 252" stroke-width="4"/>
+  <circle class="dg" cx="290" cy="256" r="4"/>
+  <path class="ln" d="M340 202 L380 202" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="386" y="206" text-anchor="start">이펙터 중심  robot.effector · kinematics.ik/fk</text>
+  <path class="ln" d="M296 256 L380 256" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <text class="tag hi" x="386" y="260" text-anchor="start">TCP (툴 끝)  robot.position · move_to/arch_to</text>
+  <path class="ln" d="M250 202 L250 256" stroke-width="1.6" marker-end="url(#arr-r01-tcp)" marker-start="url(#arr-r01-tcp)"/>
+  <text class="sub mono" x="244" y="234" text-anchor="end">tool.length</text>
+  <path class="ln-hi" d="M70 250 L130 250" stroke-width="2" marker-end="url(#arr-r01-tcp-hi)"/>
+  <text class="tag" x="136" y="254" text-anchor="start">x (팔 1 방향)</text>
+  <path class="ln-hi" d="M70 250 L70 190" stroke-width="2" marker-end="url(#arr-r01-tcp-hi)"/>
+  <text class="tag" x="70" y="184" text-anchor="middle">z (위)</text>
+  <text class="sub" x="70" y="274" text-anchor="middle">작업은 z &lt; 0</text>
+  <text class="lbl" x="560" y="60" text-anchor="middle">단위: m · rad · kg · s</text>
+  <text class="sub" x="560" y="84" text-anchor="middle">θ = 0: 위팔 수평, 아래로 +</text>
+  <text class="sub" x="560" y="104" text-anchor="middle">팔 방위각 φ = 0°, 120°, 240°</text>
+  <text class="sub mono" x="560" y="124" text-anchor="middle">TCP = 이펙터 중심 − (0, 0, tool.length)</text>
+</svg><figcaption>로봇 API는 TCP를, 기구학 함수는 이펙터 중심을 씁니다. 둘은 툴 길이만큼 z가 다릅니다.</figcaption></figure>
+<div class="callout callout-warn"><div class="callout-title">TCP와 이펙터 중심을 섞지 마세요</div><div class="callout-body"><p><code>kinematics.ik(d, p)</code>에 부품 윗면 좌표를 그대로 넣으면 툴 길이(흡착컵 <code>suction_20</code>은 45 mm)만큼 <strong>부품을 파고드는</strong> 모터각이 나옵니다. 로봇을 움직일 때는 항상 <code>robot.ik()</code>, <code>robot.move_to()</code>처럼 TCP 기준 메서드를 쓰세요.</p></div></div>
+<h2 id="실습-1-첫-프로그램">실습 1: 첫 프로그램<a class="anchor" href="#실습-1-첫-프로그램">#</a></h2>
+<p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
+<p>아래 코드를 Playground에 붙여 넣고 <a href="Ctrl+Enter">실행</a>을 누르세요. 오른쪽 시뮬레이터가 기록된 동작을 재생합니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import time
+from deltarobot import DeltaRobot
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;empty&quot;)
+print(robot)
+print(&quot;TCP 위치 [m]:&quot;, [round(v, 3) for v in robot.position])
+print(&quot;모터각 [rad]:&quot;, robot.joints)
+
+robot.home()
+z = -0.26                        # 작업 높이 (TCP, 베이스 아래 26 cm)
+square = [(0.04, 0.04), (-0.04, 0.04), (-0.04, -0.04), (0.04, -0.04), (0.04, 0.04)]
+robot.move_to(square[0][0], square[0][1], z)
+for x, y in square[1:]:
+    robot.move_to(x, y, z)
+    print(&quot;t=%.2f s  TCP=(%.3f, %.3f, %.3f)&quot; % ((robot.time,) + robot.position))
+
+time.sleep(0.5)                  # Playground에서는 가상 시간 0.5 s
+print(&quot;sleep 후 시간: %.2f s&quot; % robot.time)
+robot.home()
+print(&quot;끝: %.2f s&quot; % robot.time)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">DeltaRobot(motor=rc_servo_mg996r, tool=suction_20, backend=RecordBackend)
+TCP 위치 [m]: [0.0, 0.0, -0.246]
+모터각 [rad]: (0.35, 0.35, 0.35)
+t=1.14 s  TCP=(-0.040, 0.040, -0.260)
+t=1.77 s  TCP=(-0.040, -0.040, -0.260)
+t=2.40 s  TCP=(0.040, -0.040, -0.260)
+t=3.03 s  TCP=(0.040, 0.040, -0.260)
+sleep 후 시간: 3.53 s
+끝: 3.90 s</code></pre></div>
+<p>읽어 볼 점:</p>
+<ul><li>로봇은 <strong>홈 자세</strong>(세 모터 모두 0.35 rad)에서 시작합니다. 이때 TCP는 베이스 아래 24.6 cm입니다.</li><li><code>DeltaRobot(&quot;edu_servo&quot;)</code>의 첫 인자는 설계입니다. 프리셋 이름, <code>DeltaDesign</code>, dict, <code>&quot;파일.json&quot;</code>을 받을 수 있습니다.</li><li>한 변 8 cm를 가는 데 약 0.63 s가 걸립니다. 기본 속도는 <code>0.25·(L+l)/0.43</code> m/s이며, <code>edu_servo</code>(L+l = 0.32 m)에서는 약 0.19 m/s입니다. 가속·감속 구간이 있어서 평균 속도는 이보다 낮습니다.</li></ul>
+<div class="callout callout-info"><div class="callout-title">Playground에서 설계와 장면이 정해지는 방식</div><div class="callout-body"><ul><li><code>DeltaRobot()</code>처럼 설계를 비우면 <strong>시뮬레이터에서 마지막으로 쓴 설계와 장면</strong>을 씁니다.</li><li><code>DeltaRobot(&quot;edu_servo&quot;)</code>처럼 프리셋을 주면, 시뮬레이터의 설계가 같을 때만 그 장면을 그대로 쓰고, 다르면 <strong>같은 종류의 장면을 이 설계 크기에 맞게 다시 만듭니다.</strong></li><li><code>scene=&quot;pick_place&quot;</code>, <code>&quot;conveyor&quot;</code>, <code>&quot;drawing&quot;</code>, <code>&quot;empty&quot;</code>를 직접 주면 그 장면이 우선합니다. 이 트랙의 예제는 결과가 늘 같도록 설계와 장면을 모두 적습니다.</li></ul></div></div>
+<h2 id="실습-2-tcp와-이펙터-ik-확인">실습 2: TCP와 이펙터, IK 확인<a class="anchor" href="#실습-2-tcp와-이펙터-ik-확인">#</a></h2>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+from deltarobot import DeltaRobot, WorkspaceError
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;empty&quot;)
+d = robot.design
+print(&quot;툴 길이 %.3f m&quot; % d.tool_length)
+x, y, z = robot.position
+ex, ey, ez = robot.effector
+print(&quot;TCP     z = %.4f m&quot; % z)
+print(&quot;이펙터  z = %.4f m (차이 %.3f m)&quot; % (ez, ez - z))
+
+q = robot.ik(0.05, 0.0, -0.27)
+print(&quot;ik(0.05, 0, -0.27) =&quot;, [round(math.degrees(v), 1) for v in q], &quot;deg&quot;)
+print(&quot;fk로 되돌리면     =&quot;, [round(v, 4) for v in robot.fk(*q)])
+
+for p in [(0.0, 0.0, -0.20), (0.0, 0.0, -0.30), (0.15, 0.0, -0.27)]:
+    print(p, &quot;도달 가능&quot; if robot.reachable(*p) else &quot;도달 불가&quot;)
+try:
+    robot.move_to(0.15, 0.0, -0.27)
+except WorkspaceError as e:
+    print(&quot;WorkspaceError:&quot;, e)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">툴 길이 0.045 m
+TCP     z = -0.2457 m
+이펙터  z = -0.2007 m (차이 0.045 m)
+ik(0.05, 0, -0.27) = [15.8, 43.0, 43.0] deg
+fk로 되돌리면     = [0.05, -0.0, -0.27]
+(0.0, 0.0, -0.2) 도달 가능
+(0.0, 0.0, -0.3) 도달 가능
+(0.15, 0.0, -0.27) 도달 불가
+WorkspaceError: 작업영역 밖: (0.150, 0.000, -0.270) m — 모터 각도 한계, 볼조인트 각도 한계</code></pre></div>
+<ul><li>+x 쪽(팔 1 방향)으로 5 cm 가면 팔 1은 덜 내려가고(15.8°) 팔 2·3은 더 내려갑니다(43.0°). T04에서 유도한 IK와 같은 결과입니다.</li><li><code>-0.0</code>은 부동소수점 오차(약 10⁻¹⁷)가 반올림된 것이라 0과 같습니다.</li><li><code>WorkspaceError</code> 메시지는 <strong>어떤 한계</strong>에 걸렸는지 알려 줍니다. <code>move_to</code>는 경로를 만들기 전에 목표점부터 검사하므로 로봇은 움직이지 않습니다.</li></ul>
+<h2 id="record-백엔드와-가상-시간">record 백엔드와 가상 시간<a class="anchor" href="#record-백엔드와-가상-시간">#</a></h2>
+<p>Playground의 파이썬은 브라우저 안에서 돕니다. 실제로 0.5 s를 기다리면 화면이 멈추므로, <code>record</code> 백엔드는 <strong>시계를 직접 넘기는 방식</strong>으로 동작합니다.</p>
+<ol><li>이동 명령은 10 ms 간격의 <code>(t, q)</code> 샘플을 만들고, <code>record</code>는 이를 <code>frames</code> 목록에 붙인 뒤 가상 시각을 마지막 샘플의 t로 <strong>즉시</strong> 옮깁니다. 계산은 순식간에 끝나지만 기록상으로는 그만큼 시간이 흐릅니다.</li><li><code>robot.wait(s)</code>는 같은 자세를 0.05 s 간격으로 s초 동안 기록합니다.</li><li>Playground는 <code>time.sleep</code>, <code>time.time</code>, <code>time.monotonic</code>, <code>time.perf_counter</code>를 가상 시계로 바꿔 둡니다. 그래서 <code>time.sleep(0.5)</code>는 <code>robot.wait(0.5)</code>와 같습니다.</li><li>프로그램이 끝나면 기록 전체(설계, 장면, frames, 흡착 이벤트)가 내장 시뮬레이터로 넘어가 재생되고, 결과 요약(총 시간, 모터 검증)이 표시됩니다.</li><li>가상 시간이 <code>time_limit</code>(기본 600 s)를 넘으면 <code>RuntimeError</code>로 멈춥니다. <code>while True:</code> 무한 루프를 막는 장치입니다.</li></ol>
+<p>동작마다 위치를 찍어 보고 싶으면 <code>verbose=True</code>를 주세요. <code>DeltaRobot</code>의 나머지 키워드 인자는 백엔드 옵션으로 전달됩니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;empty&quot;, verbose=True)
+robot.move_to(0.0, 0.0, -0.25)
+robot.move_by(dx=0.03)
+robot.move_joints(20, 20, 40, degrees=True)
+robot.wait(0.3)
+print(&quot;기록된 프레임 %d개, 가상 시간 %.2f s&quot; % (len(robot.backend.frames), robot.time))
+print(&quot;마지막 프레임:&quot;, robot.backend.frames[-1])</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">[0.14s] TCP -&gt; (0.000, 0.000, -0.250)
+[0.50s] TCP -&gt; (0.030, 0.000, -0.250)
+[0.72s] TCP -&gt; (0.018, 0.032, -0.257)
+기록된 프레임 80개, 가상 시간 1.02 s
+마지막 프레임: {&#x27;t&#x27;: 1.02165, &#x27;q&#x27;: [0.3490658503988659, 0.3490658503988659, 0.6981317007977318], &#x27;tool&#x27;: 0}</code></pre></div>
+<p><code>move_joints</code>는 <strong>관절 공간</strong> 보간이라 TCP가 직선으로 가지 않습니다. 모터 3만 더 내려갔는데 TCP는 x와 y가 함께 바뀐 것을 볼 수 있습니다.</p>
+<div class="callout callout-tip"><div class="callout-title">같은 코드를 PC에서</div><div class="callout-body"><p>PC에서 <code>pip install -e python</code> 후 같은 파일을 <code>python my_first.py</code>로 실행해도 됩니다(백엔드 기본값이 <code>record</code>). 다만 PC에는 <code>time.sleep</code> 가상화가 없으므로, 기다릴 때는 <code>time.sleep</code> 대신 <code>robot.wait()</code>을 쓰는 습관을 들이세요. 모든 백엔드에서 올바르게 동작합니다.</p></div></div>
+<div class="callout callout-check"><div class="callout-title">체크포인트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> <code>robot.position</code>과 <code>robot.effector</code>의 z 차이가 툴 길이와 같은 것을 확인했다.</label></li><li><label class="check-item"><input type="checkbox"> 한 변 8 cm 정사각형의 사이클 시간을 출력에서 읽었다.</label></li><li><label class="check-item"><input type="checkbox"> 작업영역 밖 목표에서 <code>WorkspaceError</code>가 나고 로봇이 움직이지 않는 것을 확인했다.</label></li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="keyerror-unknown-preset-edusevro-choose-from-eduservo-edudynamixel-printerstepper-industrialpicker"><code>KeyError: &quot;unknown preset &#x27;edu_sevro&#x27; (choose from edu_servo, edu_dynamixel, printer_stepper, industrial_picker)&quot;</code><a class="anchor" href="#keyerror-unknown-preset-edusevro-choose-from-eduservo-edudynamixel-printerstepper-industrialpicker">#</a></h3>
+<ul><li><strong>원인</strong>: 프리셋 이름 오타입니다.</li><li><strong>해결</strong>: 메시지에 나온 네 이름 중 하나를 씁니다.</li></ul>
+<h3 id="valueerror-unknown-backend-sim-record-websim-serial-ros2"><code>ValueError: unknown backend &#x27;sim&#x27; (record | websim | serial | ros2)</code><a class="anchor" href="#valueerror-unknown-backend-sim-record-websim-serial-ros2">#</a></h3>
+<ul><li><strong>원인</strong>: 백엔드 이름이 틀렸습니다. 웹 시뮬레이터 실시간 연결은 <code>&quot;websim&quot;</code>입니다.</li></ul>
+<h3 id="workspaceerror-작업영역-밖-0-000-0-000-0-100-m-팔-길이로-닿지-않음"><code>WorkspaceError: 작업영역 밖: (0.000, 0.000, -0.100) m — 팔 길이로 닿지 않음</code><a class="anchor" href="#workspaceerror-작업영역-밖-0-000-0-000-0-100-m-팔-길이로-닿지-않음">#</a></h3>
+<ul><li><strong>원인</strong>: 목표가 팔 길이로 닿지 않습니다. 흔한 실수는 <strong>단위(mm를 m 자리에)</strong> 와 <strong>z 부호</strong>(작업은 z &lt; 0)입니다. <code>(0, 0, 0.25)</code>를 주면 <code>모터 각도 한계</code>가 납니다.</li><li><strong>해결</strong>: <code>robot.reachable(x, y, z)</code>로 먼저 확인하고, 시뮬레이터 조그 탭에서 닿는 범위를 살펴봅니다.</li></ul>
+<h3 id="workspaceerror-모터-3-각도-100-0-가-한계-40-1-85-9-밖입니다"><code>WorkspaceError: 모터 3 각도 100.0° 가 한계 [-40.1°, 85.9°] 밖입니다</code><a class="anchor" href="#workspaceerror-모터-3-각도-100-0-가-한계-40-1-85-9-밖입니다">#</a></h3>
+<ul><li><strong>원인</strong>: <code>move_joints</code>에 한계 밖 각도를 줬거나, <code>degrees=True</code> 없이 도 단위를 넣었습니다(라디안 100은 한계를 크게 넘습니다).</li></ul>
+<h3 id="valueerror-profile-trapezoid-scurve-quintic-cycloidal"><code>ValueError: profile: trapezoid, scurve, quintic, cycloidal</code><a class="anchor" href="#valueerror-profile-trapezoid-scurve-quintic-cycloidal">#</a></h3>
+<ul><li><strong>원인</strong>: <code>set_profile(&quot;s-curve&quot;)</code>처럼 없는 프로파일 이름을 줬습니다. 하이픈 없이 <code>&quot;scurve&quot;</code>입니다.</li></ul>
+<h3 id="runtimeerror-가상-시간-600-s-제한을-넘었습니다-무한-루프인가요"><code>RuntimeError: 가상 시간 600 s 제한을 넘었습니다 (무한 루프인가요?)</code><a class="anchor" href="#runtimeerror-가상-시간-600-s-제한을-넘었습니다-무한-루프인가요">#</a></h3>
+<ul><li><strong>원인</strong>: <code>while True:</code> 안에서 <code>time.sleep()</code>이나 <code>robot.wait()</code>만 반복하는 등 끝나지 않는 루프입니다.</li><li><strong>해결</strong>: 종료 조건(시간, 남은 부품 수)을 넣습니다. 정말 긴 작업이면 <code>DeltaRobot(..., time_limit=1200)</code>처럼 늘립니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">개인 과제</div><div class="callout-body"><ol><li>실습 1을 고쳐 반지름 4 cm 원을 36개 점의 <code>move_to</code>로 그리고, 한 바퀴 시간을 출력합니다. 같은 원을 <code>robot.move_path(points)</code>(점들을 한 번의 속도 프로파일로 잇는 메서드)로 그리면 시간이 얼마나 줄어드는지 비교하고 이유를 한 문장으로 씁니다.</li><li><code>set_profile()</code>로 네 가지 프로파일을 바꿔 가며 정사각형 사이클 시간을 표로 정리합니다.</li><li><code>robot.reachable()</code>로 z = −0.27 m 평면에서 x를 1 cm씩 늘려 도달 가능한 최대 x를 찾고, 시뮬레이터 분석 탭의 작업 실린더 지름과 비교합니다.</li></ol></div></div>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>이 저장소 API 문서: <code>docs/API.md</code> (함수·백엔드·도구 화면의 정확한 이름)</li><li>Pyodide 문서 — 브라우저에서 CPython 실행: https://pyodide.org/en/stable/</li><li>Pyodide의 제약(스레드·블로킹 호출): https://pyodide.org/en/stable/usage/wasm-constraints.html</li><li>Python <code>time</code> 모듈: https://docs.python.org/3/library/time.html</li><li>R. Clavel, "DELTA, a fast robot with parallel geometry", 18th ISIR, 1988 (델타로봇 원 논문)</li></ul>
+      <nav class="pager"><a class="pager-prev" href="d11.html"><span>이전 · D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a><a class="pager-next" href="r02.html"><span>다음 · R02</span>Python pick &amp; place 프로그래밍</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#라이브러리-한눈에-보기">라이브러리 한눈에 보기</a><a class="toc-l3" href="#deltarobot이-하는-일">DeltaRobot이 하는 일</a><a class="toc-l3" href="#백엔드">백엔드</a><a class="toc-l2" href="#좌표-단위-규약">좌표·단위 규약</a><a class="toc-l2" href="#실습-1-첫-프로그램">실습 1: 첫 프로그램</a><a class="toc-l2" href="#실습-2-tcp와-이펙터-ik-확인">실습 2: TCP와 이펙터, IK 확인</a><a class="toc-l2" href="#record-백엔드와-가상-시간">record 백엔드와 가상 시간</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#keyerror-unknown-preset-edusevro-choose-from-eduservo-edudynamixel-printerstepper-industrialpicker">`KeyError: &quot;unknown preset &#x27;edu_sevro&#x27; (choose from edu_servo, edu_dynamixel, printer_stepper, industrial_picker)&quot;`</a><a class="toc-l3" href="#valueerror-unknown-backend-sim-record-websim-serial-ros2">`ValueError: unknown backend &#x27;sim&#x27; (record | websim | serial | ros2)`</a><a class="toc-l3" href="#workspaceerror-작업영역-밖-0-000-0-000-0-100-m-팔-길이로-닿지-않음">`WorkspaceError: 작업영역 밖: (0.000, 0.000, -0.100) m — 팔 길이로 닿지 않음`</a><a class="toc-l3" href="#workspaceerror-모터-3-각도-100-0-가-한계-40-1-85-9-밖입니다">`WorkspaceError: 모터 3 각도 100.0° 가 한계 [-40.1°, 85.9°] 밖입니다`</a><a class="toc-l3" href="#valueerror-profile-trapezoid-scurve-quintic-cycloidal">`ValueError: profile: trapezoid, scurve, quintic, cycloidal`</a><a class="toc-l3" href="#runtimeerror-가상-시간-600-s-제한을-넘었습니다-무한-루프인가요">`RuntimeError: 가상 시간 600 s 제한을 넘었습니다 (무한 루프인가요?)`</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

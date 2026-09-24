@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D10. 응용실습 ③ 펜 드로잉·디스펜싱 델타 · studyDeltaRobot</title>
+<meta name="description" content="A5 영역에 글자·도형을 그리는 정밀 델타 — 분해능·백래시·속도 균일성을 기준으로 스테퍼+벨트를 설계합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-design">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" class="active" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="d10" data-track="design">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-design">설계·시뮬레이션</span> D-3 설계 응용실습 &middot; 약 120분 &middot; 중급</div>
+    <h1><span class="lesson-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</h1>
+    <p class="lede">A5 영역에 글자·도형을 그리는 정밀 델타 — 분해능·백래시·속도 균일성을 기준으로 스테퍼+벨트를 설계합니다.</p>
+    <div class="requires">선수 챕터: <a href="d03.html">D03</a> <a href="d04.html">D04</a> <a href="d06.html">D06</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a><a class="ghost-btn" href="../tools/playground.html">Python Playground</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>모터 분해능과 감속기 백래시를 야코비안으로 <strong>TCP 오차(mm)</strong> 로 환산하고, 요구 정밀도와 비교할 수 있습니다.</li><li>A5 용지가 작업영역에 들어가는지 확인하고, 들어가지 않거나 정밀도가 부족할 때 <strong>무엇을 바꿔야 하는지</strong>(치수·작업 높이) 숫자로 결정할 수 있습니다.</li><li><code>move_path()</code>와 <code>move_to()</code>의 차이를 속도 균일성·모서리 가속도로 비교하고, 원·별·글자를 그리는 프로그램을 완성할 수 있습니다.</li></ul>
+<h2 id="과제-소개">과제 소개<a class="anchor" href="#과제-소개">#</a></h2>
+<p>A5 종이에 도형과 글자를 그리는 <strong>펜 드로잉 델타</strong>를 만듭니다. 같은 기구에 펜 대신 디스펜서(접착제·크림 짜기)를 달면 <strong>선 굵기 = 토출량 / 이동 속도</strong>이므로, 그리기와 똑같이 <strong>속도가 일정해야</strong> 합니다. 예산을 위해 구동은 <strong>NEMA17 스테퍼 + 타이밍 벨트 감속</strong>입니다.</p>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html?preset=printer_stepper&amp;scene=drawing">시뮬레이터에서 열기 (printer_stepper + 그리기 장면)</a></p>
+<h2 id="1단계-요구사항-표">1단계 — 요구사항 표<a class="anchor" href="#1단계-요구사항-표">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>항목</th><th>요구</th><th>근거</th></tr></thead><tbody><tr><td>작업 영역</td><td><strong>A5 (210 × 148 mm) 전체</strong>, 종이 면 한 높이에서</td><td>대각선 √(210² + 148²) ≈ 257 mm</td></tr><tr><td>그리기 속도</td><td>50 mm/s, 곡선에서 <strong>등속 구간 ≥ 90 %</strong></td><td>선 굵기·토출량 균일</td></tr><tr><td>분해능</td><td>세 모터가 1스텝씩 틀릴 때 TCP 최악 오차 <strong>≤ 0.2 mm</strong></td><td>0.5 mm 펜 선 굵기의 절반 이하</td></tr><tr><td>백래시</td><td>백래시로 인한 TCP 최악 오차 <strong>≤ 0.3 mm</strong></td><td>되돌아 그리는 선이 겹쳐 보일 것</td></tr><tr><td>구동</td><td><code>stepper_nema17</code> + <code>belt</code> (2~5:1)</td><td>저가, 3D 프린터 부품</td></tr><tr><td>툴</td><td><code>pen</code> (20 g, 길이 60 mm)</td><td></td></tr><tr><td>모터 검증</td><td>모든 비 ≤ 1 (안전율 1.2, 스테퍼 여유 1.5 포함)</td><td>스테퍼는 토크가 모자라면 <strong>조용히 탈조</strong></td></tr></tbody></table></div>
+<h2 id="정밀도-계산-분해능과-백래시를-tcp로">정밀도 계산: 분해능과 백래시를 TCP로<a class="anchor" href="#정밀도-계산-분해능과-백래시를-tcp로">#</a></h2>
+<p>T06의 속도 관계 <span class="math">v = Jθ̇</span> 는 작은 변위에도 그대로 성립합니다: <span class="math">δ p = J·δθ</span>.</p>
+<ul><li><strong>모터 분해능</strong> — NEMA17은 1.8°/스텝, 드라이버 1/16 마이크로스텝이면 0.1125°(카탈로그 <code>resolution_deg</code>, 대표값). 벨트 4:1을 거치면 출력축에서 <span class="math">δθ = 0.1125°/4 = 0.0281°</span>.</li><li><strong>백래시</strong> — 벨트 감속의 대표 백래시 6′(arcmin)은 <strong>출력축 기준</strong>입니다. 방향이 바뀌면 ±절반(3′)씩 헛돌 수 있다고 보고 계산합니다. 감속비를 바꿔도 이 값은 줄지 않습니다.</li><li><strong>최악 오차</strong> — 세 모터가 각각 <span class="math">±δθ</span> 틀리는 8가지 조합 중 <span class="math">|J·δθ|</span>가 가장 큰 값을 씁니다.</li></ul>
+<div class="callout callout-warn"><div class="callout-title">마이크로스텝은 &quot;분해능&quot;이지 &quot;정확도&quot;가 아닙니다</div><div class="callout-body"><p>1/16 마이크로스텝으로 명령은 0.1125° 단위로 줄 수 있지만, 실제 스테퍼 축이 그 위치에 정확히 서는 것은 아닙니다(부하·전류 파형에 따라 오차). 위 계산은 <strong>낙관적인 하한</strong>이라고 생각하고, 실물에서는 반복 그리기로 확인해야 합니다.</p></div></div>
+<h2 id="2단계-설계-반복">2단계 — 설계 반복<a class="anchor" href="#2단계-설계-반복">#</a></h2>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
+from deltarobot import DeltaDesign, DeltaRobot
+from deltarobot import kinematics as kin
+
+def tcp_error(d, p, dtheta):
+    &quot;&quot;&quot;세 모터가 모두 ±dtheta 만큼 틀릴 때 TCP 최악 오차 [m] (미소 변위 dp = J·dθ)&quot;&quot;&quot;
+    J = kin.jacobian(d, kin.ik(d, p), p)
+    return max(math.sqrt(sum(sum(J[r][c] * s[c] * dtheta for c in range(3)) ** 2 for r in range(3)))
+               for s in itertools.product((-1, 1), repeat=3))
+
+def a5_report(d, z_tcp, W=0.210, H=0.148, n=8):
+    step = math.radians(d.motor_spec[&quot;resolution_deg&quot;]) / d.ratio      # 출력축 분해능
+    lash = math.radians(d.gearbox_spec[&quot;backlash_arcmin&quot;] / 60.0)      # 출력축 백래시
+    z = z_tcp + d.tool_length                                          # 이펙터 중심 높이
+    res, bl, outside = [], [], 0
+    for i in range(n + 1):
+        for j in range(n + 1):
+            p = (-W / 2 + W * i / n, -H / 2 + H * j / n, z)
+            if not kin.reachable(d, p):
+                outside += 1
+                continue
+            res.append(tcp_error(d, p, step))
+            bl.append(tcp_error(d, p, lash / 2))                       # 백래시는 ±절반
+    line = &quot;  z=%4.0f mm  A5 밖 %2d/%d점&quot; % (z_tcp * 1000, outside, (n + 1) ** 2)
+    if res:
+        line += &quot; | 분해능 %.3f~%.3f mm | 백래시 오차 %.3f~%.3f mm&quot; % (
+            min(res) * 1e3, max(res) * 1e3, min(bl) * 1e3, max(bl) * 1e3)
+    print(line)
+
+base = DeltaDesign.preset(&quot;printer_stepper&quot;).copy(tool=&quot;pen&quot;, payload=0.0)
+small = base.copy(base_radius=0.08, effector_radius=0.03, upper_arm=0.1, forearm=0.22)
+print(&quot;출력축 분해능 %.4f° (1.8°/16 마이크로스텝 ÷ 벨트 %g:1), 백래시 %g′&quot; % (
+    base.motor_spec[&quot;resolution_deg&quot;] / base.ratio, base.ratio, base.gearbox_spec[&quot;backlash_arcmin&quot;]))
+print(&quot;v0 (R80 L100 l220), 그리기 장면의 종이 면&quot;)
+a5_report(small, DeltaRobot(small, scene=&quot;drawing&quot;).scene.surface_z)
+print(&quot;v1 (printer_stepper 치수), 종이 높이를 바꿔 가며&quot;)
+for z in (-0.405, -0.36, -0.32, -0.28):
+    a5_report(base, z)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">출력축 분해능 0.0281° (1.8°/16 마이크로스텝 ÷ 벨트 4:1), 백래시 6′
+v0 (R80 L100 l220), 그리기 장면의 종이 면
+  z=-300 mm  A5 밖  8/81점 | 분해능 0.114~0.145 mm | 백래시 오차 0.202~0.257 mm
+v1 (printer_stepper 치수), 종이 높이를 바꿔 가며
+  z=-405 mm  A5 밖  0/81점 | 분해능 0.160~0.189 mm | 백래시 오차 0.284~0.336 mm
+  z=-360 mm  A5 밖  0/81점 | 분해능 0.140~0.166 mm | 백래시 오차 0.249~0.295 mm
+  z=-320 mm  A5 밖  0/81점 | 분해능 0.118~0.141 mm | 백래시 오차 0.210~0.251 mm
+  z=-280 mm  A5 밖  1/81점 | 분해능 0.092~0.115 mm | 백래시 오차 0.163~0.204 mm</code></pre></div>
+<figure class="fig" id="fig-d10-a5-fit"><svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="종이 높이에서 도달 가능한 영역과 A5 용지">
+  <defs>
+    <marker id="arr-d10-a5-fit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d10-a5-fit-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path d="M315.2 215.0 L314.0 211.5 L312.8 208.2 L311.5 204.9 L310.1 201.8 L308.6 198.7 L307.0 195.7 L305.4 192.8 L303.7 190.0 L301.9 187.3 L300.0 184.7 L298.1 182.2 L296.1 179.7 L294.1 177.3 L292.0 175.1 L289.9 172.9 L287.7 170.7 L285.5 168.7 L283.2 166.8 L280.9 164.9 L278.6 163.1 L276.2 161.3 L273.7 159.7 L271.3 158.1 L268.7 156.6 L266.2 155.1 L263.5 153.8 L260.9 152.5 L258.2 151.3 L255.4 150.2 L252.7 149.1 L249.8 148.1 L247.0 147.2 L244.0 146.4 L241.1 145.6 L238.1 145.0 L235.0 144.4 L231.9 143.9 L228.7 143.5 L225.6 143.2 L222.3 143.1 L219.0 143.0 L215.7 143.0 L212.3 143.1 L208.9 143.4 L205.5 143.7 L202.0 144.2 L198.5 144.8 L194.9 145.6 L192.5 148.3 L190.2 151.0 L188.0 153.8 L186.0 156.6 L184.1 159.4 L182.3 162.3 L180.6 165.2 L179.0 168.0 L177.6 170.9 L176.2 173.9 L175.0 176.8 L173.9 179.7 L172.8 182.6 L171.9 185.6 L171.1 188.5 L170.3 191.5 L169.7 194.4 L169.1 197.3 L168.6 200.3 L168.2 203.2 L167.9 206.2 L167.7 209.1 L167.6 212.1 L167.5 215.0 L167.6 217.9 L167.7 220.9 L167.9 223.8 L168.2 226.8 L168.6 229.7 L169.1 232.7 L169.7 235.6 L170.3 238.5 L171.1 241.5 L171.9 244.4 L172.8 247.4 L173.9 250.3 L175.0 253.2 L176.2 256.1 L177.6 259.1 L179.0 262.0 L180.6 264.8 L182.3 267.7 L184.1 270.6 L186.0 273.4 L188.0 276.2 L190.2 279.0 L192.5 281.7 L194.9 284.4 L198.5 285.2 L202.0 285.8 L205.5 286.3 L208.9 286.6 L212.3 286.9 L215.7 287.0 L219.0 287.0 L222.3 286.9 L225.6 286.8 L228.7 286.5 L231.9 286.1 L235.0 285.6 L238.1 285.0 L241.1 284.4 L244.0 283.6 L247.0 282.8 L249.8 281.9 L252.7 280.9 L255.4 279.8 L258.2 278.7 L260.9 277.5 L263.5 276.2 L266.2 274.9 L268.7 273.4 L271.3 271.9 L273.7 270.3 L276.2 268.7 L278.6 266.9 L280.9 265.1 L283.2 263.2 L285.5 261.3 L287.7 259.3 L289.9 257.1 L292.0 254.9 L294.1 252.7 L296.1 250.3 L298.1 247.8 L300.0 245.3 L301.9 242.7 L303.7 240.0 L305.4 237.2 L307.0 234.3 L308.6 231.3 L310.1 228.2 L311.5 225.1 L312.8 221.8 L314.0 218.5 L315.2 215.0 Z" style="stroke:var(--task);fill:var(--task);fill-opacity:0.05" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="520.0" y="50.0" text-anchor="start">v0: R80 r30 L100 l220</text>
+  <text x="520.0" y="68.0" text-anchor="start" font-size="12" style="fill:var(--task)">종이 면 z = -300 mm 에서의 경계</text>
+  <path d="M350.0 215.0 L348.4 210.1 L346.6 205.2 L344.6 200.6 L342.6 196.0 L340.4 191.6 L338.1 187.4 L335.7 183.2 L333.2 179.2 L330.7 175.4 L328.0 171.6 L325.2 168.0 L322.4 164.5 L319.5 161.2 L316.5 157.9 L313.5 154.8 L310.3 151.8 L307.2 148.9 L303.9 146.1 L300.6 143.4 L297.2 140.8 L293.8 138.4 L290.3 136.0 L286.8 133.7 L283.2 131.6 L279.5 129.5 L275.8 127.6 L272.0 125.8 L268.1 124.0 L264.2 122.4 L260.2 120.9 L256.2 119.5 L252.1 118.1 L247.9 117.0 L243.7 115.9 L239.4 114.9 L235.0 114.1 L230.6 113.4 L226.1 112.8 L221.5 112.4 L216.8 112.0 L212.1 111.9 L207.4 111.9 L202.5 112.0 L197.6 112.3 L192.7 112.8 L187.7 113.5 L182.6 114.3 L177.5 115.4 L174.0 119.3 L170.8 123.3 L167.7 127.3 L164.8 131.3 L162.1 135.4 L159.5 139.5 L157.1 143.6 L154.9 147.8 L152.9 152.0 L151.0 156.2 L149.2 160.3 L147.6 164.5 L146.1 168.7 L144.8 172.9 L143.6 177.2 L142.6 181.4 L141.7 185.6 L140.9 189.8 L140.2 194.0 L139.7 198.2 L139.2 202.4 L138.9 206.6 L138.7 210.8 L138.7 215.0 L138.7 219.2 L138.9 223.4 L139.2 227.6 L139.7 231.8 L140.2 236.0 L140.9 240.2 L141.7 244.4 L142.6 248.6 L143.6 252.8 L144.8 257.1 L146.1 261.3 L147.6 265.5 L149.2 269.7 L151.0 273.8 L152.9 278.0 L154.9 282.2 L157.1 286.4 L159.5 290.5 L162.1 294.6 L164.8 298.7 L167.7 302.7 L170.8 306.7 L174.0 310.7 L177.5 314.6 L182.6 315.7 L187.7 316.5 L192.7 317.2 L197.6 317.7 L202.5 318.0 L207.4 318.1 L212.1 318.1 L216.8 318.0 L221.5 317.6 L226.1 317.2 L230.6 316.6 L235.0 315.9 L239.4 315.1 L243.7 314.1 L247.9 313.0 L252.1 311.9 L256.2 310.5 L260.2 309.1 L264.2 307.6 L268.1 306.0 L272.0 304.2 L275.8 302.4 L279.5 300.5 L283.2 298.4 L286.8 296.3 L290.3 294.0 L293.8 291.6 L297.2 289.2 L300.6 286.6 L303.9 283.9 L307.2 281.1 L310.3 278.2 L313.5 275.2 L316.5 272.1 L319.5 268.8 L322.4 265.5 L325.2 262.0 L328.0 258.4 L330.7 254.6 L333.2 250.8 L335.7 246.8 L338.1 242.6 L340.4 238.4 L342.6 234.0 L344.6 229.4 L346.6 224.8 L348.4 219.9 L350.0 215.0 Z" style="stroke:var(--danger);fill:var(--danger);fill-opacity:0.05" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/>
+  <text class="tag" x="520.0" y="104.0" text-anchor="start">v1: printer_stepper R110 r35 L140 l320</text>
+  <text x="520.0" y="122.0" text-anchor="start" font-size="12" style="fill:var(--danger)">종이 면 z = -405 mm 에서의 경계</text>
+  <path d="M360.2 215.0 L357.1 209.7 L354.2 204.6 L351.3 199.7 L348.6 195.0 L346.0 190.4 L343.4 186.0 L340.9 181.6 L338.4 177.3 L336.0 173.2 L333.6 169.0 L331.3 164.9 L328.9 160.8 L326.5 156.7 L324.1 152.6 L321.8 148.4 L319.3 144.2 L316.9 140.0 L314.4 135.6 L311.8 131.2 L309.2 126.6 L306.4 121.9 L303.6 117.0 L300.7 111.9 L297.6 106.6 L291.4 106.6 L285.6 106.6 L279.9 106.6 L274.5 106.6 L269.2 106.6 L264.0 106.6 L259.0 106.6 L254.1 106.6 L249.3 106.6 L244.5 106.6 L239.7 106.6 L235.0 106.6 L230.3 106.6 L225.5 106.6 L220.7 106.6 L215.9 106.6 L211.0 106.6 L206.0 106.6 L200.8 106.6 L195.5 106.6 L190.1 106.6 L184.4 106.6 L178.6 106.6 L172.4 106.6 L169.3 111.9 L166.4 117.0 L163.6 121.9 L160.8 126.6 L158.2 131.2 L155.6 135.6 L153.1 140.0 L150.7 144.2 L148.2 148.4 L145.9 152.6 L143.5 156.7 L141.1 160.8 L138.7 164.9 L136.4 169.0 L134.0 173.2 L131.6 177.3 L129.1 181.6 L126.6 186.0 L124.0 190.4 L121.4 195.0 L118.7 199.7 L115.8 204.6 L112.9 209.7 L109.8 215.0 L112.9 220.3 L115.8 225.4 L118.7 230.3 L121.4 235.0 L124.0 239.6 L126.6 244.0 L129.1 248.4 L131.6 252.7 L134.0 256.8 L136.4 261.0 L138.7 265.1 L141.1 269.2 L143.5 273.3 L145.9 277.4 L148.2 281.6 L150.7 285.8 L153.1 290.0 L155.6 294.4 L158.2 298.8 L160.8 303.4 L163.6 308.1 L166.4 313.0 L169.3 318.1 L172.4 323.4 L178.6 323.4 L184.4 323.4 L190.1 323.4 L195.5 323.4 L200.8 323.4 L206.0 323.4 L211.0 323.4 L215.9 323.4 L220.7 323.4 L225.5 323.4 L230.3 323.4 L235.0 323.4 L239.7 323.4 L244.5 323.4 L249.3 323.4 L254.1 323.4 L259.0 323.4 L264.0 323.4 L269.2 323.4 L274.5 323.4 L279.9 323.4 L285.6 323.4 L291.4 323.4 L297.6 323.4 L300.7 318.1 L303.6 313.0 L306.4 308.1 L309.2 303.4 L311.8 298.8 L314.4 294.4 L316.9 290.0 L319.3 285.8 L321.8 281.6 L324.1 277.4 L326.5 273.3 L328.9 269.2 L331.3 265.1 L333.6 261.0 L336.0 256.8 L338.4 252.7 L340.9 248.4 L343.4 244.0 L346.0 239.6 L348.6 235.0 L351.3 230.3 L354.2 225.4 L357.1 220.3 L360.2 215.0 Z" style="stroke:var(--accent);fill:var(--accent);fill-opacity:0.05" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="520.0" y="158.0" text-anchor="start">최종: v1 + 종이 면을 z = −320 mm 로</text>
+  <text x="520.0" y="176.0" text-anchor="start" font-size="12" style="fill:var(--accent)">종이 면 z = -320 mm 에서의 경계</text>
+  <rect x="172.0" y="170.6" width="126.0" height="88.8" style="fill:var(--text-dim);fill-opacity:0;stroke:var(--text-dim)" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <text class="lbl" x="235.0" y="162.6" text-anchor="middle">A5 210 × 148 mm</text>
+  <text class="tag" x="520.0" y="230.0" text-anchor="start">경계: 144 방향으로 이분 탐색한</text>
+  <text class="tag" x="520.0" y="246.0" text-anchor="start">reachable() 결과 (모터·볼조인트·팔꿈치</text>
+  <text class="tag" x="520.0" y="262.0" text-anchor="start">한계 포함)</text>
+</svg><figcaption>종이 높이에서 실제로 도달 가능한 영역(<code>reachable()</code> 경계)과 A5 용지. v0은 용지 모서리가 밖으로 나가고, v1은 두 높이 모두 용지를 덮습니다.</figcaption></figure>
+<h3 id="반복-기록">반복 기록<a class="anchor" href="#반복-기록">#</a></h3>
+<div class="table-wrap"><table><thead><tr><th>안</th><th>바꾼 것</th><th>A5 (81점 격자)</th><th>분해능 (최악)</th><th>백래시 오차 (최악)</th><th>판정</th><th>원인과 조치</th></tr></thead><tbody><tr><td>v0</td><td>소형 R80 r30 L100 l220, 종이 z = −300 mm</td><td>8점 밖</td><td>0.145 mm</td><td>0.257 mm</td><td>✖</td><td>작업영역 부족 → 치수 키움</td></tr><tr><td>v1</td><td><code>printer_stepper</code> 치수 R110 r35 L140 l320, 기본 그리기 장면 z = −405 mm</td><td>모두 안</td><td>0.189 mm</td><td><strong>0.336 mm</strong></td><td>✖</td><td>백래시 초과 → ?</td></tr><tr><td>v1 + 벨트 5:1</td><td>감속비만 4 → 5</td><td>모두 안</td><td>0.151 mm</td><td><strong>0.336 mm</strong></td><td>✖</td><td>백래시는 출력축 값이라 그대로</td></tr><tr><td><strong>최종</strong></td><td>v1, 종이 면을 z = −320 mm로 85 mm 올림</td><td>모두 안</td><td>0.141 mm</td><td>0.251 mm</td><td>✔</td><td>로봇에 가까운 곳은 야코비안이 작음</td></tr><tr><td>(참고)</td><td>종이 z = −280 mm</td><td><strong>1점 밖</strong></td><td>0.115 mm</td><td>0.204 mm</td><td>✖</td><td>너무 올리면 A5가 안 들어감</td></tr></tbody></table></div>
+<p>(벨트 5:1 행은 같은 <code>a5_report()</code>에 <code>base.copy(gear_ratio=5)</code>를 넣어 얻은 값입니다.)</p>
+<p>핵심은 <strong>로봇을 바꾸지 않고 작업대 높이만 바꿔</strong> 정밀도 요구를 맞췄다는 것입니다. 작업영역 아래쪽으로 갈수록 팔이 늘어져 같은 모터 각도 변화에도 TCP가 크게 움직입니다(야코비안↑). z = −320 mm는 백래시 오차 0.251 mm(요구 0.3 mm)와 A5 여유(−280 mm에서 처음 벗어남) 사이의 균형점입니다.</p>
+<div class="callout callout-design"><div class="callout-title">다른 해결책과 비교</div><div class="callout-body"><ul><li><strong>감속기 교체</strong>: 사이클로이드(1′)나 하모닉(0.5′)은 백래시를 1/6~1/12로 줄이지만 무겁고 비쌉니다. 이 과제의 "벨트" 조건에 맞지 않습니다.</li><li><strong>예압</strong>: 벨트 장력을 높이거나 스프링으로 팔을 한쪽으로 눌러 두면 백래시가 드러나지 않습니다. 델타는 <strong>중력이 이미 예압</strong> 역할을 합니다 — 아래 프로그램에서 토크 부호로 확인합니다.</li><li><strong>소프트웨어 보정</strong>: 방향이 바뀔 때 백래시만큼 더 돌리는 보정. 백래시 값이 일정해야 효과가 있습니다.</li></ul></div></div>
+<h2 id="3단계-등속-그리기-movepath-vs-moveto">3단계 — 등속 그리기: move_path vs move_to<a class="anchor" href="#3단계-등속-그리기-movepath-vs-moveto">#</a></h2>
+<p><code>move_to()</code>는 <strong>점마다 멈추는</strong> 직선 이동이고, <code>move_path(points, speed, accel)</code>는 여러 점을 잇는 꺾은선 전체를 <strong>하나의 속도 프로파일</strong>로 움직입니다. 기본 그리기 장면(종이 z = −405 mm)에서 반지름 40 mm 원(72각형)과 별을 50 mm/s, 0.5 m/s²로 그려 비교했습니다.</p>
+<div class="table-wrap"><table><thead><tr><th>도형</th><th>방법</th><th>그리는 시간</th><th>등속 구간(±5 %)</th><th>수평 가속도 최대</th></tr></thead><tbody><tr><td>원</td><td><code>move_to</code> 72번</td><td>17.01 s</td><td>0 %</td><td>0.48 m/s²</td></tr><tr><td>원</td><td><code>move_path</code></td><td>5.22 s</td><td>94 %</td><td>0.49 m/s²</td></tr><tr><td>별</td><td><code>move_to</code> 5번</td><td>8.61 s</td><td>81 %</td><td>0.49 m/s²</td></tr><tr><td>별</td><td><code>move_path</code></td><td>7.81 s</td><td>95 %</td><td><strong>4.35 m/s²</strong></td></tr></tbody></table></div>
+<ul><li>원을 <code>move_to</code>로 그리면 3.5 mm짜리 변마다 가속·감속하느라 <strong>한 번도 50 mm/s에 도달하지 못하고</strong> 3배 넘게 오래 걸립니다. 디스펜서라면 점선처럼 뭉친 선이 됩니다.</li><li>별을 <code>move_path</code>로 그리면 꼭짓점에서 멈추지 않고 방향만 확 꺾여, 가속도 한계 0.5 m/s²의 약 9배가 순간적으로 걸립니다(경로의 꺾인 점에서는 곡률 반지름이 0).</li><li>결론: <strong>매끈한 곡선</strong>은 <code>move_path</code>, <strong>날카로운 꼭짓점</strong>은 꼭짓점마다 멈추는 <code>move_to</code>. (꼭짓점을 작은 원호로 둥글린 뒤 <code>move_path</code>를 쓰는 방법도 있습니다 — 과제 3.)</li></ul>
+<h2 id="4단계-응용-프로그램-a5에-테두리-원-별-글자-그리기">4단계 — 응용 프로그램: A5에 테두리·원·별·글자 그리기<a class="anchor" href="#4단계-응용-프로그램-a5에-테두리-원-별-글자-그리기">#</a></h2>
+<p>최종 설계(printer_stepper 치수 + NEMA17 + 벨트 4:1 + 펜, 종이 면 z = −0.320 m)로 그리기 장면을 만들고, 한 획 글꼴로 "DELTA"까지 씁니다. 장면은 <code>default_scene(design, &quot;drawing&quot;)</code>으로 만든 뒤 <code>surface_z</code>만 바꿔 작업대를 올렸습니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+from deltarobot import DeltaDesign, DeltaRobot, default_scene
+from deltarobot import dynamics as dyn
+
+# D10 최종 설계: printer_stepper 치수 + NEMA17 + 벨트 4:1 + 펜, 종이 면을 z = -0.320 m 로 올림
+design = DeltaDesign.preset(&quot;printer_stepper&quot;).copy(tool=&quot;pen&quot;, payload=0.0)
+scene = default_scene(design, &quot;drawing&quot;)
+scene[&quot;surface_z&quot;] = -0.320                  # 작업대(종이) 높이 — 백래시 오차 검토로 정한 값
+robot = DeltaRobot(design, scene=scene)
+
+Z = robot.scene.surface_z                    # 펜 끝이 종이에 닿는 높이
+LIFT = 0.010                                 # 펜 들어 올리는 높이 [m]
+DRAW_V, DRAW_A = 0.05, 0.5                   # 그리기 속도 50 mm/s, 가속도 0.5 m/s^2
+
+def stroke(points, smooth=False):
+    &quot;&quot;&quot;펜을 내려 한 획을 그린 뒤 펜을 든다.
+    smooth=True : 곡선(원) — move_path 로 꼭짓점에서 멈추지 않고 등속으로
+    smooth=False: 꺾인 선(별·글자) — 꼭짓점마다 멈추는 move_to (모서리 가속도 튐 방지)&quot;&quot;&quot;
+    x0, y0 = points[0]
+    robot.move_to(x0, y0, Z + LIFT)              # 펜 든 채 이동 (기본 속도)
+    robot.move_to(x0, y0, Z, speed=0.05)         # 천천히 내려 찍기
+    robot.pen_down()
+    if smooth:
+        robot.move_path([(x, y, Z) for x, y in points[1:]], speed=DRAW_V, accel=DRAW_A)
+    else:
+        for x, y in points[1:]:
+            robot.move_to(x, y, Z, speed=DRAW_V, accel=DRAW_A)
+    robot.pen_up()
+    robot.move_by(dz=LIFT)
+
+def circle(cx, cy, r, n=72):
+    return [(cx + r * math.cos(2 * math.pi * k / n), cy + r * math.sin(2 * math.pi * k / n))
+            for k in range(n + 1)]
+
+def star(cx, cy, r):
+    return [(cx + r * math.sin(4 * math.pi * k / 5), cy + r * math.cos(4 * math.pi * k / 5))
+            for k in range(6)]
+
+# 한 획 글꼴: 글자 칸 (0..1) x (0..1)
+FONT = {&quot;D&quot;: [[(0, 0), (0, 1), (0.6, 1), (1, 0.7), (1, 0.3), (0.6, 0), (0, 0)]],
+        &quot;E&quot;: [[(1, 1), (0, 1), (0, 0), (1, 0)], [(0, 0.5), (0.7, 0.5)]],
+        &quot;L&quot;: [[(0, 1), (0, 0), (1, 0)]],
+        &quot;T&quot;: [[(0, 1), (1, 1)], [(0.5, 1), (0.5, 0)]],
+        &quot;A&quot;: [[(0, 0), (0.5, 1), (1, 0)], [(0.25, 0.5), (0.75, 0.5)]]}
+
+def text(s, x0, y0, w=0.018, h=0.025, pitch=0.028):
+    for i, ch in enumerate(s):
+        for line in FONT[ch]:
+            stroke([(x0 + i * pitch + u * w, y0 + v * h) for u, v in line])
+
+W, H = 0.210, 0.148                              # A5 가로 놓기
+robot.home()
+stroke([(-W / 2, -H / 2), (W / 2, -H / 2), (W / 2, H / 2), (-W / 2, H / 2), (-W / 2, -H / 2)])  # 테두리
+stroke(circle(-0.050, 0.020, 0.040), smooth=True)
+stroke(star(0.055, 0.020, 0.040))
+text(&quot;DELTA&quot;, -0.066, -0.060)
+robot.home()
+
+res = robot.analyze()
+print(&quot;총 시간 %.1f s&quot; % robot.time)
+print(&quot;피크 %.2f  RMS %.2f  속도 %.2f  속도-토크 %.2f  -&gt;  %s&quot; % (
+    res[&quot;peak_ratio&quot;], res[&quot;rms_ratio&quot;], res[&quot;speed_ratio&quot;], res[&quot;curve_ratio&quot;],
+    &quot;통과&quot; if res[&quot;ok&quot;] else res[&quot;problems&quot;]))
+
+# 백래시: 그리는 동안 토크 부호가 바뀌면 기어 이가 반대편으로 넘어간다
+data = dyn.analyze(design, robot.backend.frames)
+for i in range(3):
+    tau = [f[&quot;tau&quot;][i] for f in data if f[&quot;tool&quot;] == 1]
+    print(&quot;모터%d 그리는 중 τ %.3f ~ %.3f N·m  %s&quot; % (
+        i + 1, min(tau), max(tau), &quot;부호 유지&quot; if min(tau) * max(tau) &gt; 0 else &quot;부호 반전!&quot;))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">총 시간 47.8 s
+피크 0.19  RMS 0.12  속도 0.11  속도-토크 0.30  -&gt;  통과
+모터1 그리는 중 τ -0.200 ~ -0.044 N·m  부호 유지
+모터2 그리는 중 τ -0.203 ~ -0.033 N·m  부호 유지
+모터3 그리는 중 τ -0.205 ~ -0.033 N·m  부호 유지</code></pre></div>
+<ul><li>모터 검증은 모두 여유가 큽니다(스테퍼 여유 1.5를 나눈 곡선 비도 0.30). 그리기는 느린 작업이라 <strong>정밀도가 설계를 결정</strong>합니다.</li><li>그리는 동안 세 모터의 출력축 토크가 <strong>항상 음수</strong>(팔 무게·이동판 무게를 들어 올리는 방향)입니다. 기어 이가 늘 같은 쪽 면에 닿아 있으므로 이 동작에서는 <strong>중력이 백래시를 예압</strong>해 백래시 오차가 드러나지 않습니다. 최소 |τ| = 0.033 N·m가 그 여유입니다.</li><li>반대로 꼭짓점에서 급가속하는 경로(별을 <code>move_path</code>로)는 순간 토크 부호를 바꿀 수 있습니다. 개발 초기에 모든 획을 <code>move_path</code>로, 종이 z = −405 mm에서 그렸을 때는 모터 2의 토크가 그리는 도중 +0.039 N·m까지 올라가 부호가 바뀌었습니다.</li></ul>
+<h2 id="5단계-부품표-bom">5단계 — 부품표 (BOM)<a class="anchor" href="#5단계-부품표-bom">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>구분</th><th>카탈로그 id</th><th>수량</th><th>단위 질량</th><th>비고 (대표값, 데이터시트 확인)</th></tr></thead><tbody><tr><td>모터</td><td><code>stepper_nema17</code></td><td>3</td><td>0.35 kg</td><td>0.45 N·m, 1.8°/스텝, STEP/DIR, 24 V 드라이버</td></tr><tr><td>감속</td><td><code>belt</code> 4:1</td><td>3</td><td>0.08 kg</td><td>효율 0.95, 백래시 6′ (출력축), 장력 조정 기구</td></tr><tr><td>위팔</td><td><code>al_tube</code> Ø12×10</td><td>3 × 140 mm</td><td>13 g/개 + 허브 20 g</td><td></td></tr><tr><td>아래팔 로드</td><td><code>cfrp_tube</code> Ø10×8</td><td>6 × 320 mm</td><td>14.4 g/개</td><td>간격 w = 50 mm</td></tr><tr><td>볼조인트 컵</td><td>—</td><td>12</td><td>4 g</td><td></td></tr><tr><td>이펙터 판</td><td>—</td><td>1</td><td>60 g</td><td>r = 35 mm, 펜 홀더</td></tr><tr><td>툴</td><td><code>pen</code></td><td>1</td><td>20 g</td><td>길이 60 mm, 펜 들기 = z 방향 10 mm 이동</td></tr><tr><td>드라이버</td><td>스테퍼 드라이버 (1/16 마이크로스텝)</td><td>3</td><td>—</td><td>전류 설정은 모터 정격에 맞춤</td></tr><tr><td>원점 센서</td><td>리밋 스위치</td><td>3</td><td>—</td><td><strong>오픈루프 스테퍼는 전원을 켤 때마다 원점 복귀 필수</strong></td></tr><tr><td>작업대</td><td>종이 면 z = −320 mm</td><td>1</td><td>—</td><td>베이스 모터 축 평면에서 펜 끝까지 320 mm</td></tr></tbody></table></div>
+<h2 id="평가">평가<a class="anchor" href="#평가">#</a></h2>
+<div class="callout callout-check"><div class="callout-title">평가 체크리스트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> A5 격자 81점이 모두 도달 가능한 종이 높이를 찾았고, 그 근거 표가 있다.</label></li><li><label class="check-item"><input type="checkbox"> 분해능·백래시 TCP 오차를 <code>δp = J·δθ</code>로 계산했고, 요구(0.2 mm / 0.3 mm)와 비교했다.</label></li><li><label class="check-item"><input type="checkbox"> 감속비 변경이 백래시 오차를 줄이지 못하는 이유를 설명했다.</label></li><li><label class="check-item"><input type="checkbox"> 원은 <code>move_path</code>로 등속 구간 90 % 이상, 꺾인 선은 꼭짓점에서 멈추게 그렸다.</label></li><li><label class="check-item"><input type="checkbox"> 그리기 프로그램이 <code>analyze()</code> 통과, 토크 부호 유지(중력 예압)를 확인했다.</label></li><li><label class="check-item"><input type="checkbox"> 스테퍼의 탈조 위험(안전율 1.5)과 원점 복귀 필요성을 BOM·보고서에 반영했다.</label></li></ul></div></div>
+<div class="callout callout-mission"><div class="callout-title">팀 미션 — 디스펜싱 델타</div><div class="callout-body"><p>같은 로봇으로 케이크 위에 크림으로 <strong>지름 150 mm 원과 "HAPPY" 글자</strong>를 짜야 합니다. 조건: 선 굵기가 일정해야 하므로 등속 구간 ≥ 90 %, 크림 튜브(툴 질량 0.3 kg으로 가정 → <code>payload=0.3</code>), 케이크 윗면 높이는 자유롭게 정할 수 있음. (1) 한 획 글꼴에 H·P·Y를 추가하고, (2) 곡선은 <code>move_path</code>로 그리면서 날카로운 꼭짓점은 작은 원호로 둥글려 <strong>꼭짓점에서도 멈추지 않는</strong> 경로를 만들고, (3) 등속 구간 비율·<code>analyze()</code>·백래시 오차를 표로 제출하세요.</p></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>증상·메시지</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td><code>WorkspaceError: 작업영역 밖: ... — 팔 길이로 닿지 않음</code> (A5 모서리에서)</td><td>종이가 작업영역보다 큼, 또는 종이 높이가 너무 높음</td><td><code>a5_report()</code>로 높이를 다시 고르거나 치수를 키움</td></tr><tr><td><code>WorkspaceError: 경로 중간 작업영역 밖: ...</code></td><td>펜을 든 채 이동하는 직선이 작업영역 경계를 스침</td><td>이동 높이(<code>LIFT</code>)를 줄이거나 경유점 추가</td></tr><tr><td>원이 느리고 선이 뭉침</td><td>원을 <code>move_to</code> 여러 번으로 그림 (변마다 정지)</td><td><code>move_path()</code>로 한 번에</td></tr><tr><td>별 꼭짓점에서 선이 튀거나 흔들림</td><td><code>move_path</code>는 꼭짓점에서 감속하지 않음 → 순간 가속도 급증</td><td>꼭짓점마다 <code>move_to</code>, 또는 꼭짓점을 원호로 둥글림</td></tr><tr><td>그림이 조금씩 밀려 있음 (실물)</td><td>스테퍼 탈조 — 시뮬레이터는 탈조를 재현하지 않음</td><td><code>curve_ratio</code>(1.5 여유 포함) 확인, 가속도↓, 원점 복귀</td></tr><tr><td><code>ValueError: 설계 오류: belt 의 감속비는 [2, 3, 4, 5] 중에서 고르세요</code></td><td>없는 벨트 감속비</td><td>2~5 중 선택</td></tr></tbody></table></div>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>종이 높이를 −320 mm로 고정하고 <code>upper_arm</code>을 0.12~0.16 m로 바꿔 가며 <code>a5_report()</code>를 돌려, 백래시 오차가 가장 작은 L을 찾으세요. 작업영역은 어떻게 되나요?</li><li>그리기 프로그램에서 펜을 든 채 이동하는 구간(<code>move_to(..., Z + LIFT)</code>)의 속도를 올리면 총 시간이 얼마나 줄어드는지, <code>analyze()</code>가 여전히 통과하는지 확인하세요.</li><li>별의 꼭짓점을 반지름 2 mm 원호(점 8개)로 둥글린 경로를 만들어 <code>move_path</code> 한 번으로 그리고, 등속 구간과 최대 가속도를 위 표와 비교하세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>NEMA17 스테퍼 모터·드라이버 데이터시트 (마이크로스텝 정확도, 풀아웃 토크 곡선).</li><li>타이밍 벨트 제조사 설계 가이드 (장력·백래시).</li><li>K. M. Lynch, F. C. Park, <em>Modern Robotics</em>, Cambridge University Press, 2017 — 5장 야코비안(속도·정적 힘 관계).</li><li>T06 야코비안·속도·특이점, D06 궤적 계획 (이 강의).</li></ul>
+      <nav class="pager"><a class="pager-prev" href="d09.html"><span>이전 · D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a><a class="pager-next" href="d11.html"><span>다음 · D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#과제-소개">과제 소개</a><a class="toc-l2" href="#1단계-요구사항-표">1단계 — 요구사항 표</a><a class="toc-l2" href="#정밀도-계산-분해능과-백래시를-tcp로">정밀도 계산: 분해능과 백래시를 TCP로</a><a class="toc-l2" href="#2단계-설계-반복">2단계 — 설계 반복</a><a class="toc-l3" href="#반복-기록">반복 기록</a><a class="toc-l2" href="#3단계-등속-그리기-movepath-vs-moveto">3단계 — 등속 그리기: move_path vs move_to</a><a class="toc-l2" href="#4단계-응용-프로그램-a5에-테두리-원-별-글자-그리기">4단계 — 응용 프로그램: A5에 테두리·원·별·글자 그리기</a><a class="toc-l2" href="#5단계-부품표-bom">5단계 — 부품표 (BOM)</a><a class="toc-l2" href="#평가">평가</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

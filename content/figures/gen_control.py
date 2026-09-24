@@ -69,7 +69,7 @@ class Svg:
 
 # --------------------------------------------------------------------- r01
 def r01_backends():
-    s = Svg("r01-backends", 720, 330, "DeltaRobot 하나에 백엔드 네 개")
+    s = Svg("r01-backends", 720, 365,"DeltaRobot 하나에 백엔드 네 개")
     s.box(20, 120, 170, 90, hi=True)
     s.text(105, 148, "학생 코드")
     s.text(105, 170, "robot.arch_to(...)", "sub mono")
@@ -93,8 +93,8 @@ def r01_backends():
         s.text(496, y + 22, name, "lbl mono", "start")
         s.text(496, y + 40, a, "sub", "start")
         s.text(496, y + 56, b, "tag mono", "start")
-    s.text(325, 290, "backend= 인자만 바꾸면 같은 코드가 시뮬 → PC → ROS 2 → 실물로", "tag")
-    s.text(325, 310, "serial·ros2는 모터 속도 초과를 거부, record·websim은 경고만", "sub")
+    s.text(360, 330, "backend= 인자만 바꾸면 같은 코드가 시뮬 → PC → ROS 2 → 실물로", "tag")
+    s.text(360, 350, "serial·ros2는 모터 속도 초과를 거부, record·websim은 경고만", "sub")
     s.write()
 
 
@@ -137,14 +137,14 @@ def r02_cycle():
     s = Svg("r02-cycle", 720, 290, "색깔 분류 한 사이클의 동작")
     z_tab = 230
     s.line(30, z_tab, 690, z_tab)
-    s.text(40, z_tab + 18, "작업대 surface_z", "tag", "start")
+    s.text(200, z_tab + 18, "작업대 surface_z", "tag", "start")
     # part and bin
     s.box(110, z_tab - 16, 30, 16, hi=True, rx=2)
     s.text(125, z_tab + 18, "부품 top", "tag")
     s.box(520, z_tab - 14, 110, 14, rx=2)
     s.text(575, z_tab + 18, "상자 (x, y, w, d, h)", "tag")
     # arch path
-    s.text(135, 70, "① arch_to(part)", "tag mono", "start")
+    s.text(135, 130, "① arch_to(part)", "tag mono", "start")
     s.path("M125 205 L125 110 Q125 90 145 90 L555 90 Q575 90 575 110 L575 200", hi=True, width=2.4, arrow=True)
     s.circle(125, 207, 5, "hi")
     s.text(160, 200, "② tool_on() → 부품 id", "tag mono", "start")
@@ -162,30 +162,30 @@ def r02_cycle():
 # --------------------------------------------------------------------- r03
 def r03_websim():
     s = Svg("r03-websim", 720, 320, "websim 백엔드 연결 순서")
-    s.box(20, 30, 250, 270, hi=True)
-    s.text(145, 56, "PC: python my_robot.py")
-    s.text(145, 78, "DeltaRobot(backend=\"websim\")", "sub mono")
-    s.text(145, 96, "WebSocket 서버 127.0.0.1:8765", "tag mono")
-    s.box(450, 30, 250, 270)
-    s.text(575, 56, "브라우저: sim/index.html")
-    s.text(575, 78, "연결 탭 → [PC Python 연결]", "sub")
-    s.text(575, 96, "WebSocket 클라이언트", "tag")
-    msgs = [(130, "← 연결 (Origin 검사, 허용 밖이면 403)", False, "l"),
+    s.box(20, 30, 210, 270, hi=True)
+    s.text(125, 56, "PC: python my_robot.py")
+    s.text(125, 78, "backend=\"websim\"", "sub mono")
+    s.text(125, 96, "서버 127.0.0.1:8765", "tag mono")
+    s.box(490, 30, 210, 270)
+    s.text(595, 56, "브라우저: sim/index.html")
+    s.text(595, 78, "[PC Python 연결]", "sub")
+    s.text(595, 96, "WebSocket 클라이언트", "tag")
+    msgs = [(130, "← 연결 (Origin 검사, 거절 시 403)", False, "l"),
             (160, "← hello {design, scene}", False, "l"),
             (190, "design {design, scene} →", True, "r"),
-            (220, "state {t, q[3], tool} → (10 ms마다)", True, "r"),
-            (256, "← estop  → EmergencyStop 예외", False, "l")]
+            (220, "state {t, q, tool} → 10 ms마다", True, "r"),
+            (256, "← estop → EmergencyStop", False, "l")]
     for y, t, hi, d in msgs:
         if d == "r":
-            s.line(272, y, 448, y, hi=hi, arrow=True, width=2)
+            s.line(232, y, 488, y, hi=hi, arrow=True, width=2)
         else:
-            s.line(448, y, 272, y, hi=hi, arrow=True, width=2, dash=(y == 256))
+            s.line(488, y, 232, y, hi=hi, arrow=True, width=2, dash=(y == 256))
         s.text(360, y - 6, t, "tag mono" if y != 256 else "tag mono dg")
-    s.text(145, 140, "대기 (wait_connect 60 s)", "sub")
-    s.text(145, 200, "설계·장면 확정", "sub")
-    s.text(145, 230, "궤적을 실시간으로 전송", "sub")
-    s.text(575, 230, "받은 모터각으로 3D 표시", "sub")
-    s.text(575, 270, "상단 비상정지 버튼", "sub")
+    s.text(125, 140, "대기 (wait_connect 60 s)", "sub")
+    s.text(125, 200, "설계·장면 확정", "sub")
+    s.text(125, 230, "궤적을 실시간 전송", "sub")
+    s.text(595, 230, "받은 모터각으로 3D 표시", "sub")
+    s.text(595, 270, "상단 비상정지 버튼", "sub")
     s.write()
 
 
@@ -197,22 +197,22 @@ def r04_node_graph():
         s.box(x, y, w, h, hi=hi, rx=18)
         s.text(x + w / 2, y + h / 2 - 2, name, "lbl mono")
         s.text(x + w / 2, y + h / 2 + 16, sub, "sub")
-    node(20, 40, 170, 56, "delta_commander", "goal → 궤적")
-    node(20, 170, 170, 56, "deltarobot 클라이언트", "backend=\"ros2\"")
+    node(20, 40, 150, 56, "delta_commander", "goal → 궤적")
+    node(20, 170, 150, 56, "DeltaRobot", "backend=\"ros2\"")
     node(275, 150, 170, 76, "delta_driver", "mock | serial", hi=True)
-    node(530, 40, 170, 56, "robot_state_publisher", "URDF → /tf")
+    node(520, 40, 190, 56, "robot_state_publisher", "URDF → /tf")
     node(530, 150, 170, 56, "rviz2", "RobotModel · TF")
     node(275, 320, 170, 60, "delta_web_bridge", "ws://127.0.0.1:8765")
     s.box(530, 320, 170, 60, rx=8)
     s.text(615, 346, "웹 시뮬레이터")
     s.text(615, 364, "연결 탭 [PC Python 연결]", "sub")
     # edges
-    s.path("M190 68 C240 68 240 170 273 170", arrow=True, hi=True, width=2)
-    s.text(232, 96, "/delta/joint_command", "tag mono", "middle")
-    s.line(190, 198, 273, 198, arrow=True, hi=True, width=2)
+    s.path("M170 68 C230 68 230 165 273 165", arrow=True, hi=True, width=2)
+    s.text(236, 128, "/delta/joint_command", "tag mono", "start")
+    s.line(170, 198, 273, 198, arrow=True, hi=True, width=2)
     s.text(232, 190, "joint_command", "tag mono")
     s.text(232, 214, "tool_command", "tag mono")
-    s.path("M445 175 C490 175 490 68 528 68", arrow=True, width=2)
+    s.path("M445 175 C490 175 490 68 518 68", arrow=True, width=2)
     s.text(490, 108, "/joint_states", "tag mono", "start")
     s.line(615, 96, 615, 148, arrow=True)
     s.text(622, 128, "/tf", "tag mono", "start")
@@ -256,7 +256,7 @@ def r05_tree():
         s.line(x + 20, y + 10, x + 40, y + 10)
         s.text(x + 46, y + 14, a, "tag mono" + (" hi" if hi else ""), "start")
         s.text(x + 230, y + 14, b, "sub", "start")
-    s.text(x + 46, 222, "upper_arm{i} → elbow{i}{a,b}_link → forearm{i}{a,b}  (끝이 열려 있음)", "sub mono", "start")
+    s.text(x + 46, 222, "→ upper_arm → elbow_link → forearm (끝 열림)", "sub mono", "start")
     s.line(x + 10, 70, x + 10, 262)
     s.line(x + 10, 262, x + 40, 262)
     s.text(x + 46, 266, "effector_x → effector_y → effector_z", "tag mono hi", "start")
@@ -272,9 +272,9 @@ def r05_tree():
 def r06_paths():
     s = Svg("r06-paths", 720, 300, "ROS 2에서 로봇을 움직이는 세 가지 길")
     ys = [40, 120, 200]
-    items = [("ros2 topic pub /delta/goal", "geometry_msgs/Point (TCP, m)", "delta_commander가 궤적 생성"),
-             ("ros2 service call /delta/tool", "std_srvs/SetBool", "흡착/그리퍼 on·off"),
-             ("DeltaRobot(backend=\"ros2\")", "파이썬이 직접 궤적 계획", "/delta/joint_command 스트림")]
+    items = [("ros2 topic pub /delta/goal", "geometry_msgs/Point (TCP, m)", "커맨더가 직선 궤적"),
+             ("ros2 service call /delta/tool", "std_srvs/SetBool", "커맨더 → 툴"),
+             ("DeltaRobot(backend=\"ros2\")", "파이썬이 직접 궤적 계획", "joint_command")]
     for y, (a, b, c) in zip(ys, items):
         s.box(20, y, 280, 62, hi=(y == 200), rx=8)
         s.text(34, y + 24, a, "lbl mono", "start")
@@ -303,7 +303,7 @@ def r07_wiring():
     s.box(20, 220, 170, 90)
     s.text(105, 248, "PC")
     s.text(105, 268, "backend=\"serial\"", "sub mono")
-    s.text(105, 288, "port=\"COM3\" / /dev/ttyACM0", "tag mono")
+    s.text(105, 288, "port=\"COM3\" 등", "tag mono")
     s.line(105, 218, 105, 142, both=True, arrow=True, width=2)
     s.text(112, 185, "USB", "tag", "start")
     s.box(270, 220, 170, 90)
@@ -340,9 +340,9 @@ def r07_calib():
     s.path("M%g %g A60 60 0 0 1 %g %g" % (cx + 60, cy, cx + 60 * math.cos(a), cy + 60 * math.sin(a)), arrow=True)
     s.text(cx + 70, cy + 34, "+", "lbl hi", "start")
     s.box(20, 190, 680, 76, rx=8)
-    s.text(36, 214, "펌웨어 변환:  서보 명령[°] = 90 + 방향ᵢ × θᵢ + 오프셋ᵢ", "lbl mono", "start")
-    s.text(36, 236, "방향ᵢ = +1 또는 −1 (서보 장착 방향) · 오프셋ᵢ = 수평에서 읽은 보정값 · θ는 −40°…+85°로 제한", "sub", "start")
-    s.text(36, 256, "세 팔이 모두 수평이면 이펙터는 베이스 아래 정중앙 — 자로 대칭을 확인", "tag", "start")
+    s.text(36, 214, "펌웨어 변환:  pulse_us = ZERO_US[i] + DIR[i] × US_PER_DEG[i] × θ[°]", "lbl mono", "start")
+    s.text(36, 236, "ZERO_US: 수평 지그에서 찾은 펄스 · DIR: 펄스↑일 때 팔이 아래로 가면 +1 · US_PER_DEG: 약 10~11 µs/°(측정)", "sub", "start")
+    s.text(36, 256, "θ는 −40°…+85°로 제한, 슬루율 200°/s — J 0 0 0에서 세 팔이 모두 수평이면 영점 완료", "tag", "start")
     s.write()
 
 
@@ -356,7 +356,7 @@ def r08_intercept():
     s.text(x0 - 8, y0 + 8, "x", "tag", "end")
     # part line x(t) = x + v t
     s.line(x0, y0 + h - 30, x0 + w - 20, y0 + 40, hi=True, width=2.4)
-    s.text(x0 + w - 16, y0 + 36, "부품 x(t) = x₀ + v·(t − t₀)", "tag hi", "start")
+    s.text(x0 + 20, y0 + 20, "부품 x(t) = x₀ + v·(t − t₀)", "tag hi", "start")
     # robot arrival estimates
     s.circle(x0 + 30, y0 + h - 30 - 30 * 190 / 400, 4, "hi")
     s.text(x0 + 30, y0 + h - 60, "지금 t₀", "tag")
@@ -365,10 +365,10 @@ def r08_intercept():
         yy = y0 + h - 30 - (tx) * 190 / 400
         s.line(x0 + tx, y0 + h, x0 + tx, yy, dash=True)
         s.circle(x0 + tx, yy, 4, "dg" if k == 2 else "box")
-        s.text(x0 + tx, y0 + h + 18, lab, "sub")
+        s.text(x0 + tx, y0 + h + (34 if k == 2 else 18), lab, "sub")
     s.box(510, 30, 200, 230, rx=8)
     s.text(610, 54, "반복 계산 (3~5회)", "lbl")
-    rows = ["Δt ← 0", "x_hit = x₀ + v·Δt", "경로 = arch_path(현재, x_hit)", "Δt ← Profile(경로 길이).T",
+    rows = ["Δt ← 0", "x_hit = x₀ + v·Δt", "L = arch_path 길이", "Δt ← Profile(L).T",
             "→ 수렴하면 arch_to(x_hit)", "", "v ≪ 로봇 속도라 빨리 수렴"]
     for k, t in enumerate(rows):
         s.text(526, 82 + k * 24, t, "sub mono" if k < 5 else "tag", "start")

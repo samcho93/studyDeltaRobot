@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R08. 캡스톤: 컨베이어 트래킹 분류 · studyDeltaRobot</title>
+<meta name="description" content="움직이는 컨베이어 위 부품의 위치를 예측해 따라 잡는 트래킹 pick &amp; place를 시뮬 → ROS 2 → 실물 순으로 완성합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-control">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" class="active" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="r08" data-track="control">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-control">Python·ROS 2·실물</span> R-3 실물과 캡스톤 &middot; 약 240분 &middot; 고급</div>
+    <h1><span class="lesson-no">R08</span>캡스톤: 컨베이어 트래킹 분류</h1>
+    <p class="lede">움직이는 컨베이어 위 부품의 위치를 예측해 따라 잡는 트래킹 pick &amp; place를 시뮬 → ROS 2 → 실물 순으로 완성합니다.</p>
+    <div class="requires">선수 챕터: <a href="r02.html">R02</a> <a href="r03.html">R03</a> <a href="r06.html">R06</a> <a href="r07.html">R07</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a><a class="ghost-btn" href="../tools/playground.html">Python Playground</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>컨베이어 위 부품의 위치를 <span class="math">x(t) = x₀ + v·(t − t₀)</span>로 예측하고, 로봇 이동 시간과 맞물린 <strong>만남 지점(intercept)</strong> 을 반복 계산으로 구합니다.</li><li>이동 시간을 <code>deltarobot.trajectory.Profile</code>과 <code>arch_path</code>로 <strong>움직이기 전에</strong> 추정합니다.</li><li>흡착하는 동안 컨베이어 속도로 따라가는 트래킹 pick, 색깔 분류, 예외 처리를 갖춘 프로그램을 완성합니다.</li><li>같은 프로그램을 Playground → 웹 시뮬(websim) → ROS 2 → 실물 순으로 옮기며 단계마다 달라지는 점을 검증합니다.</li></ul>
+<h2 id="문제-정의">문제 정의<a class="anchor" href="#문제-정의">#</a></h2>
+<p><code>scene=&quot;conveyor&quot;</code>는 설계 크기에 맞춘 컨베이어 셀입니다. 부품 30개가 2초 간격으로 벨트 왼쪽 끝(<code>x_start</code>)에 나타나 +x 방향으로 흘러가고, 오른쪽 끝(<code>x_end</code>)을 지나면 사라집니다. 빨강은 상자 A, 파랑은 상자 B에 넣어야 합니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;conveyor&quot;)
+conv = robot.scene.conveyor()
+print(&quot;컨베이어: y=%.4f m, 폭 %.4f m, x %.4f → %.4f m, 속도 %.4f m/s&quot; % (
+    conv[&quot;y&quot;], conv[&quot;width&quot;], conv[&quot;x_start&quot;], conv[&quot;x_end&quot;], conv[&quot;speed&quot;]))
+print(&quot;부품 %d개, 첫 부품 t=%.1f s, 간격 %.1f s&quot; % (
+    len(conv[&quot;spawn&quot;]), conv[&quot;spawn&quot;][0][&quot;t&quot;], conv[&quot;spawn&quot;][1][&quot;t&quot;] - conv[&quot;spawn&quot;][0][&quot;t&quot;]))
+print(&quot;상자:&quot;, [(b[&quot;id&quot;], b[&quot;color&quot;], b[&quot;x&quot;], b[&quot;y&quot;]) for b in robot.bins()])
+
+robot.home()
+robot.wait(4.0)
+for p in robot.parts():
+    print(&quot;t=%.1f s  %s %-5s x=%.4f y=%.4f&quot; % (robot.time, p[&quot;id&quot;], p[&quot;color&quot;], p[&quot;x&quot;], p[&quot;y&quot;]))
+robot.wait(1.0)
+print(&quot;1초 뒤:&quot;, [(p[&quot;id&quot;], round(p[&quot;x&quot;], 4)) for p in robot.parts()])
+
+# 예측 없이 &#x27;지금 보이는 위치&#x27;로 가면?
+part = robot.parts()[0]
+robot.arch_to(part[&quot;x&quot;], part[&quot;y&quot;], part[&quot;top&quot;])
+got = robot.tool_on()
+now = [p for p in robot.parts() if p[&quot;id&quot;] == part[&quot;id&quot;]]
+print(&quot;이동 시간 동안 부품이 %.4f m 이동 → tool_on 결과: %s&quot; % (now[0][&quot;x&quot;] - part[&quot;x&quot;] if now else float(&quot;nan&quot;), got))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">컨베이어: y=-0.0505 m, 폭 0.0505 m, x -0.1458 → 0.1458 m, 속도 0.0224 m/s
+부품 30개, 첫 부품 t=1.0 s, 간격 2.0 s
+상자: [(&#x27;A&#x27;, &#x27;red&#x27;, -0.0393, 0.0561), (&#x27;B&#x27;, &#x27;blue&#x27;, 0.0393, 0.0561)]
+t=4.0 s  c1 red   x=-0.0786 y=-0.0505
+t=4.0 s  c2 blue  x=-0.1234 y=-0.0370
+1초 뒤: [(&#x27;c1&#x27;, -0.0562), (&#x27;c2&#x27;, -0.101), (&#x27;c3&#x27;, -0.1458)]
+이동 시간 동안 부품이 0.0229 m 이동 → tool_on 결과: None</code></pre></div>
+<p>두 가지를 알 수 있습니다.</p>
+<ol><li><code>robot.parts()</code>는 <strong>호출한 순간</strong>(<code>robot.time</code>)의 위치를 줍니다. 1초에 22.4 mm씩 움직입니다.</li><li>보이는 위치로 가면 도착하는 약 1초 사이에 부품이 23 mm 떠내려가, 흡착 판정 범위(수평 12 mm)를 벗어나 <strong>놓칩니다.</strong> 도착할 때 부품이 <strong>있을</strong> 곳으로 가야 합니다.</li></ol>
+<p>시간 예산도 계산해 둡니다. 부품이 2초마다 오므로 한 사이클(집기 + 상자 + 복귀)이 평균 2초 안에 끝나야 모두 잡을 수 있습니다. R02에서 기본 속도(0.19 m/s)의 한 사이클은 약 2.3초였습니다. 속도를 올려야 합니다.</p>
+<h2 id="만남-지점-계산">만남 지점 계산<a class="anchor" href="#만남-지점-계산">#</a></h2>
+<figure class="fig" id="fig-r08-intercept"><svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="컨베이어 부품과 로봇이 만나는 시각 계산">
+  <defs>
+    <marker id="arr-r08-intercept" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r08-intercept-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M70 260 L490 260" stroke-width="1.6" marker-end="url(#arr-r08-intercept)"/>
+  <path class="ln" d="M70 260 L70 30" stroke-width="1.6" marker-end="url(#arr-r08-intercept)"/>
+  <text class="tag" x="490" y="280" text-anchor="end">시간 t</text>
+  <text class="tag" x="62" y="38" text-anchor="end">x</text>
+  <path class="ln-hi" d="M70 230 L470 70" stroke-width="2.4"/>
+  <text class="tag hi" x="90" y="50" text-anchor="start">부품 x(t) = x₀ + v·(t − t₀)</text>
+  <circle class="hi" cx="100" cy="215.75" r="4"/>
+  <text class="tag" x="100" y="200" text-anchor="middle">지금 t₀</text>
+  <path class="ln" d="M240 260 L240 149.25" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <circle class="box" cx="240" cy="149.25" r="4"/>
+  <text class="sub" x="240" y="278" text-anchor="middle">Δt₁</text>
+  <path class="ln" d="M320 260 L320 111.25" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <circle class="box" cx="320" cy="111.25" r="4"/>
+  <text class="sub" x="320" y="278" text-anchor="middle">Δt₂</text>
+  <path class="ln" d="M340 260 L340 101.75" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <circle class="dg" cx="340" cy="101.75" r="4"/>
+  <text class="sub" x="340" y="294" text-anchor="middle">Δt₃ ≈ Δt₂</text>
+  <rect class="box" x="510" y="30" width="200" height="230" rx="8"/>
+  <text class="lbl" x="610" y="54" text-anchor="middle">반복 계산 (3~5회)</text>
+  <text class="sub mono" x="526" y="82" text-anchor="start">Δt ← 0</text>
+  <text class="sub mono" x="526" y="106" text-anchor="start">x_hit = x₀ + v·Δt</text>
+  <text class="sub mono" x="526" y="130" text-anchor="start">L = arch_path 길이</text>
+  <text class="sub mono" x="526" y="154" text-anchor="start">Δt ← Profile(L).T</text>
+  <text class="sub mono" x="526" y="178" text-anchor="start">→ 수렴하면 arch_to(x_hit)</text>
+  <text class="tag" x="526" y="202" text-anchor="start"></text>
+  <text class="tag" x="526" y="226" text-anchor="start">v ≪ 로봇 속도라 빨리 수렴</text>
+  <text class="sub" x="360" y="312" text-anchor="middle">도착 시각에 부품이 있을 x를 겨냥 → 도착 즉시 tool_on(), 컨베이어 속도로 잠깐 따라가며 흡착</text>
+</svg><figcaption>부품의 직선 x(t)와 로봇 도착 시각이 만나는 점을 반복 계산으로 찾습니다. 로봇이 컨베이어보다 훨씬 빨라서 몇 번 만에 수렴합니다.</figcaption></figure>
+<p>지금 시각을 <span class="math">t₀</span>, 부품 위치를 <span class="math">x₀</span>, 컨베이어 속도를 <span class="math">v</span>라고 하면, 로봇이 <span class="math">Δt</span> 뒤에 도착할 때 부품은 <span class="math">x₀ + v·Δt</span>에 있습니다. 그런데 <span class="math">Δt</span>는 <strong>어디로 가느냐</strong>에 따라 달라집니다. 그래서 번갈아 계산합니다.</p>
+<ol><li><span class="math">Δt = 0</span>에서 시작합니다.</li><li>목표 <span class="math">x_hit = x₀ + v·Δt</span></li><li>현재 위치 → <span class="math">x_hit</span>의 아치 경로 길이를 <code>arch_path(...).length</code>로 구합니다.</li><li><code>Profile(robot.profile, 길이, robot.speed, robot.accel).T</code>로 이동 시간 <span class="math">Δt</span>를 새로 구합니다.</li><li>2~4를 3~5번 반복합니다.</li></ol>
+<p><code>arch_to</code>가 실제로 쓰는 것과 <strong>같은 경로 함수와 같은 프로파일</strong>로 계산하므로 추정 시간이 실제 이동 시간과 같습니다. 반복할 때마다 <span class="math">Δt</span> 변화가 대략 (컨베이어 속도 ÷ 로봇 속도) 배로 줄어드는데, 로봇이 컨베이어보다 10배 이상 빨라서 금방 수렴합니다.</p>
+<div class="callout callout-info"><div class="callout-title">arch_path는 이펙터 중심 좌표</div><div class="callout-body"><p><code>deltarobot.trajectory</code>의 경로 함수는 라이브러리 내부 함수라 <strong>이펙터 중심</strong> 좌표를 씁니다(R01). TCP 목표에 툴 길이를 더해 넘기고, 시작점은 <code>robot.effector</code>를 씁니다. 경로 길이는 평행 이동이라 어느 좌표든 같지만, 아치의 높이 계산을 <code>arch_to</code>와 똑같이 맞추려는 것입니다.</p></div></div>
+<h2 id="1단계-playground에서-완성">1단계: Playground에서 완성<a class="anchor" href="#1단계-playground에서-완성">#</a></h2>
+<p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+from deltarobot import DeltaRobot, WorkspaceError
+from deltarobot.trajectory import Profile, arch_path
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;conveyor&quot;)
+robot.set_speed(0.25, 2.5)                   # R02에서 검증한 범위, 펌웨어 200°/s 안쪽
+conv = robot.scene.conveyor()
+v = conv[&quot;speed&quot;]                            # 컨베이어 속도 [m/s], +x 방향
+surface = robot.scene.data[&quot;surface_z&quot;]
+HEIGHT = 0.03                                # 아치 높이 [m]
+X_MIN, X_MAX = -0.09, 0.08                   # 집을 x 구간 (작업영역 안쪽 여유)
+TRACK = 0.1                                  # 흡착하며 컨베이어를 따라가는 시간 [s]
+bin_of = {b[&quot;color&quot;]: b for b in robot.bins()}
+END = conv[&quot;spawn&quot;][-1][&quot;t&quot;] + (conv[&quot;x_end&quot;] - conv[&quot;x_start&quot;]) / v
+
+def move_time(x, y, z):
+    &quot;&quot;&quot;현재 위치에서 TCP (x, y, z)까지 arch_to에 걸릴 시간 추정 [s].&quot;&quot;&quot;
+    p0 = robot.effector
+    p1 = (x, y, z + robot.design.tool_length)          # arch_path는 이펙터 중심 좌표
+    length = arch_path(p0, p1, HEIGHT).length
+    return Profile(robot.profile, length, robot.speed, robot.accel).T
+
+def intercept(part):
+    &quot;&quot;&quot;도착 시각에 부품이 있을 x와 이동 시간 dt를 반복 계산으로 구한다.&quot;&quot;&quot;
+    dt = 0.0
+    for _ in range(5):
+        x_hit = part[&quot;x&quot;] + v * dt
+        dt = move_time(x_hit, part[&quot;y&quot;], part[&quot;top&quot;])
+    return part[&quot;x&quot;] + v * dt, dt
+
+robot.home()
+picked, missed, log = 0, 0, 0
+while robot.time &lt; END:
+    best = None
+    for part in robot.parts():
+        if part[&quot;on&quot;] != &quot;conveyor&quot;:
+            continue
+        x_hit, dt = intercept(part)
+        if X_MIN &lt;= x_hit &lt;= X_MAX and (best is None or part[&quot;x&quot;] &gt; best[0][&quot;x&quot;]):
+            best = (part, x_hit, dt)             # 가장 앞(하류)에 있는 부품부터
+    if best is None:
+        robot.wait(0.1)                          # 잡을 부품이 들어올 때까지 대기
+        continue
+    part, x_hit, dt = best
+    try:
+        robot.arch_to(x_hit, part[&quot;y&quot;], part[&quot;top&quot;], height=HEIGHT)
+        got = robot.tool_on()
+        robot.move_by(dx=v * TRACK, speed=v, accel=10 * v)   # 컨베이어와 같은 속도로 따라가며 흡착
+        if got is None:
+            missed += 1
+            robot.tool_off()
+            continue
+        b = bin_of[part[&quot;color&quot;]]
+        robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], surface + b[&quot;h&quot;] + part[&quot;h&quot;] + 0.005, height=HEIGHT)
+        robot.tool_off()
+        picked += 1
+        if log &lt; 3:
+            log += 1
+            print(&quot;%s %-4s x %.4f → 예측 %.4f (Δt %.2f s), 상자 %s, t=%.2f s&quot; % (
+                got, part[&quot;color&quot;], part[&quot;x&quot;], x_hit, dt, b[&quot;id&quot;], robot.time))
+    except WorkspaceError as e:
+        print(&quot;건너뜀:&quot;, e)
+        robot.tool_off()
+
+robot.home()
+s = robot.scene.score()
+rep = robot.analyze()
+print(&quot;집기 %d, 놓침 %d, 끝난 시각 %.1f s&quot; % (picked, missed, robot.time))
+print(&quot;점수:&quot;, s, &quot;/ 흘러온 부품&quot;, len(conv[&quot;spawn&quot;]))
+print(&quot;peak %.2f rms %.2f 최대 모터 속도 %.0f °/s ok=%s&quot; % (
+    rep[&quot;peak_ratio&quot;], rep[&quot;rms_ratio&quot;], math.degrees(max(rep[&quot;max_speed_motor&quot;])), rep[&quot;ok&quot;]))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">c1 red  x -0.1100 → 예측 -0.0893 (Δt 0.92 s), 상자 A, t=4.71 s
+c2 blue x -0.1075 → 예측 -0.0883 (Δt 0.86 s), 상자 B, t=6.91 s
+c3 red  x -0.1030 → 예측 -0.0782 (Δt 1.11 s), 상자 A, t=9.24 s
+집기 30, 놓침 0, 끝난 시각 72.5 s
+점수: {&#x27;per_bin&#x27;: {&#x27;A&#x27;: 15, &#x27;B&#x27;: 15}, &#x27;correct&#x27;: 30, &#x27;total&#x27;: 30} / 흘러온 부품 30
+peak 0.31 rms 0.52 최대 모터 속도 172 °/s ok=True</code></pre></div>
+<p><strong>30개 모두 색에 맞게 분류</strong>했고(<code>correct 30 / total 30</code>), 모터 검증도 통과했습니다. 프로그램의 핵심:</p>
+<ul><li><strong>부품 고르기</strong>: 만남 지점이 작업 구간(<code>X_MIN</code>~<code>X_MAX</code>) 안에 있는 부품 중 가장 하류(x가 큰) 것부터 잡습니다. 놓치면 곧 사라질 부품이 먼저입니다.</li><li><strong>대기</strong>: 잡을 부품이 없으면 <code>robot.wait(0.1)</code>로 기다립니다. Playground에서는 가상 시간이라 금방 끝납니다.</li><li><strong>트래킹 pick</strong>: 흡착은 <code>tool_on()</code> 순간에 판정되지만, 실물 진공은 압력이 차는 데 시간이 걸립니다. 그동안 <code>move_by(dx=v·TRACK, speed=v)</code>로 <strong>컨베이어와 같은 속도</strong>로 따라가 부품과 컵이 미끄러지지 않게 합니다.</li><li><strong>예외 처리</strong>: 계산이 틀려 작업영역 밖을 겨누면 <code>WorkspaceError</code>로 그 부품만 건너뛰고, 혹시 잡은 것이 있으면 <code>tool_off()</code>로 놓습니다.</li></ul>
+<p>속도를 바꿔 보면 시간 예산이 보입니다. 같은 프로그램을 <code>set_speed(0.30, 3.0)</code>으로 돌려도 30개를 모두 잡지만(최대 모터 속도 약 194°/s로 펌웨어 한계 200°/s에 너무 가깝습니다), <code>set_speed(0.20, 2.0)</code>에서는 사이클이 2초를 넘어 <strong>26개</strong>만 잡습니다. 이 셀에서는 0.25 m/s가 여유 있는 선택입니다.</p>
+<div class="callout callout-check"><div class="callout-title">1단계 체크포인트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> 예측 없이 가면 <code>tool_on()</code>이 <code>None</code>인 것을 확인했다.</label></li><li><label class="check-item"><input type="checkbox"> 트래킹 프로그램이 <code>correct</code> 28개 이상, <code>ok=True</code>를 얻었다.</label></li><li><label class="check-item"><input type="checkbox"> 반복 계산 횟수(1, 2, 5회)를 바꿔 결과가 어떻게 달라지는지 확인했다.</label></li></ul></div></div>
+<h2 id="2단계-웹-시뮬레이터에서-실시간-websim">2단계: 웹 시뮬레이터에서 실시간 (websim)<a class="anchor" href="#2단계-웹-시뮬레이터에서-실시간-websim">#</a></h2>
+<p>로봇 생성 줄만 바꿉니다. 나머지 코드는 그대로입니다.</p>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">robot = DeltaRobot(&quot;edu_servo&quot;, backend=&quot;websim&quot;, scene=&quot;conveyor&quot;)</code></pre></div>
+<p>R03처럼 스크립트를 실행하고 시뮬레이터 <strong>연결</strong> 탭에서 <strong>[PC Python 연결]</strong> 을 누릅니다. 달라지는 점:</p>
+<ul><li><code>robot.time</code>이 실제 시간이므로 프로그램이 <strong>72초 동안 실제로</strong> 돕니다. <code>robot.wait(0.1)</code> 대기 루프도 실제 0.1초입니다.</li><li>부품 위치 판단은 파이썬 안의 장면 모델(<code>robot.parts()</code>, <code>robot.time</code> 기준)이 합니다. 파이썬은 연결할 때 이 장면을 시뮬레이터에 보내고, 시뮬레이터는 받은 모터각과 툴 상태로 로봇을 그립니다.</li><li>계획과 전송 사이에 계산 시간이 끼어도 괜찮습니다. 궤적 샘플에는 <strong>계획한 순간의 시각</strong>이 들어 있고, 백엔드는 그 시각에 맞춰 보냅니다. 그러나 PC가 바빠 전송이 늦어지면 도착이 늦어져 놓칠 수 있습니다. 결과는 마지막에 출력되는 <code>score()</code>로 확인합니다.</li><li><code>analyze()</code>는 <code>record</code> 전용이므로 마지막 줄의 분석 출력을 빼거나 <code>try</code>로 감쌉니다(R02 오류 표 참고). 3·4단계도 같습니다.</li><li>시뮬레이터 비상정지 → <code>EmergencyStop</code>으로 프로그램이 끝나야 합니다. <code>except WorkspaceError</code>만 쓴 이유입니다.</li></ul>
+<h2 id="3단계-ros-2-mock-웹-브리지로-관찰">3단계: ROS 2 (mock → 웹 브리지로 관찰)<a class="anchor" href="#3단계-ros-2-mock-웹-브리지로-관찰">#</a></h2>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">ros2 launch delta_robot display.launch.py preset:=edu_servo web_bridge:=true scene:=conveyor</code></pre></div>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">robot = DeltaRobot(&quot;edu_servo&quot;, backend=&quot;ros2&quot;, scene=&quot;conveyor&quot;)</code></pre></div>
+<ul><li>로봇이 <strong>홈 자세</strong>에 있을 때 시작합니다(R06 주의사항). launch 직후라면 홈입니다.</li><li><code>ros2</code> 백엔드는 속도 초과를 <strong>거부</strong>합니다. 0.25 m/s 설정은 모터 최고 속도의 약 절반이라 통과합니다.</li><li>드라이버(mock)는 모터를 "최고 속도 ÷ 감속비"로 제한하며 따라가므로, <code>/delta/tcp</code>를 기록하면 실제 추종 경로를 확인할 수 있습니다.</li><li>웹 브리지를 켜면 RViz와 웹 시뮬레이터 양쪽에서 로봇 움직임을 봅니다. 다만 브리지가 보내는 컨베이어 장면의 시각 기준은 <strong>브리지를 시작한 시각</strong>이고, 파이썬 프로그램의 부품 시각 기준은 **<code>DeltaRobot</code>을 만든 시각**입니다. 화면 속 부품과 로봇이 어긋나 보일 수 있으니, 이 단계에서는 로봇 동작과 파이썬의 <code>score()</code>로 판정합니다.</li><li><code>/delta/estop</code>을 발행해 프로그램이 <code>EmergencyStop</code>으로 멈추는지 꼭 시험합니다.</li></ul>
+<h2 id="실습-실물">실습 (실물)<a class="anchor" href="#실습-실물">#</a></h2>
+<p>4단계는 실물입니다. 3단계까지 통과한 프로그램만 가져옵니다.</p>
+<div class="callout callout-safety"><div class="callout-title">안전 확인 (실물 실습 전 필수)</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> R07의 안전 확인 항목(교수 입회, 물리 전원 스위치 담당자, 첫 전원은 로드 없이, 비상정지 후 팔 낙하 주의)을 모두 다시 확인합니다.</label></li><li><label class="check-item"><input type="checkbox"> 컨베이어를 쓰면 <strong>벨트·풀리에 손가락·머리카락·소매가 끼지 않도록</strong> 덮개를 씌우고, 컨베이어 전원도 별도 스위치로 끌 수 있게 합니다.</label></li><li><label class="check-item"><input type="checkbox"> 첫 실행은 <strong>부품 없이(가상 부품)</strong>, 속도를 절반(<code>set_speed(0.12, 1.2)</code>)으로 낮춰 동작 범위를 확인합니다.</label></li><li><label class="check-item"><input type="checkbox"> 로봇과 컨베이어가 움직이는 동안 작업 영역에 손을 넣지 않습니다. 부품 보충·정리는 두 전원을 모두 끈 뒤에 합니다.</label></li><li><label class="check-item"><input type="checkbox"> 드라이런(1단계)에서 최대 모터 속도가 펌웨어 슬루율 200°/s 아래이고 <code>ok=True</code>인 설정만 실물에 보냅니다.</label></li></ul></div></div>
+<h3 id="4-1-가상-부품으로-동작-확인">4-1. 가상 부품으로 동작 확인<a class="anchor" href="#4-1-가상-부품으로-동작-확인">#</a></h3>
+<p>로봇 생성 줄만 바꿉니다. 컨베이어와 부품이 없어도 로봇은 가상 부품을 쫓아 트래킹·분류 동작을 그대로 합니다(흡착 펌프도 켜졌다 꺼집니다).</p>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">robot = DeltaRobot(&quot;edu_servo&quot;, backend=&quot;serial&quot;, port=&quot;COM3&quot;, scene=&quot;conveyor&quot;)
+robot.set_speed(0.12, 1.2)      # 첫 실행은 절반 속도 — 이때는 일부 부품을 놓치는 것이 정상</code></pre></div>
+<h3 id="4-2-실제-컨베이어와-맞추기-확장">4-2. 실제 컨베이어와 맞추기 (확장)<a class="anchor" href="#4-2-실제-컨베이어와-맞추기-확장">#</a></h3>
+<p>소형 컨베이어가 있다면 장면 모델을 <strong>실측값</strong>으로 바꿉니다.</p>
+<ol><li>벨트 속도 <span class="math">v</span>를 잽니다(표시선이 30 cm를 지나는 시간, 3회 평균).</li><li>컨베이어의 중심선 y, 작업대 높이(<code>surface_z</code>), 벨트가 작업영역에 들어오는 x를 로봇 좌표로 잽니다. 가장 쉬운 방법은 R07의 <code>first_motion</code> 방식으로 TCP를 천천히 벨트 위에 가져가 좌표를 읽는 것입니다.</li><li><code>default_scene()</code>으로 만든 장면 dict의 <code>conveyor</code>를 고칩니다. 부품 투입은 "프로그램 시작과 동시에 벨트를 켜고, 부품은 미리 벨트 위 상류에 놓아 둔다"로 맞춥니다: <code>spawn</code> 시각 <span class="math">tₙ</span>인 부품은 시작 순간 <code>x_start</code> − <span class="math">v·tₙ</span>에 놓습니다.</li></ol>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot, DeltaDesign, default_scene
+
+scene = default_scene(DeltaDesign.preset(&quot;edu_servo&quot;), &quot;conveyor&quot;)
+c = scene[&quot;conveyor&quot;]
+c[&quot;speed&quot;] = 0.020                       # 실측 벨트 속도 [m/s]
+c[&quot;y&quot;] = -0.050                          # 실측 벨트 중심 y [m]
+scene[&quot;surface_z&quot;] = -0.283              # 실측 벨트 윗면 높이 [m]
+c[&quot;spawn&quot;] = [{&quot;t&quot;: 2.0 + 3.0 * n, &quot;y_off&quot;: 0.0, &quot;color&quot;: (&quot;red&quot;, &quot;blue&quot;)[n % 2],
+               &quot;material&quot;: &quot;plastic&quot;} for n in range(6)]
+for s in c[&quot;spawn&quot;]:
+    print(&quot;시작 순간 %s 부품을 x = %.3f m 에 놓기&quot; % (s[&quot;color&quot;], c[&quot;x_start&quot;] - c[&quot;speed&quot;] * s[&quot;t&quot;]))
+input(&quot;부품을 놓고, 벨트 스위치에 손을 둔 뒤 Enter와 동시에 벨트를 켜세요 &quot;)
+robot = DeltaRobot(&quot;edu_servo&quot;, backend=&quot;serial&quot;, port=&quot;COM3&quot;, scene=scene)</code></pre></div>
+<p>로봇 생성 이후는 1단계 프로그램과 같습니다(설정 줄의 <code>set_speed</code>는 4-1에서 확인한 속도로). 시작 동기화 오차, 벨트 속도 변동, 부품 위치 오차가 모두 <strong>만남 지점 오차</strong>가 됩니다. 흡착 판정 여유가 12 mm라는 점을 기준으로, 어떤 오차가 가장 큰지 측정해 보고하세요. 실제 산업용 셀은 엔코더로 벨트 위치를 재고 카메라로 부품 위치를 찾아 이 오차를 없앱니다.</p>
+<p>ROS 2로 실물을 구동하려면 R07처럼 <code>bringup.launch.py</code>로 드라이버를 <code>serial</code>로 띄우고 3단계의 <code>backend=&quot;ros2&quot;</code> 코드를 씁니다.</p>
+<h2 id="평가-기준-루브릭">평가 기준 (루브릭)<a class="anchor" href="#평가-기준-루브릭">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>항목</th><th>배점</th><th>우수 (만점)</th><th>보통</th><th>미흡</th></tr></thead><tbody><tr><td>1단계 Playground 결과</td><td>25</td><td>30개 중 28개 이상 정확 분류, <code>ok=True</code></td><td>20~27개</td><td>20개 미만 또는 <code>ok=False</code></td></tr><tr><td>만남 지점 계산</td><td>15</td><td><code>Profile</code>로 이동 시간 추정, 반복 수렴을 설명·검증</td><td>고정 시간으로 근사</td><td>예측 없음</td></tr><tr><td>코드 품질·예외 처리</td><td>15</td><td><code>WorkspaceError</code>만 잡고 <code>EmergencyStop</code>은 전파, 상수 분리, 주석</td><td>일부 누락</td><td><code>except Exception</code> 남용</td></tr><tr><td>2단계 websim</td><td>10</td><td>실시간 실행 결과와 Playground 결과 차이를 분석</td><td>실행만 성공</td><td>미실행</td></tr><tr><td>3단계 ROS 2</td><td>15</td><td>mock에서 실행, 비상정지 시험 로그, <code>/delta/tcp</code> 경로 분석</td><td>실행만 성공</td><td>미실행</td></tr><tr><td>4단계 실물</td><td>10</td><td>가상 부품 동작 + (확장) 실제 부품 분류 결과와 오차 원인 분석</td><td>가상 부품 동작만</td><td>미실행</td></tr><tr><td>안전 절차</td><td>10</td><td>안전 체크리스트 기록, 비상정지 시험 영상</td><td>체크리스트만</td><td>안전 절차 미준수 (실물 단계 0점)</td></tr></tbody></table></div>
+<div class="callout callout-mission"><div class="callout-title">팀 미션: 처리량 올리기</div><div class="callout-body"><p>같은 셀에서 부품 간격을 1.5초로 줄인 장면(<code>spawn</code>의 <code>t</code>를 <code>1.0 + 1.5 * n</code>으로 바꾼 dict)을 만들고, 모터 검증 <code>ok=True</code>를 유지하면서 가장 많이 분류하는 팀이 이깁니다. 바꿀 수 있는 것: 속도·가속도·프로파일, 아치 높이, 부품 고르는 순서, 작업 구간(<code>X_MIN</code>, <code>X_MAX</code>), 상자로 가는 경로(<code>move_path</code>로 모서리에서 멈추지 않게). 바꿀 수 없는 것: 설계(<code>edu_servo</code>), 장면의 상자 위치, 안전 한계.</p></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="점수가-0이고-toolon이-항상-none">점수가 0이고 <code>tool_on()</code>이 항상 <code>None</code><a class="anchor" href="#점수가-0이고-toolon이-항상-none">#</a></h3>
+<ul><li><strong>원인</strong>: 예측 없이 현재 위치로 가거나, 컨베이어 속도의 부호·단위를 틀렸습니다(mm/s를 m/s 자리에). 이펙터 중심 좌표로 경로 길이를 구하지 않아 이동 시간이 틀린 경우도 있습니다.</li><li><strong>해결</strong>: 1단계 첫 예제처럼 이동 전후 부품 위치를 출력해, 예측한 <code>x_hit</code>과 도착 시 부품 x를 비교합니다.</li></ul>
+<h3 id="workspaceerror-작업영역-밖-0-120-0-051-0-276-m-모터-각도-한계-볼조인트-각도-한계"><code>WorkspaceError: 작업영역 밖: (-0.120, -0.051, -0.276) m — 모터 각도 한계, 볼조인트 각도 한계</code><a class="anchor" href="#workspaceerror-작업영역-밖-0-120-0-051-0-276-m-모터-각도-한계-볼조인트-각도-한계">#</a></h3>
+<ul><li><strong>원인</strong>: <code>X_MIN</code>을 너무 작게(상류 쪽으로) 잡아 벨트 입구 쪽 작업영역 밖을 겨눴습니다.</li><li><strong>해결</strong>: 벨트 y와 부품 윗면 높이에서 <code>robot.reachable(x, y, z)</code>로 x를 훑어 구간을 정합니다. <code>edu_servo</code>에서 벨트 중심선 기준 약 −0.1 m보다 상류는 닿지 않습니다.</li></ul>
+<h3 id="runtimeerror-가상-시간-600-s-제한을-넘었습니다-무한-루프인가요"><code>RuntimeError: 가상 시간 600 s 제한을 넘었습니다 (무한 루프인가요?)</code><a class="anchor" href="#runtimeerror-가상-시간-600-s-제한을-넘었습니다-무한-루프인가요">#</a></h3>
+<ul><li><strong>원인</strong>: <code>while</code> 조건에 끝나는 시각(<code>END</code>)이 없거나, 조건을 부품 수로 잡았는데 놓친 부품 때문에 영원히 채워지지 않습니다.</li><li><strong>해결</strong>: 마지막 부품이 벨트를 벗어나는 시각으로 루프를 끝냅니다.</li></ul>
+<h3 id="websim-ros-2에서-playground보다-많이-놓침">websim·ROS 2에서 Playground보다 많이 놓침<a class="anchor" href="#websim-ros-2에서-playground보다-많이-놓침">#</a></h3>
+<ul><li><strong>원인</strong>: 실시간 백엔드에서는 PC 부하로 전송이 늦어지거나(websim), 드라이버가 속도 제한으로 목표를 늦게 따라갑니다(ROS 2 mock·실물 펌웨어 슬루율).</li><li><strong>해결</strong>: 작업 구간을 하류 쪽으로 약간 줄여 여유를 두고, <code>TRACK</code> 시간을 늘리며, 속도를 무리하게 높이지 않습니다. <code>/delta/tcp</code>로 실제 도착 시각을 측정해 비교합니다.</li></ul>
+<h3 id="ros-2에서-workspaceerror-관절-속도-rad-s-가-모터-한계">ROS 2에서 <code>WorkspaceError: 관절 속도 ... rad/s 가 모터 한계 ...</code><a class="anchor" href="#ros-2에서-workspaceerror-관절-속도-rad-s-가-모터-한계">#</a></h3>
+<ul><li><strong>원인</strong>: 실물 백엔드는 속도 초과를 거부합니다. <code>set_speed(0.30, 3.0)</code> 이상에서 작업영역 가장자리를 지날 때 생길 수 있습니다.</li><li><strong>해결</strong>: 1단계에서 <code>analyze()</code>로 검증한 설정(0.25 m/s)을 씁니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">캡스톤 제출물</div><div class="callout-body"><ol><li>최종 프로그램(한 파일, 백엔드만 바꿔 네 단계에서 실행 가능하게: 예를 들어 맨 위 <code>BACKEND = &quot;record&quot;</code> 상수와 <code>DeltaRobot(..., backend=BACKEND)</code>).</li><li>단계별 결과표: 분류 개수·정확도·놓친 개수·사이클 시간·<code>peak_ratio</code>/<code>rms_ratio</code>(Playground)·비상정지 시험 결과.</li><li>만남 지점 계산 검증: 반복 횟수별 예측 오차 그래프 또는 표, 그리고 수렴하는 이유 설명.</li><li>실물 단계 보고: 안전 체크리스트, 영상(비상정지 포함), 실측 오차와 원인 분석.</li></ol></div></div>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>이 저장소 API 문서: <code>docs/API.md</code> (<code>scene.conveyor()</code>, <code>trajectory.Profile</code>, <code>arch_path</code>)</li><li>ROS 2 Humble 문서: https://docs.ros.org/en/humble/</li><li>websockets 문서: https://websockets.readthedocs.io/en/stable/</li><li>pySerial 문서: https://pyserial.readthedocs.io/en/latest/</li><li>Arduino Servo 라이브러리: https://docs.arduino.cc/libraries/servo/</li><li>R. Clavel, "DELTA, a fast robot with parallel geometry", 18th ISIR, 1988</li><li>D09 응용실습 ② 컨베이어 고속 피킹 셀(설계 관점의 사이클 검증)</li></ul>
+      <nav class="pager"><a class="pager-prev" href="r07.html"><span>이전 · R07</span>실물: 아두이노 펌웨어·캘리브레이션</a><span class="pager-next disabled"></span></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#문제-정의">문제 정의</a><a class="toc-l2" href="#만남-지점-계산">만남 지점 계산</a><a class="toc-l2" href="#1단계-playground에서-완성">1단계: Playground에서 완성</a><a class="toc-l2" href="#2단계-웹-시뮬레이터에서-실시간-websim">2단계: 웹 시뮬레이터에서 실시간 (websim)</a><a class="toc-l2" href="#3단계-ros-2-mock-웹-브리지로-관찰">3단계: ROS 2 (mock → 웹 브리지로 관찰)</a><a class="toc-l2" href="#실습-실물">실습 (실물)</a><a class="toc-l3" href="#4-1-가상-부품으로-동작-확인">4-1. 가상 부품으로 동작 확인</a><a class="toc-l3" href="#4-2-실제-컨베이어와-맞추기-확장">4-2. 실제 컨베이어와 맞추기 (확장)</a><a class="toc-l2" href="#평가-기준-루브릭">평가 기준 (루브릭)</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#점수가-0이고-toolon이-항상-none">점수가 0이고 `tool_on()`이 항상 `None`</a><a class="toc-l3" href="#workspaceerror-작업영역-밖-0-120-0-051-0-276-m-모터-각도-한계-볼조인트-각도-한계">`WorkspaceError: 작업영역 밖: (-0.120, -0.051, -0.276) m — 모터 각도 한계, 볼조인트 각도 한계`</a><a class="toc-l3" href="#runtimeerror-가상-시간-600-s-제한을-넘었습니다-무한-루프인가요">`RuntimeError: 가상 시간 600 s 제한을 넘었습니다 (무한 루프인가요?)`</a><a class="toc-l3" href="#websim-ros-2에서-playground보다-많이-놓침">websim·ROS 2에서 Playground보다 많이 놓침</a><a class="toc-l3" href="#ros-2에서-workspaceerror-관절-속도-rad-s-가-모터-한계">ROS 2에서 `WorkspaceError: 관절 속도 ... rad/s 가 모터 한계 ...`</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

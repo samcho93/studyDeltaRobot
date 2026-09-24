@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R03. PC Python ↔ 웹 시뮬 실시간 연결 · studyDeltaRobot</title>
+<meta name="description" content="pip으로 라이브러리를 설치하고 websim 백엔드로 PC의 파이썬이 웹 시뮬레이터를 실시간으로 움직이게 합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-control">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" class="active" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="r03" data-track="control">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-control">Python·ROS 2·실물</span> R-1 Python 제어 &middot; 약 60분 &middot; 중급</div>
+    <h1><span class="lesson-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</h1>
+    <p class="lede">pip으로 라이브러리를 설치하고 websim 백엔드로 PC의 파이썬이 웹 시뮬레이터를 실시간으로 움직이게 합니다.</p>
+    <div class="requires">선수 챕터: <a href="r02.html">R02</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>PC에 <code>deltarobot</code>을 설치하고 <code>websim</code> 백엔드에 필요한 <code>websockets</code>를 함께 설치합니다.</li><li><code>DeltaRobot(backend=&quot;websim&quot;)</code>이 <strong>PC에 작은 WebSocket 서버</strong>를 열고 웹 시뮬레이터가 거기에 접속하는 구조를 설명합니다.</li><li>R02의 분류 프로그램을 <strong>한 글자도 바꾸지 않고</strong> 실시간으로 웹 시뮬레이터에서 돌립니다.</li><li>시뮬레이터의 비상정지가 파이썬에서 <code>EmergencyStop</code> 예외가 되는 흐름을 확인하고, 연결 문제를 스스로 진단합니다.</li></ul>
+<h2 id="왜-pc-파이썬인가">왜 PC 파이썬인가<a class="anchor" href="#왜-pc-파이썬인가">#</a></h2>
+<p>Playground(<code>record</code> 백엔드)는 동작을 <strong>먼저 계산한 뒤 재생</strong>합니다. 실물 로봇은 그렇게 움직이지 않습니다. 명령이 시간에 맞춰 흘러가고, 중간에 비상정지가 들어올 수 있고, 프로그램이 도는 동안 센서나 다른 프로그램과 주고받아야 합니다. <code>websim</code> 백엔드는 이 <strong>실시간 흐름</strong>을 실물 없이 연습하게 해 줍니다.</p>
+<ul><li>모터각을 10 ms마다 <strong>벽시계에 맞춰</strong> 보냅니다. 6개 분류는 실제로 약 14초가 걸립니다.</li><li><code>robot.time</code>은 가상 시간이 아니라 로봇을 만든 뒤 흐른 <strong>실제 시간</strong>입니다.</li><li>시뮬레이터 상단의 비상정지 버튼을 누르면 파이썬 프로그램이 멈춥니다.</li></ul>
+<h2 id="연결-구조">연결 구조<a class="anchor" href="#연결-구조">#</a></h2>
+<p>브라우저는 보안상 PC에 서버를 열 수 없으므로, <strong>파이썬이 서버</strong>(<code>ws://127.0.0.1:8765</code>)가 되고 <strong>시뮬레이터가 클라이언트</strong>로 접속합니다. 주소가 <code>127.0.0.1</code>(루프백)이라 같은 PC 안에서만 연결되고, 다른 컴퓨터에서는 접속할 수 없습니다.</p>
+<figure class="fig" id="fig-r03-websim"><svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="websim 백엔드 연결 순서">
+  <defs>
+    <marker id="arr-r03-websim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r03-websim-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="20" y="30" width="250" height="270" rx="10"/>
+  <text class="lbl" x="145" y="56" text-anchor="middle">PC: python my_robot.py</text>
+  <text class="sub mono" x="145" y="78" text-anchor="middle">DeltaRobot(backend="websim")</text>
+  <text class="tag mono" x="145" y="96" text-anchor="middle">WebSocket 서버 127.0.0.1:8765</text>
+  <rect class="box" x="450" y="30" width="250" height="270" rx="10"/>
+  <text class="lbl" x="575" y="56" text-anchor="middle">브라우저: sim/index.html</text>
+  <text class="sub" x="575" y="78" text-anchor="middle">연결 탭 → [PC Python 연결]</text>
+  <text class="tag" x="575" y="96" text-anchor="middle">WebSocket 클라이언트</text>
+  <path class="ln" d="M448 130 L272 130" stroke-width="2" marker-end="url(#arr-r03-websim)"/>
+  <text class="tag mono" x="360" y="124" text-anchor="middle">← 연결 (Origin 검사, 허용 밖이면 403)</text>
+  <path class="ln" d="M448 160 L272 160" stroke-width="2" marker-end="url(#arr-r03-websim)"/>
+  <text class="tag mono" x="360" y="154" text-anchor="middle">← hello {design, scene}</text>
+  <path class="ln-hi" d="M272 190 L448 190" stroke-width="2" marker-end="url(#arr-r03-websim-hi)"/>
+  <text class="tag mono" x="360" y="184" text-anchor="middle">design {design, scene} →</text>
+  <path class="ln-hi" d="M272 220 L448 220" stroke-width="2" marker-end="url(#arr-r03-websim-hi)"/>
+  <text class="tag mono" x="360" y="214" text-anchor="middle">state {t, q[3], tool} → (10 ms마다)</text>
+  <path class="ln" d="M448 256 L272 256" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arr-r03-websim)"/>
+  <text class="tag mono dg" x="360" y="250" text-anchor="middle">← estop  → EmergencyStop 예외</text>
+  <text class="sub" x="145" y="140" text-anchor="middle">대기 (wait_connect 60 s)</text>
+  <text class="sub" x="145" y="200" text-anchor="middle">설계·장면 확정</text>
+  <text class="sub" x="145" y="230" text-anchor="middle">궤적을 실시간으로 전송</text>
+  <text class="sub" x="575" y="230" text-anchor="middle">받은 모터각으로 3D 표시</text>
+  <text class="sub" x="575" y="270" text-anchor="middle">상단 비상정지 버튼</text>
+</svg><figcaption>파이썬이 서버를 열고 기다리면, 시뮬레이터가 접속해 설계·장면을 주고받은 뒤 모터각 상태를 실시간으로 받습니다.</figcaption></figure>
+<ol><li>파이썬이 서버를 열고 최대 <code>wait_connect</code>(기본 60 s) 동안 기다립니다.</li><li>시뮬레이터 <strong>연결</strong> 탭의 <strong>[PC Python 연결]</strong> 을 누르면 접속하고 <code>hello</code>(시뮬레이터의 현재 설계·장면)를 보냅니다.</li><li>파이썬은 설계를 정해(R01의 규칙과 같음: 설계를 비우면 시뮬레이터 것을 사용) <code>design</code> 메시지로 돌려보내고, 시뮬레이터는 그 설계·장면으로 바뀝니다.</li><li>이후 파이썬은 <code>state {t, q, tool}</code>을 10 ms마다 보내고, 시뮬레이터는 받은 모터각으로 로봇을 그립니다.</li><li>비상정지 버튼을 누르면 시뮬레이터가 <code>estop</code>을 보내고, 파이썬의 다음 동작 확인 시점에 <code>EmergencyStop</code>이 발생합니다.</li></ol>
+<p>같은 포트와 같은 메시지 형식을 R06의 ROS 2 <code>delta_web_bridge</code>도 씁니다. 그래서 시뮬레이터는 상대가 파이썬 스크립트인지 ROS 2인지 구분하지 않습니다.</p>
+<h2 id="설치">설치<a class="anchor" href="#설치">#</a></h2>
+<p>Python 3.9 이상이 필요합니다. 저장소를 받은 뒤 <strong>저장소 루트</strong>에서 설치합니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">git clone https://github.com/samcho93/studyDeltaRobot.git
+cd studyDeltaRobot
+python -m venv .venv
+# Windows:  .venv\Scripts\activate      Linux/macOS:  source .venv/bin/activate
+pip install -e &quot;python[websim]&quot;       # deltarobot + websockets&gt;=12
+python -c &quot;import deltarobot, websockets; print(deltarobot.__version__, websockets.__version__)&quot;</code></pre></div>
+<p><code>-e</code>(editable)로 설치하면 <code>python/deltarobot/</code>을 고쳤을 때 다시 설치하지 않아도 바로 반영됩니다. 따옴표는 셸이 <code>[websim]</code>을 파일 패턴으로 해석하지 않게 하려고 붙입니다.</p>
+<h2 id="실습-분류-프로그램을-실시간으로">실습: 분류 프로그램을 실시간으로<a class="anchor" href="#실습-분류-프로그램을-실시간으로">#</a></h2>
+<p><code>sort_websim.py</code>로 저장합니다. R02 프로그램에서 **<code>backend=&quot;websim&quot;</code>만 추가**하고, 비상정지 처리와 <code>close()</code>를 넣었습니다.</p>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python"># sort_websim.py — python sort_websim.py 실행 후 시뮬레이터에서 [PC Python 연결]
+from deltarobot import DeltaRobot, EmergencyStop, WorkspaceError
+
+robot = DeltaRobot(&quot;edu_servo&quot;, backend=&quot;websim&quot;)
+print(robot)
+try:
+    robot.home()
+    surface = robot.scene.data[&quot;surface_z&quot;]
+    bin_of = {b[&quot;color&quot;]: b for b in robot.bins()}
+    for part in robot.parts():
+        b = bin_of[part[&quot;color&quot;]]
+        robot.arch_to(part[&quot;x&quot;], part[&quot;y&quot;], part[&quot;top&quot;])
+        robot.tool_on()
+        robot.wait(0.1)
+        robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], surface + b[&quot;h&quot;] + part[&quot;h&quot;] + 0.005)
+        robot.tool_off()
+        print(&quot;%s -&gt; %s  (%.1f s)&quot; % (part[&quot;id&quot;], b[&quot;id&quot;], robot.time))
+    robot.home()
+    print(&quot;점수:&quot;, robot.scene.score())
+except EmergencyStop as e:
+    print(&quot;비상정지:&quot;, e)
+finally:
+    robot.close()</code></pre></div>
+<p>순서:</p>
+<ol><li>터미널에서 <code>python sort_websim.py</code>를 실행합니다. 대기 메시지가 나옵니다.</li><li>브라우저에서 시뮬레이터를 열고 <strong>연결</strong> 탭 → <strong>[PC Python 연결]</strong> 을 누릅니다(60초 안에).</li><li>시뮬레이터가 <code>edu_servo</code> 설계와 분류 장면으로 바뀌고 로봇이 움직입니다.</li></ol>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html">시뮬레이터 열기</a></p>
+<p>콘솔 출력(초 단위 시각은 실행마다 조금씩 다릅니다):</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">[websim] ws://127.0.0.1:8765 에서 대기 중 — 시뮬레이터 &#x27;연결&#x27; 탭에서 [PC Python 연결]을 누르세요
+[websim] 시뮬레이터 연결됨
+DeltaRobot(motor=rc_servo_mg996r, tool=suction_20, backend=WebSimBackend)
+p1 -&gt; A  (2.3 s)
+p2 -&gt; B  (4.9 s)
+p3 -&gt; C  (7.4 s)
+p4 -&gt; A  (9.7 s)
+p5 -&gt; B  (11.9 s)
+p6 -&gt; C  (14.1 s)
+점수: {&#x27;per_bin&#x27;: {&#x27;A&#x27;: 2, &#x27;B&#x27;: 2, &#x27;C&#x27;: 2}, &#x27;correct&#x27;: 6, &#x27;total&#x27;: 6}
+[websim] 시뮬레이터 연결 끊김</code></pre></div>
+<p>Playground의 가상 시간(R02: 2.30 s, 4.79 s, …)과 거의 같은 시각에 사이클이 끝납니다. 계획한 궤적 시간을 실제 시간에 맞춰 내보내기 때문입니다. 약간 늦는 것은 계산·전송 지연입니다.</p>
+<div class="callout callout-info"><div class="callout-title">설계를 시뮬레이터에서 가져오기</div><div class="callout-body"><p><code>DeltaRobot(backend=&quot;websim&quot;)</code>처럼 설계를 비우면 시뮬레이터 설계 탭에서 만든 설계와 현재 장면을 그대로 씁니다. 설계 탭에서 암 길이를 바꾼 뒤 같은 스크립트를 다시 실행하면, 코드 수정 없이 <strong>새 설계로 같은 작업</strong>을 검증할 수 있습니다. 단, <code>analyze()</code>는 <code>record</code> 백엔드 전용이므로 모터 검증은 Playground나 시뮬레이터 분석 탭에서 합니다.</p></div></div>
+<div class="callout callout-tip"><div class="callout-title">Chrome의 로컬 네트워크 접근 허용</div><div class="callout-body"><p>GitHub Pages(https)의 페이지가 <code>127.0.0.1</code>에 접속하면, 최근 Chrome은 이 사이트가 <strong>이 기기의 다른 앱·서비스(로컬 네트워크)에 접근하도록 허용할지</strong> 묻습니다. <strong>허용</strong>을 눌러야 연결됩니다. 실수로 차단했다면 주소창 왼쪽 사이트 정보 아이콘 → 사이트 설정에서 해당 권한을 허용으로 바꾸고 새로고침합니다. <code>http://localhost:8000</code>(<code>python build.py --serve</code>)으로 연 로컬 미리보기에서는 이 창이 뜨지 않을 수 있습니다.</p></div></div>
+<h2 id="비상정지-확인">비상정지 확인<a class="anchor" href="#비상정지-확인">#</a></h2>
+<p>위 스크립트를 다시 실행하고, 로봇이 움직이는 중에 시뮬레이터 상단의 <strong>비상정지</strong> 버튼을 누릅니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">[websim] ws://127.0.0.1:8765 에서 대기 중 — 시뮬레이터 &#x27;연결&#x27; 탭에서 [PC Python 연결]을 누르세요
+[websim] 시뮬레이터 연결됨
+DeltaRobot(motor=rc_servo_mg996r, tool=suction_20, backend=WebSimBackend)
+p1 -&gt; A  (2.3 s)
+[websim] 비상정지 수신!
+비상정지: 비상정지 요청을 받았습니다 — 프로그램을 멈춥니다
+[websim] 시뮬레이터 연결 끊김</code></pre></div>
+<ul><li>백엔드는 모터각 샘플을 보내기 <strong>직전마다</strong> 비상정지 플래그를 확인합니다. 그래서 늦어도 다음 10 ms 샘플에서 멈춥니다.</li><li>비상정지 뒤에는 그 <code>robot</code> 객체의 모든 동작 명령이 계속 <code>EmergencyStop</code>을 냅니다. 원인을 없앤 뒤 <strong>프로그램을 다시 시작</strong>하는 것이 규칙입니다. 실물에서도 같은 습관이 필요합니다.</li><li><code>except EmergencyStop</code>에서 로봇을 다시 움직이는 코드를 넣지 마세요. 비상정지는 "정지"만 해야 합니다.</li></ul>
+<div class="callout callout-warn"><div class="callout-title">시뮬레이터의 비상정지는 실물 안전장치가 아닙니다</div><div class="callout-body"><p>이 버튼은 <strong>소프트웨어 신호</strong>입니다. R07의 실물 실습에서는 서보 전원을 직접 끊는 하드웨어 비상정지(전원 스위치)를 반드시 따로 둡니다.</p></div></div>
+<div class="callout callout-check"><div class="callout-title">체크포인트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> <code>pip install -e &quot;python[websim]&quot;</code> 후 버전이 출력되었다.</label></li><li><label class="check-item"><input type="checkbox"> 스크립트를 실행하고 시뮬레이터에서 6개 분류가 실시간으로 재생되었다.</label></li><li><label class="check-item"><input type="checkbox"> 비상정지를 눌렀을 때 <code>비상정지: ...</code>가 출력되고 프로그램이 끝났다.</label></li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="runtimeerror-websim-백엔드에는-websockets-12-가-필요합니다-pip-install-websockets-12"><code>RuntimeError: websim 백엔드에는 websockets&gt;=12 가 필요합니다: pip install &quot;websockets&gt;=12&quot;</code><a class="anchor" href="#runtimeerror-websim-백엔드에는-websockets-12-가-필요합니다-pip-install-websockets-12">#</a></h3>
+<ul><li><strong>원인</strong>: <code>pip install -e python</code>만 하고 <code>[websim]</code> 옵션을 빠뜨렸거나, 가상환경이 다릅니다.</li><li><strong>해결</strong>: 같은 가상환경에서 <code>pip install -e &quot;python[websim]&quot;</code>. <code>python -m pip ...</code>으로 실행하면 인터프리터가 섞이지 않습니다.</li></ul>
+<h3 id="oserror-errno-10048-각-소켓-주소프로토콜-네트워크-주소-포트는-하나만-사용할-수-있습니다-while-attempting-to-bind-on-address-127-0-0-1-8765"><code>OSError: [Errno 10048] 각 소켓 주소(프로토콜/네트워크 주소/포트)는 하나만 사용할 수 있습니다 (while attempting to bind on address (&#x27;127.0.0.1&#x27;, 8765))</code><a class="anchor" href="#oserror-errno-10048-각-소켓-주소프로토콜-네트워크-주소-포트는-하나만-사용할-수-있습니다-while-attempting-to-bind-on-address-127-0-0-1-8765">#</a></h3>
+<ul><li><strong>원인</strong>(Windows): 8765 포트를 이미 누가 쓰고 있습니다. 앞에서 실행한 스크립트가 아직 대기 중이거나, R06의 ROS 2 <code>delta_web_bridge</code>가 떠 있습니다. Linux에서는 <code>OSError: [Errno 98] Address already in use (while attempting to bind on address (&#x27;127.0.0.1&#x27;, 8765))</code>로 나옵니다.</li><li><strong>해결</strong>: 이전 프로그램을 <code>Ctrl+C</code>로 끕니다. 누가 쓰는지는 Windows <code>netstat -ano | findstr :8765</code>, Linux <code>ss -ltnp | grep 8765</code>로 찾습니다. 시뮬레이터는 8765번으로 접속하므로 포트를 바꾸기보다 <strong>이전 프로그램을 끄는 것</strong>이 해결책입니다.</li></ul>
+<h3 id="timeouterror-60-초-안에-시뮬레이터가-연결되지-않았습니다"><code>TimeoutError: 60 초 안에 시뮬레이터가 연결되지 않았습니다</code><a class="anchor" href="#timeouterror-60-초-안에-시뮬레이터가-연결되지-않았습니다">#</a></h3>
+<ul><li><strong>원인</strong>: 60초 안에 [PC Python 연결]을 누르지 않았거나, 브라우저가 접속하지 못했습니다(아래 403, Chrome 권한 거부).</li><li><strong>해결</strong>: 시뮬레이터를 먼저 열어 두고 스크립트를 실행합니다. 더 기다리려면 <code>DeltaRobot(..., backend=&quot;websim&quot;, wait_connect=180)</code>을 씁니다.</li></ul>
+<h3 id="시뮬레이터가-접속하지-못함-브라우저-콘솔에-http-403">시뮬레이터가 접속하지 못함 (브라우저 콘솔에 HTTP 403)<a class="anchor" href="#시뮬레이터가-접속하지-못함-브라우저-콘솔에-http-403">#</a></h3>
+<ul><li><strong>원인</strong>: 백엔드는 허용된 출처(<code>https://samcho93.github.io</code>, <code>http://localhost</code>, <code>http://127.0.0.1</code>)의 페이지만 받아들이고, 나머지는 <code>403 origin not allowed</code>로 거절합니다. 시뮬레이터 HTML을 <strong>파일로 직접 연 경우</strong>(<code>file://...</code>) 출처가 <code>null</code>이라 거절됩니다.</li><li><strong>해결</strong>: 강의 사이트에서 열거나, 저장소 루트에서 <code>python build.py --serve</code> 후 <code>http://localhost:8000/sim/index.html</code>로 엽니다.</li></ul>
+<h3 id="로봇이-끊기며-움직임-경고-관절-속도">로봇이 끊기며 움직임 / <code>경고: 관절 속도 ...</code><a class="anchor" href="#로봇이-끊기며-움직임-경고-관절-속도">#</a></h3>
+<ul><li><strong>원인</strong>: PC가 바쁘면 10 ms 간격을 못 지켜 화면이 끊깁니다. 경고는 R02와 같은 속도 초과입니다.</li><li><strong>해결</strong>: 다른 무거운 프로그램을 닫고, 속도 경고는 <code>set_speed()</code>로 없앱니다. <code>websim</code>은 경고만 하지만 실물 백엔드는 거부합니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">개인 과제</div><div class="callout-body"><ol><li><code>DeltaRobot(backend=&quot;websim&quot;)</code>(설계 생략)으로 바꾸고, 시뮬레이터 설계 탭에서 <code>edu_dynamixel</code> 프리셋을 고른 뒤 실행해 봅니다. 콘솔의 <code>DeltaRobot(motor=...)</code> 출력과 사이클 시간이 어떻게 바뀌는지 기록합니다.</li><li>사이클마다 <code>robot.time</code>으로 측정한 실제 시간과, 같은 코드를 <code>record</code> 백엔드로 돌린 가상 시간을 표로 비교하고 차이의 원인을 설명합니다.</li><li><code>with DeltaRobot(&quot;edu_servo&quot;, backend=&quot;websim&quot;) as robot:</code> 형태로 바꿔 <code>finally: robot.close()</code> 없이도 연결이 정리되는지 확인합니다.</li></ol></div></div>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>이 저장소 <code>docs/PROTOCOL.md</code> (hello·design·state·estop·goal 메시지 형식, Origin 규칙)</li><li>websockets 문서 (sync 서버 <code>websockets.sync.server.serve</code>): https://websockets.readthedocs.io/en/stable/reference/sync/server.html</li><li>websockets — Origin 검사와 보안: https://websockets.readthedocs.io/en/stable/topics/security.html</li><li>pip — editable 설치와 extras: https://pip.pypa.io/en/stable/cli/pip_install/</li><li>Python <code>venv</code>: https://docs.python.org/3/library/venv.html</li><li>Chrome Local Network Access 설명: https://developer.chrome.com/blog/local-network-access</li><li>MDN WebSocket API: https://developer.mozilla.org/en-US/docs/Web/API/WebSocket</li></ul>
+      <nav class="pager"><a class="pager-prev" href="r02.html"><span>이전 · R02</span>Python pick &amp; place 프로그래밍</a><a class="pager-next" href="r04.html"><span>다음 · R04</span>ROS 2 환경과 delta_robot 패키지</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#왜-pc-파이썬인가">왜 PC 파이썬인가</a><a class="toc-l2" href="#연결-구조">연결 구조</a><a class="toc-l2" href="#설치">설치</a><a class="toc-l2" href="#실습-분류-프로그램을-실시간으로">실습: 분류 프로그램을 실시간으로</a><a class="toc-l2" href="#비상정지-확인">비상정지 확인</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#runtimeerror-websim-백엔드에는-websockets-12-가-필요합니다-pip-install-websockets-12">`RuntimeError: websim 백엔드에는 websockets&gt;=12 가 필요합니다: pip install &quot;websockets&gt;=12&quot;`</a><a class="toc-l3" href="#oserror-errno-10048-각-소켓-주소프로토콜-네트워크-주소-포트는-하나만-사용할-수-있습니다-while-attempting-to-bind-on-address-127-0-0-1-8765">`OSError: [Errno 10048] 각 소켓 주소(프로토콜/네트워크 주소/포트)는 하나만 사용할 수 있습니다 (while attempting to bind on address (&#x27;127.0.0.1&#x27;, 8765))`</a><a class="toc-l3" href="#timeouterror-60-초-안에-시뮬레이터가-연결되지-않았습니다">`TimeoutError: 60 초 안에 시뮬레이터가 연결되지 않았습니다`</a><a class="toc-l3" href="#시뮬레이터가-접속하지-못함-브라우저-콘솔에-http-403">시뮬레이터가 접속하지 못함 (브라우저 콘솔에 HTTP 403)</a><a class="toc-l3" href="#로봇이-끊기며-움직임-경고-관절-속도">로봇이 끊기며 움직임 / `경고: 관절 속도 ...`</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

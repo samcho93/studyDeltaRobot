@@ -26,19 +26,19 @@
   <text class="sub" x="190" y="400" text-anchor="middle">각 팔의 제약 |P + r·uᵢ − Eᵢ| = l</text>
   <text class="sub" x="190" y="418" text-anchor="middle">⇔ |P − Cᵢ| = l : 반지름 l 인 구 3개</text>
   <text class="lbl" x="575" y="30" text-anchor="middle">옆에서 본 두 교점 (θ₁ = θ₂ = θ₃ = 0.35 rad)</text>
-  <circle style="fill:none;stroke:var(--accent);stroke-dasharray:6 4;stroke-width:1.2" cx="672.3" cy="228.2" r="156"/>
-  <circle class="hi" cx="672.3" cy="228.2" r="5"/>
-  <circle style="fill:none;stroke:var(--warn);stroke-dasharray:6 4;stroke-width:1.2" cx="526.3" cy="228.2" r="156"/>
-  <circle class="hi" cx="526.3" cy="228.2" r="5"/>
-  <text class="tag" x="680.3" y="220.2" text-anchor="start">C1</text>
-  <text class="tag" x="518.3" y="220.2" text-anchor="end">C2, C3 (겹쳐 보임)</text>
-  <path style="fill:none;stroke:var(--text-dim)" d="M471 228.2 L710.2 228.2" stroke-width="1.2"/>
-  <text class="tag" x="710.2" y="223" text-anchor="end">세 중심의 평면</text>
-  <path class="ln" d="M575 350.1 L575 106.2" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <circle class="hi" cx="575" cy="350.1" r="6"/>
-  <circle class="box" cx="575" cy="106.2" r="6"/>
-  <text class="lbl" x="585" y="368.1" text-anchor="start">아래 해 z = -0.2791 (선택)</text>
-  <text class="sub" x="585" y="100.2" text-anchor="start">위 해 z = 0.1899</text>
-  <text class="lbl" x="567" y="289.1" text-anchor="end">h</text>
-  <text class="lbl" x="567" y="167.2" text-anchor="end">h</text>
+  <circle style="fill:none;stroke:var(--accent);stroke-dasharray:6 4;stroke-width:1.2" cx="670.5" cy="234.2" r="129"/>
+  <circle class="hi" cx="670.5" cy="234.2" r="5"/>
+  <circle style="fill:none;stroke:var(--warn);stroke-dasharray:6 4;stroke-width:1.2" cx="549.8" cy="234.2" r="129"/>
+  <circle class="hi" cx="549.8" cy="234.2" r="5"/>
+  <text class="tag" x="678.5" y="226.2" text-anchor="start">C1</text>
+  <text class="tag" x="541.8" y="220.2" text-anchor="end">C2, C3 (겹쳐 보임)</text>
+  <path style="fill:none;stroke:var(--text-dim)" d="M486.8 234.2 L701.8 234.2" stroke-width="1.2"/>
+  <text class="tag" x="701.8" y="249.2" text-anchor="end">세 중심의 평면</text>
+  <path class="ln" d="M590 335 L590 133.3" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <circle class="hi" cx="590" cy="335" r="6"/>
+  <circle class="box" cx="590" cy="133.3" r="6"/>
+  <text class="lbl" x="600" y="353" text-anchor="start">아래 해 z = -0.2791 (선택)</text>
+  <text class="sub" x="602" y="149.3" text-anchor="start">위 해 z = 0.1899</text>
+  <text class="lbl" x="582" y="284.6" text-anchor="end">h</text>
+  <text class="lbl" x="582" y="183.8" text-anchor="end">h</text>
 </svg>

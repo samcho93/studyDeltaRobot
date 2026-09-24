@@ -22,7 +22,7 @@ from deltarobot import kinematics as kin  # noqa: E402
 from deltarobot import trajectory as traj  # noqa: E402
 from deltarobot import urdf  # noqa: E402
 
-COLORS = ["var(--accent)", "var(--info)", "var(--warn)", "var(--danger)", "var(--task)", "var(--text-dim)"]
+COLORS = ["var(--accent)", "var(--danger)", "var(--warn)", "var(--task)", "var(--info)", "var(--text-dim)"]
 
 
 def esc(s: str) -> str:
@@ -115,6 +115,9 @@ class Axes:
 
     def frame(self, xticks, yticks, xlabel="", ylabel="", xfmt="%g", yfmt="%g", grid=True):
         s = self.s
+        eps = 1e-9
+        xticks = [v for v in xticks if self.xr[0] - eps <= v <= self.xr[1] + eps]
+        yticks = [v for v in yticks if self.yr[0] - eps <= v <= self.yr[1] + eps]
         for v in yticks:
             yy = self.Y(v)
             if grid:
@@ -175,12 +178,12 @@ def adept_frames(design, across, speed=None, accel=None, up=0.025, n=1, radius=0
 # ====================================================================== d01
 def d01_sim_tabs():
     s = Svg("d01-sim-tabs", 760, 300, "시뮬레이터 다섯 탭과 설계 반복 흐름")
-    tabs = [("설계", ["프리셋 · R r L l w", "모터 · 감속기 · 툴", "[설계 검증]"]),
-            ("조그", ["TCP x/y/z 슬라이더", "θ1~θ3 슬라이더", "조건수 · 한계 표시"]),
-            ("작업", ["장면 · 데모 프로그램", "프로파일 · 속도 · 가속도", "재생 · 배속"]),
-            ("분석", ["θ · ω · τ 그래프", "피크/RMS/속도/관성비", "사이클 · 작업영역"]),
-            ("연결", ["PC Python (websim)", "JSON · URDF 내려받기", "공유 링크"])]
-    w, gap = 132, 20
+    tabs = [("설계", ["프리셋·R r L l w", "모터·감속기·툴", "[설계 검증]"]),
+            ("조그", ["TCP x/y/z", "θ1~θ3 슬라이더", "조건수·한계 표시"]),
+            ("작업", ["장면·데모", "프로파일·속도", "재생·배속"]),
+            ("분석", ["θ·ω·τ 그래프", "피크·RMS·속도", "사이클·작업영역"]),
+            ("연결", ["PC Python", "JSON·URDF", "공유 링크"])]
+    w, gap = 136, 14
     x0 = (760 - (5 * w + 4 * gap)) / 2
     for i, (title, lines) in enumerate(tabs):
         x = x0 + i * (w + gap)
@@ -194,8 +197,8 @@ def d01_sim_tabs():
     xa = x0 + 3 * (w + gap) + w / 2
     xb = x0 + w / 2
     s.path("M%.1f 180 L%.1f 230 L%.1f 230 L%.1f 184" % (xa, xa, xb, xb), hi=True, arrow=True, width=1.8)
-    s.text((xa + xb) / 2, 222, "✖ 가 있으면 설계 탭으로 돌아가 수정 → 다시 검증", "tag")
-    s.text(380, 272, "설계값은 브라우저에 저장되어 URDF 뷰어 · Playground가 같은 설계를 씁니다", "sub")
+    s.text((xa + xb) / 2, 248, "✖ 가 있으면 설계 탭으로 돌아가 수정 → 다시 검증", "tag")
+    s.text(380, 282,"설계값은 브라우저에 저장되어 URDF 뷰어 · Playground가 같은 설계를 씁니다", "sub")
     s.write()
 
 
@@ -207,7 +210,7 @@ def d01_graph_reading():
     ts = [f["t"] - t0 for f in data]
     m = d.motor_spec
     n, eta = d.ratio, d.efficiency
-    s = Svg("d01-graph-reading", 760, 420, "분석 탭 그래프 읽기: 모터 속도와 토크, 한계선")
+    s = Svg("d01-graph-reading", 760, 480,"분석 탭 그래프 읽기: 모터 속도와 토크, 한계선")
     T = ts[-1]
     a1 = Axes(s, 70, 40, 640, 130, (0, T), (0, 8))
     a1.frame([0, 0.5, 1.0, 1.5], [0, 2, 4, 6, 8], "", "모터 속도 |ω| [rad/s]", yfmt="%g")
@@ -218,15 +221,18 @@ def d01_graph_reading():
     a2.frame([0, 0.5, 1.0, 1.5], [0, 0.3, 0.6, 0.9, 1.2], "시간 [s]", "모터 토크 |τ| [N·m]", yfmt="%.1f")
     for i in range(3):
         a2.plot(ts, [abs(f["tau"][i]) / (n * eta) for f in data], COLORS[i], 1.8)
+        a2.plot(ts, [dyn.available_torque(d, f["theta_d"][i] * n) for f in data], COLORS[i], 1.1, "3 3")
     a2.hline(m["peak_torque"], "var(--danger)", "피크(정지) 토크 %.2f N·m" % m["peak_torque"])
     a2.hline(m["rated_torque"], "var(--warn)", "정격 토크 %.2f N·m (RMS 비교)" % m["rated_torque"])
-    legend(s, 560, 402 - 18 * 2, [("모터 1", COLORS[0], ""), ("모터 2", COLORS[1], ""), ("모터 3", COLORS[2], "")])
+    legend(s, 520, 420, [("모터 1", COLORS[0], ""), ("모터 2", COLORS[1], ""), ("모터 3", COLORS[2], "")])
+    legend(s, 90, 420, [("실선: 필요 토크 |τ|", "var(--text-dim)", ""),
+                                 ("점선: 그 순간 속도에서 낼 수 있는 토크", "var(--text-dim)", "3 3")])
     s.write()
 
 
 # ====================================================================== d02
 def d02_adept_cycle():
-    s = Svg("d02-adept-cycle", 760, 430, "Adept 사이클: 25 mm 상승, 305 mm 이동, 25 mm 하강 후 복귀")
+    s = Svg("d02-adept-cycle", 760, 450,"Adept 사이클: 25 mm 상승, 305 mm 이동, 25 mm 하강 후 복귀")
     path = traj.arch_path((-0.1525, 0, 0), (0.1525, 0, 0), 0.025)
     pts = [path.point(path.length * k / 200) for k in range(201)]
     # top: path shape, z exaggerated x4
@@ -243,8 +249,8 @@ def d02_adept_cycle():
     s.text(0 + sx(0), sy(0.031) - 6, "305 mm", "lbl")
     s.line(sx(-0.165), sy(0), sx(-0.165), sy(0.025), arrow=True, width=1.2)
     s.text(sx(-0.165) - 8, sy(0.0125) + 4, "25 mm", "tag", anchor="end")
-    s.text(700, 60, "모서리 반지름 = 높이/2", "tag", anchor="end")
-    s.text(700, 76, "(z 방향 4배 확대)", "tag", anchor="end")
+    zoom = (ax.h / (ax.yr[1] - ax.yr[0])) / (ax.w / (ax.xr[1] - ax.xr[0]))
+    s.text(380, 186, "모서리 반지름 = 높이/2 (기본값) · z 방향 %.1f배 확대" % zoom, "tag")
     # bottom: speed profile of one round trip (industrial_picker defaults)
     d = DeltaDesign.preset("industrial_picker")
     r = DeltaRobot(d, scene="empty")
@@ -258,9 +264,9 @@ def d02_adept_cycle():
     s.line(a2.X(T), a2.y, a2.X(T), a2.y + a2.h, width=1, dash=True)
     s.text(a2.X(T / 2), a2.y + 16, "가는 길", "tag")
     s.text(a2.X(1.5 * T), a2.y + 16, "돌아오는 길", "tag")
-    s.text(a2.X(2 * T) - 4, a2.y + a2.h - 8,
+    s.text(380, 436,
            "industrial_picker 기본값 %.2f m/s, %.1f m/s², scurve → 1 사이클 %.2f s" % (r.speed, r.accel, 2 * T),
-           "tag", anchor="end")
+           "tag")
     s.write()
 
 
@@ -281,22 +287,23 @@ def d03_ratio_effect():
         x0, x1 = ax.X(0), ax.X(c["diameter"] * 500)
         y0, y1 = ax.Y(c["z_top"] * 1000), ax.Y(c["z_bottom"] * 1000)
         s.rect(x0, y0, x1 - x0, y1 - y0, col, 0.08, dash=True, width=1.2)
-        items.append(("l/L = %.1f  (l = %d mm) → D %d mm" % (ratio, round(d.forearm * 1000), round(c["diameter"] * 1000)),
+        items.append(("%.1f · l %d → D %d" % (ratio, round(d.forearm * 1000), round(c["diameter"] * 1000)),
                       col, ""))
-    legend(s, 575, 70, items, dy=24)
-    s.text(575, 210, "실선: 높이별 최대 반지름", "tag", anchor="start")
-    s.text(575, 228, "(한 원 전체가 도달 가능)", "tag", anchor="start")
-    s.text(575, 252, "점선 사각형: H = 100 mm", "tag", anchor="start")
-    s.text(575, 270, "작업 실린더 (반단면)", "tag", anchor="start")
-    s.text(575, 300, "L = 130 mm, R = 100, r = 35 고정", "tag", anchor="start")
+    s.text(585, 56, "l/L · l [mm] → D [mm]", "sub", anchor="start")
+    legend(s, 585, 78, items, dy=24)
+    s.text(585, 210, "실선: 높이별 최대 반지름", "tag", anchor="start")
+    s.text(585, 228, "(한 원 전체가 도달 가능)", "tag", anchor="start")
+    s.text(585, 252, "점선 사각형: H = 100 mm", "tag", anchor="start")
+    s.text(585, 270, "작업 실린더 (반단면)", "tag", anchor="start")
+    s.text(585, 300, "L = 130, R = 100, r = 35 mm", "tag", anchor="start")
     s.write()
 
 
 # ====================================================================== d04
 def d04_torque_speed():
-    s = Svg("d04-torque-speed", 760, 400, "모터 종류별 속도-토크 모델과 출력축 환산 곡선")
+    s = Svg("d04-torque-speed", 760, 490, "모터 종류별 속도-토크 모델과 출력축 환산 곡선")
     # left: normalised shapes
-    ax = Axes(s, 60, 40, 280, 280, (0, 1.05), (0, 1.1))
+    ax = Axes(s, 60, 40, 280, 270, (0, 1.05), (0, 1.1))
     ax.frame([0, 0.25, 0.5, 0.75, 1.0], [0, 0.25, 0.5, 0.75, 1.0], "ω / ω_max", "가용 토크 / 피크 토크",
              xfmt="%.2f", yfmt="%.2f")
     kinds = [("rc_servo_mg996r", "RC · 스마트 서보 (직선)", COLORS[0], ""),
@@ -308,10 +315,9 @@ def d04_torque_speed():
         wm, pk = d.motor_spec["max_speed"], d.motor_spec["peak_torque"]
         xs = [k / 200 * 1.05 for k in range(201)]
         ax.plot(xs, [dyn.available_torque(d, x * wm) / pk for x in xs], col, 2.2, dash)
-    legend(s, 70, 360, [(k[1], k[2], k[3]) for k in kinds[:2]], dy=18)
-    legend(s, 250, 360, [(k[1], k[2], k[3]) for k in kinds[2:]], dy=18)
+    legend(s, 70, 385, [(k[1], k[2], k[3]) for k in kinds], dy=19)
     # right: output-side curves for typical drive trains (log y)
-    ax2 = Axes(s, 460, 40, 270, 280, (0, 30), (0.1, 100), logy=True)
+    ax2 = Axes(s, 460, 40, 270, 270, (0, 30), (0.1, 100), logy=True)
     ax2.frame([0, 10, 20, 30], [0.1, 1, 10, 100], "출력축 속도 [rad/s]", "출력축 가용 토크 [N·m] (로그)")
     combos = [("rc_servo_mg996r", "none", 1, "MG996R 직결"),
               ("dxl_xm430_w350", "none", 1, "XM430 직결"),
@@ -330,9 +336,7 @@ def d04_torque_speed():
                 a /= dyn.STEPPER_MARGIN
             ys.append(a if a > 0 else 0.1)
         ax2.plot(xs, ys, COLORS[k], 2.0)
-        s.ctext(ax2.X(30) + 4 if False else ax2.x + ax2.w + 4, ax2.Y(ys[0]) + 4, "", COLORS[k])
-    legend(s, 470, 350, [(c[3], COLORS[k], "") for k, c in enumerate(combos[:3])], dy=16)
-    legend(s, 620, 350, [(c[3], COLORS[k + 3], "") for k, c in enumerate(combos[3:])], dy=16)
+    legend(s, 470, 375, [(c[3], COLORS[k], "") for k, c in enumerate(combos)], dy=18)
     s.write()
 
 
@@ -345,7 +349,7 @@ def d04_ratio_sweep():
         r, _ = adept_frames(d, 0.305, speed=3.0, accel=30.0, radius=0.025)
         res = r.analyze()
         rows.append((n, res["peak_ratio"], res["rms_ratio"], res["speed_ratio"], res["inertia_ratio"]))
-    s = Svg("d04-ratio-sweep", 760, 400, "감속비에 따른 피크·RMS·속도 사용률과 관성비")
+    s = Svg("d04-ratio-sweep", 760, 452,"감속비에 따른 피크·RMS·속도 사용률과 관성비")
     ax = Axes(s, 70, 40, 420, 290, (0, 55), (0, 2.5))
     ax.frame([0, 10, 20, 30, 40, 50], [0, 0.5, 1.0, 1.5, 2.0, 2.5], "감속비 N", "사용률 (1 이하 통과)", yfmt="%.1f")
     ax.hline(1.0, "var(--danger)", "한계 1.0")
@@ -353,8 +357,8 @@ def d04_ratio_sweep():
         ax.plot([r[0] for r in rows], [r[idx] for r in rows], COLORS[k], 2.2)
         for rr in rows:
             s.dot(ax.X(rr[0]), ax.Y(min(rr[idx], 2.5)), 3, COLORS[k])
-    legend(s, 90, 380 - 36, [("피크 토크 비", COLORS[0], ""), ("RMS 토크 비", COLORS[1], "")], dy=18)
-    legend(s, 260, 380 - 36, [("속도 비", COLORS[2], "")], dy=18)
+    legend(s, 80, 392, [("피크 토크 비", COLORS[0], ""), ("RMS 토크 비", COLORS[1], "")], dy=18)
+    legend(s, 250, 392, [("속도 비", COLORS[2], "")], dy=18)
     ax2 = Axes(s, 560, 40, 170, 290, (0, 55), (0.1, 1000), logy=True)
     ax2.frame([0, 25, 50], [0.1, 1, 10, 100, 1000], "감속비 N", "관성비 (로그)")
     ax2.plot([r[0] for r in rows], [r[4] for r in rows], COLORS[4], 2.2)
@@ -366,23 +370,23 @@ def d04_ratio_sweep():
     nstar = math.sqrt(jl / d.motor_spec["rotor_inertia"])
     s.cpath("M%.1f %.1f L%.1f %.1f" % (ax2.X(nstar), ax2.y, ax2.X(nstar), ax2.y + ax2.h), "var(--text-dim)", 1.2, "3 3")
     s.text(ax2.X(nstar) + 4, ax2.y + 14, "N* ≈ %.0f" % nstar, "tag", anchor="start")
-    s.text(380, 395, "AC 400 W + 유성, 0.5 kg, Adept 305 mm 사이클, 3 m/s · 30 m/s²", "tag")
+    s.text(380, 440, "AC 400 W + 유성, 0.5 kg, Adept 305 mm 사이클, 3 m/s · 30 m/s², 모서리 반지름 25 mm", "tag")
     s.write()
     return rows
 
 
 # ====================================================================== d05
 def d05_holding():
-    s = Svg("d05-holding-force", 760, 400, "가속도에 따른 필요 유지력과 툴별 유지력")
+    s = Svg("d05-holding-force", 760, 414,"가속도에 따른 필요 유지력과 툴별 유지력")
     ax = Axes(s, 70, 40, 470, 300, (0, 80), (0, 110))
-    ax.frame([0, 20, 40, 60, 80], [0, 20, 40, 60, 80, 100], "최대 |a − g| 에서 g 를 뺀 가속도 a [m/s²]",
+    ax.frame([0, 20, 40, 60, 80], [0, 20, 40, 60, 80, 100], "이동판 가속도 a [m/s²] (중력과 같은 방향으로 더해지는 최악의 경우)",
              "힘 [N]")
     SF = 2.0
     for k, m in enumerate((0.05, 0.2, 0.5)):
         xs = [0, 80]
         ax.plot(xs, [m * (9.81 + a) * SF for a in xs], COLORS[k], 2.4)
-        s.ctext(ax.X(80) - 4, ax.Y(m * (9.81 + 80) * SF) - 6 if m * (9.81 + 80) * SF < 105 else ax.Y(105),
-                "m = %g kg" % m, COLORS[k], anchor="end", size=11)
+        s.ctext(ax.X(66), ax.Y(m * (9.81 + 66) * SF) + (14 if k == 0 else -7),
+                "m = %g kg" % m, COLORS[k], anchor="middle", size=11)
     tools = DeltaDesign().copy()
     from deltarobot import catalog
     cat = catalog()["tools"]
@@ -394,7 +398,7 @@ def d05_holding():
         yy = ax.Y(F)
         s.cpath("M%.1f %.1f L%.1f %.1f" % (ax.x, yy, ax.x + ax.w, yy), "var(--text-dim)", 1.1, "5 4")
         s.text(ax.x + ax.w + 8, yy + 4, "%s %.1f N" % (label, F), "tag", anchor="start")
-    s.text(305, 390, "필요 유지력 F = m (g + a) · SF,  SF = %.1f" % SF, "tag")
+    s.text(305, 402, "필요 유지력 F = m (g + a) · SF,  SF = %.1f" % SF, "tag")
     del tools
     s.write()
 
@@ -402,23 +406,24 @@ def d05_holding():
 # ====================================================================== d06
 def d06_profiles():
     dist, vmax, amax = 0.30, 2.0, 20.0
-    s = Svg("d06-profiles", 760, 520, "네 가지 속도 프로파일의 위치·속도·가속도")
+    s = Svg("d06-profiles", 760, 560, "네 가지 속도 프로파일의 위치·속도·가속도")
     profs = [traj.Profile(k, dist, vmax, amax) for k in traj.PROFILES]
     T = max(p.T for p in profs)
     panels = [(0, "위치 s [m]", (0, 0.32), [0, 0.1, 0.2, 0.3], "%.1f"),
               (1, "속도 ṡ [m/s]", (0, 2.2), [0, 1, 2], "%g"),
               (2, "가속도 s̈ [m/s²]", (-40, 40), [-40, -20, 0, 20, 40], "%g")]
     for k, (idx, lab, yr, yt, fmt) in enumerate(panels):
-        ax = Axes(s, 80, 30 + k * 150, 500, 110, (0, T * 1.02), yr)
+        ax = Axes(s, 80, 30 + k * 172, 500, 110, (0, T * 1.02), yr)
         ax.frame([0, 0.1, 0.2, 0.3], yt, "시간 [s]" if k == 2 else "", lab, xfmt="%.1f", yfmt=fmt)
         for j, p in enumerate(profs):
             ts = [p.T * i / 300 for i in range(301)]
             ax.plot(ts, [p.at(t)[idx] for t in ts], COLORS[j], 2.0)
     legend(s, 600, 60, [("%s  T = %.3f s" % (p.kind, p.T), COLORS[j], "") for j, p in enumerate(profs)], dy=22)
     s.text(600, 170, "d = 0.30 m", "tag", anchor="start")
-    s.text(600, 188, "vmax = 2 m/s, amax = 20 m/s²", "tag", anchor="start")
-    s.text(600, 215, "같은 한계값이라도", "tag", anchor="start")
-    s.text(600, 233, "프로파일마다 T 가 다릅니다", "tag", anchor="start")
+    s.text(600, 188, "vmax = 2 m/s", "tag", anchor="start")
+    s.text(600, 203, "amax = 20 m/s²", "tag", anchor="start")
+    s.text(600, 230, "같은 한계값이라도", "tag", anchor="start")
+    s.text(600, 246, "프로파일마다 T 가 다름", "tag", anchor="start")
     s.write()
     return profs
 
@@ -450,7 +455,7 @@ def d07_urdf_tree():
     kinds = {}
     for _, t in joints:
         kinds[t] = kinds.get(t, 0) + 1
-    s = Svg("d07-urdf-tree", 760, 470, "deltarobot.urdf 가 만드는 트리 구조")
+    s = Svg("d07-urdf-tree", 760, 515, "deltarobot.urdf 가 만드는 트리 구조")
     s.box(300, 20, 160, 40, hi=True)
     s.text(380, 45, "base_link")
     # arm chain (arm 1 shown)
@@ -468,7 +473,7 @@ def d07_urdf_tree():
         if k < len(chain) - 1:
             s.line(x + 110, yy + 42, x + 110, yy + 60, arrow=True, width=1.2)
     s.path("M340 60 L340 75 L170 75 L170 94", arrow=True, width=1.2)
-    s.text(215, 462, "팔 1 (a 로드).  b 로드: elbow1b_pitch/yaw 가 a 를 mimic (평행사변형)", "tag")
+    s.text(380, 505, "왼쪽: 팔 1 의 a 로드.  b 로드는 elbow1b_pitch/yaw 가 a 를 mimic (평행사변형)", "tag")
     s.box(262, 250, 150, 70)
     s.text(337, 275, "× 3 팔", "lbl")
     s.text(337, 295, "motor2 · motor3 도", "tag")
@@ -489,9 +494,9 @@ def d07_urdf_tree():
         if k < len(ev) - 1:
             s.line(x2 + 110, yy + 40, x2 + 110, yy + 50, arrow=True, width=1.2)
     s.path("M420 60 L420 75 L570 75 L570 84", arrow=True, width=1.2)
-    s.text(680, 36, "링크 %d · 관절 %d (revolute %d, prismatic %d, fixed %d) · mimic %d"
+    s.text(380, 482, "edu_dynamixel: 링크 %d · 관절 %d (revolute %d, prismatic %d, fixed %d) · mimic %d"
            % (len(links), len(joints), kinds.get("revolute", 0), kinds.get("prismatic", 0),
-              kinds.get("fixed", 0), mimic), "tag", anchor="end")
+              kinds.get("fixed", 0), mimic), "sub")
     s.write()
     return len(links), len(joints), kinds, mimic
 
@@ -503,9 +508,9 @@ def d08_workspace_fit():
                    upper_arm_material="pla_print", forearm_material="pla_print", payload=0.01)
     v1 = base.copy(payload=0.01)
     s = Svg("d08-workspace-fit", 760, 400, "탁상형 델타: 1차 설계와 최종 설계의 작업영역, 요구 실린더")
-    ax = Axes(s, 80, 40, 440, 300, (0, 180), (-360, -60))
-    ax.frame([0, 50, 100, 150], [-350, -300, -250, -200, -150, -100], "반지름 [mm]", "이펙터 중심 z [mm]")
-    for k, (d, label) in enumerate(((v0, "v0: R70 r30 L80 l160"), (v1, "v1: edu_servo 치수 R80 r30 L100 l220"))):
+    ax = Axes(s, 80, 40, 440, 300, (0, 220), (-360, -60))
+    ax.frame([0, 50, 100, 150, 200], [-350, -300, -250, -200, -150, -100], "반지름 [mm]", "이펙터 중심 z [mm]")
+    for k, (d, label) in enumerate(((v0, "v0: R70 r30 L80 l160"), (v1, "v1: R80 r30 L100 l220"))):
         c = kin.work_cylinder(d, 0.04)
         prof = [(z * 1000, rr * 1000) for z, rr in c["profile"] if rr > 0]
         col = COLORS[k * 3]
@@ -582,7 +587,7 @@ def d09_cell():
     bpts = []
     for k in range(73):
         a = 2 * math.pi * k / 72
-        lo, hi = 0.0, 0.7
+        lo, hi = 0.0, kin.workspace_bounds(design)[0]
         for _ in range(22):
             mid = (lo + hi) / 2
             if robot.reachable(mid * math.cos(a), mid * math.sin(a), ztop):
@@ -607,14 +612,15 @@ def d09_cell():
         s.text(X(b["x"]), Y(b["y"]) + 4, "상자 %s (%s)" % (b["id"], b["color"]), "tag")
     for x, y, c in picks:
         s.dot(X(x), Y(y), 3.2, "var(--danger)" if c == "red" else "var(--info)")
-    s.text(640, 60, "초록 실선: 부품 윗면 높이에서", "tag", anchor="start")
-    s.text(640, 76, "도달 가능한 경계", "tag", anchor="start")
-    s.text(640, 100, "회색 점선: 장면의", "tag", anchor="start")
-    s.text(640, 116, "작업 반지름 %.0f mm" % (rc * 1000), "tag", anchor="start")
-    s.text(640, 140, "점: 실제 집은 위치", "tag", anchor="start")
-    s.text(640, 156, "(%d개, 예측 x)" % len(picks), "tag", anchor="start")
-    s.text(640, 190, "눈금 100 mm", "tag", anchor="start")
-    s.line(640, 200, 640 + 0.1 * sc, 200, width=2)
+    tx = 560
+    s.text(tx, 60, "초록 실선: 부품 윗면 높이에서", "tag", anchor="start")
+    s.text(tx, 76, "도달 가능한 경계", "tag", anchor="start")
+    s.text(tx, 100, "회색 점선: 장면의", "tag", anchor="start")
+    s.text(tx, 116, "작업 반지름 %.0f mm" % (rc * 1000), "tag", anchor="start")
+    s.text(tx, 140, "점: 실제 집은 위치", "tag", anchor="start")
+    s.text(tx, 156, "(%d개, 예측한 x)" % len(picks), "tag", anchor="start")
+    s.text(tx, 190, "눈금 100 mm", "tag", anchor="start")
+    s.line(tx, 200, tx + 0.1 * sc, 200, width=2)
     s.write()
     return len(picks)
 
@@ -623,18 +629,20 @@ def d09_cell():
 def d10_a5_fit():
     base = DeltaDesign.preset("printer_stepper").copy(tool="pen", payload=0.0)
     small = base.copy(base_radius=0.08, effector_radius=0.03, upper_arm=0.1, forearm=0.22)
-    s = Svg("d10-a5-fit", 760, 420, "종이 높이에서 도달 가능한 영역과 A5 용지")
-    sc = 1.3   # px per mm
-    cx, cy = 250, 210
+    s = Svg("d10-a5-fit", 760, 440, "종이 높이에서 도달 가능한 영역과 A5 용지")
+    sc = 0.6   # px per mm
+    cx, cy = 235, 215
     X = lambda x: cx + x * 1000 * sc
     Y = lambda y: cy - y * 1000 * sc
-    for k, (d, label) in enumerate(((small, "v0: R80 r30 L100 l220"), (base, "v1: printer_stepper R110 r35 L140 l320"))):
+    cases = ((small, "v0: R80 r30 L100 l220", None), (base, "v1: printer_stepper R110 r35 L140 l320", None),
+             (base, "최종: v1 + 종이 면을 z = −320 mm 로", -0.320))
+    for k, (d, label, zset) in enumerate(cases):
         r = DeltaRobot(d, scene="drawing")
-        z = r.scene.surface_z
+        z = r.scene.surface_z if zset is None else zset
         pts = []
         for j in range(145):
             a = 2 * math.pi * j / 144
-            lo, hi = 0.0, 0.4
+            lo, hi = 0.0, kin.workspace_bounds(d)[0]
             for _ in range(22):
                 mid = (lo + hi) / 2
                 if r.reachable(mid * math.cos(a), mid * math.sin(a), z):
@@ -642,26 +650,26 @@ def d10_a5_fit():
                 else:
                     hi = mid
             pts.append((lo * math.cos(a), lo * math.sin(a)))
-        col = COLORS[3] if k == 0 else COLORS[0]
+        col = (COLORS[3], COLORS[1], COLORS[0])[k]
         s.cpath("M" + " L".join("%.1f %.1f" % (X(p[0]), Y(p[1])) for p in pts) + " Z", col, 2.0,
-                fill=col, opacity=0.06)
-        s.text(520, 70 + k * 60, label, "tag", anchor="start")
-        s.ctext(520, 88 + k * 60, "종이 면 z = %.0f mm 에서의 경계" % (z * 1000), col, size=12)
+                fill=col, opacity=0.05, dash="" if k != 1 else "6 4")
+        s.text(520, 50 + k * 54, label, "tag", anchor="start")
+        s.ctext(520, 68 + k * 54, "종이 면 z = %.0f mm 에서의 경계" % (z * 1000), col, size=12)
     s.rect(X(-0.105), Y(0.074), 0.210 * 1000 * sc, 0.148 * 1000 * sc, "var(--text-dim)", 0.0, dash=True, width=1.8)
     s.text(X(0), Y(0.074) - 8, "A5 210 × 148 mm", "lbl")
-    s.text(520, 210, "경계는 72·144 방향으로 이분 탐색한", "tag", anchor="start")
-    s.text(520, 226, "reachable() 결과 (모터·볼조인트·팔꿈치", "tag", anchor="start")
-    s.text(520, 242, "한계 포함)", "tag", anchor="start")
+    s.text(520, 230, "경계: 144 방향으로 이분 탐색한", "tag", anchor="start")
+    s.text(520, 246, "reachable() 결과 (모터·볼조인트·팔꿈치", "tag", anchor="start")
+    s.text(520, 262, "한계 포함)", "tag", anchor="start")
     s.write()
 
 
 # ====================================================================== d11
 def d11_flow():
     s = Svg("d11-design-loop", 760, 300, "설계 캡스톤 흐름: 요구사항에서 검증 보고서까지")
-    steps = [("① 요구사항", "페이로드 · D×H", "사이클 · 정밀도"), ("② 치수", "R r L l (D03)", "작업 실린더"),
-             ("③ 구동", "모터 · 감속기 (D04)", "관성비 · 분해능"), ("④ 툴·궤적", "유지력 (D05)", "프로파일 (D06)"),
-             ("⑤ 검증", "analyze() · 설계 검증", "응용 프로그램"), ("⑥ 보고서", "표 · 그래프", "URDF · JSON")]
-    w, gap = 108, 16
+    steps = [("① 요구사항", "페이로드·D×H", "사이클·정밀도"), ("② 치수", "R r L l (D03)", "작업 실린더"),
+             ("③ 구동", "모터·감속기", "D04 · 관성비"), ("④ 툴·궤적", "유지력 (D05)", "프로파일 (D06)"),
+             ("⑤ 검증", "analyze()", "응용 프로그램"), ("⑥ 보고서", "표·그래프", "JSON·URDF")]
+    w, gap = 116, 10
     x0 = (760 - (6 * w + 5 * gap)) / 2
     for i, (a, b, c) in enumerate(steps):
         x = x0 + i * (w + gap)
@@ -674,9 +682,9 @@ def d11_flow():
     xa = x0 + 4 * (w + gap) + w / 2
     xb = x0 + 1 * (w + gap) + w / 2
     s.path("M%.1f 166 L%.1f 216 L%.1f 216 L%.1f 170" % (xa, xa, xb, xb), hi=True, arrow=True, width=1.8)
-    s.text((xa + xb) / 2, 208, "✖ 항목이 있으면 원인 단계로 돌아가 반복 (반복 기록도 보고서에 남김)", "tag")
+    s.text((xa + xb) / 2, 234, "✖ 항목이 있으면 원인 단계로 돌아가 반복 (반복 기록도 보고서에 남김)", "tag")
     s.text(380, 40, "모든 수치는 시뮬레이터·deltarobot 실행 결과로 뒷받침", "sub")
-    s.text(380, 262, "제출물: 설계 JSON + 검증 코드 + 보고서(요구 대비 결과표) + 발표", "tag")
+    s.text(380, 272, "제출물: 설계 JSON + 검증 코드 + 보고서(요구 대비 결과표) + 발표", "tag")
     s.write()
 
 

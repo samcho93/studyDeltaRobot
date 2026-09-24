@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D08. 응용실습 ① 탁상형 교육용 델타 · studyDeltaRobot</title>
+<meta name="description" content="RC 서보와 3D 프린팅 부품으로 사탕(10 g)을 색깔별로 분류하는 책상 위 델타를 설계하고 검증합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-design">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" class="active" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="d08" data-track="design">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-design">설계·시뮬레이션</span> D-3 설계 응용실습 &middot; 약 120분 &middot; 중급</div>
+    <h1><span class="lesson-no">D08</span>응용실습 ① 탁상형 교육용 델타</h1>
+    <p class="lede">RC 서보와 3D 프린팅 부품으로 사탕(10 g)을 색깔별로 분류하는 책상 위 델타를 설계하고 검증합니다.</p>
+    <div class="requires">선수 챕터: <a href="d03.html">D03</a> <a href="d04.html">D04</a> <a href="d05.html">D05</a> <a href="d06.html">D06</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a><a class="ghost-btn" href="../tools/playground.html">Python Playground</a><a class="ghost-btn" href="../tools/urdf-viewer.html">URDF 뷰어</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>책상 위 사탕 분류 로봇의 요구사항을 <strong>수치 표</strong>로 만들고, 시뮬레이터 설계 탭과 Python 분석으로 한 항목씩 판정할 수 있습니다.</li><li>1차 설계안이 <strong>불합격</strong>하는 이유를 숫자로 찾고, 치수·속도를 고쳐 <strong>합격</strong> 설계에 도달하는 반복 과정을 기록할 수 있습니다.</li><li>카탈로그 id로 부품표(BOM)를 만들고, 분류 장면에서 실제로 동작하는 Python 프로그램을 완성할 수 있습니다.</li></ul>
+<h2 id="과제-소개">과제 소개<a class="anchor" href="#과제-소개">#</a></h2>
+<p>과학 축제 부스에 놓을 <strong>사탕 분류 델타</strong>를 만듭니다. 쟁반 위의 사탕(빨강·파랑·초록)을 흡착컵으로 집어 같은 색 상자에 넣습니다. 예산이 작아 모터는 <strong>RC 서보(MG996R급)</strong> 3개, 구조물은 <strong>3D 프린팅</strong>입니다. 시뮬레이터의 분류 장면(<code>pick_place</code>)이 이 부스를 대신합니다.</p>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html?preset=edu_servo&amp;scene=pick_place">시뮬레이터에서 열기 (edu_servo + 분류 장면)</a></p>
+<h2 id="1단계-요구사항-표">1단계 — 요구사항 표<a class="anchor" href="#1단계-요구사항-표">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>항목</th><th>요구</th><th>근거</th></tr></thead><tbody><tr><td>페이로드</td><td>10 g (사탕 1개)</td><td>포장 사탕 최대 질량</td></tr><tr><td>작업 실린더</td><td><strong>D ≥ 200 mm, H ≥ 40 mm</strong></td><td>쟁반(지름 약 120 mm) + 상자 3개를 한 원 안에 배치, 아치 30 mm + 상자 높이</td></tr><tr><td>사이클</td><td><strong>30 개/분 이상</strong> (한 개 2.0 s 이내)</td><td>관람객 대기 시간</td></tr><tr><td>정밀도</td><td>TCP 분해능(최악) <strong>≤ 5 mm</strong></td><td>흡착컵 Ø20이 사탕 윗면(약 15 mm)을 덮는 허용 오차</td></tr><tr><td>툴</td><td>흡착컵 <code>suction_20</code></td><td>포장지 윗면이 평평, 색과 무관하게 집기</td></tr><tr><td>구동</td><td>RC 서보 <code>rc_servo_mg996r</code> × 3, 직결</td><td>예산. 피드백 없음, 분해능 약 1°(대표값)</td></tr><tr><td>모터 검증</td><td>피크·RMS·속도·곡선 비 모두 ≤ 1 (안전율 1.2)</td><td><code>robot.analyze()</code></td></tr></tbody></table></div>
+<div class="callout callout-info"><div class="callout-title">RC 서보의 한계를 요구사항에 반영하기</div><div class="callout-body"><p>MG996R급 서보는 위치 피드백을 밖으로 주지 않고, 데드밴드 때문에 1° 정도 이하의 움직임은 잘 따라오지 못합니다(카탈로그 <code>resolution_deg: 1.0</code>, 대표값). 그래서 정밀도 요구를 <strong>±5 mm 수준</strong>으로 잡았습니다. 이보다 정밀해야 하면 스마트 서보(0.088°)로 바꿔야 합니다 — 아래 과제 2.</p></div></div>
+<h2 id="2단계-설계-반복-v0-v1-최종">2단계 — 설계 반복 (v0 → v1 → 최종)<a class="anchor" href="#2단계-설계-반복-v0-v1-최종">#</a></h2>
+<h3 id="v0-더-작고-싸게-불합격">v0: 더 작고 싸게 (불합격)<a class="anchor" href="#v0-더-작고-싸게-불합격">#</a></h3>
+<p>"책상 위니까 작을수록 좋다"는 생각으로 <code>edu_servo</code>보다 작게, 팔을 모두 PLA로 뽑는 안을 먼저 검토합니다. R = 70, r = 30, L = 80, l = 160 mm (l/L = 2.0), 위팔·아래팔 모두 <code>pla_print</code>.</p>
+<h3 id="v1-eduservo-치수-작업영역-합격">v1: edu_servo 치수 (작업영역 합격)<a class="anchor" href="#v1-eduservo-치수-작업영역-합격">#</a></h3>
+<p>v0이 작업영역에서 떨어지자 크기를 키웁니다. l/L = 2.2, R − r = 50 mm인 <code>edu_servo</code> 치수(R = 80, r = 30, L = 100, l = 220 mm)로, 아래팔은 강성을 위해 알루미늄 튜브(<code>al_tube</code>)로 바꿉니다.</p>
+<h3 id="판정-스크립트">판정 스크립트<a class="anchor" href="#판정-스크립트">#</a></h3>
+<p>두 안의 작업 실린더와 분해능을 보고, v1으로 분류 동작을 세 가지 속도로 돌려 사이클과 모터를 판정합니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
+from deltarobot import DeltaDesign, DeltaRobot
+from deltarobot import kinematics as kin
+
+REQ = {&quot;D&quot;: 0.200, &quot;H&quot;: 0.040, &quot;cpm&quot;: 30, &quot;res&quot;: 0.005}    # 사탕 분류 요구사항
+
+def tcp_resolution(d, p):
+    dth = math.radians(d.motor_spec[&quot;resolution_deg&quot;]) / d.ratio
+    J = kin.jacobian(d, kin.ik(d, p), p)
+    return max(math.sqrt(sum(sum(J[r][c] * s[c] * dth for c in range(3)) ** 2 for r in range(3)))
+               for s in itertools.product((-1, 1), repeat=3))
+
+def geometry_check(name, d):
+    c = kin.work_cylinder(d, REQ[&quot;H&quot;])
+    zc, rc = (c[&quot;z_top&quot;] + c[&quot;z_bottom&quot;]) / 2, c[&quot;diameter&quot;] / 2
+    pts = [(0.0, 0.0, zc)] + [(0.9 * rc * math.cos(a), 0.9 * rc * math.sin(a), zc)
+                              for a in (0, math.pi / 3, 2 * math.pi / 3, math.pi)]
+    res = max(tcp_resolution(d, p) for p in pts)
+    print(&quot;%s: D x H = %.0f x %.0f mm (요구 %.0f x %.0f) %s | TCP 분해능 최악 %.1f mm (요구 %.0f) %s&quot; % (
+        name, c[&quot;diameter&quot;] * 1000, c[&quot;height&quot;] * 1000, REQ[&quot;D&quot;] * 1000, REQ[&quot;H&quot;] * 1000,
+        &quot;✔&quot; if c[&quot;diameter&quot;] &gt;= REQ[&quot;D&quot;] else &quot;✖&quot;, res * 1000, REQ[&quot;res&quot;] * 1000,
+        &quot;✔&quot; if res &lt;= REQ[&quot;res&quot;] else &quot;✖&quot;))
+
+def sort_run(d, speed=None, accel=None):
+    robot = DeltaRobot(d, scene=&quot;pick_place&quot;)
+    if speed:
+        robot.set_speed(speed, accel)
+    robot.home()
+    bins = {b[&quot;color&quot;]: b for b in robot.bins()}
+    t0 = robot.time
+    parts = robot.parts()
+    for p in parts:
+        robot.arch_to(p[&quot;x&quot;], p[&quot;y&quot;], p[&quot;top&quot;], height=0.03)
+        robot.tool_on()
+        robot.wait(0.2)
+        b = bins[p[&quot;color&quot;]]
+        robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], robot.scene.surface_z + b[&quot;h&quot;] + 0.015, height=0.03)
+        robot.tool_off()
+        robot.wait(0.1)
+    cpm = 60 * len(parts) / (robot.time - t0)
+    r = robot.analyze()
+    print(&quot;  속도 %.2f m/s, 가속도 %.1f m/s^2: %.1f 개/분 %s | 피크 %.2f RMS %.2f 속도 %.2f %s&quot; % (
+        robot.speed, robot.accel, cpm, &quot;✔&quot; if cpm &gt;= REQ[&quot;cpm&quot;] else &quot;✖&quot;,
+        r[&quot;peak_ratio&quot;], r[&quot;rms_ratio&quot;], r[&quot;speed_ratio&quot;], &quot;✔&quot; if r[&quot;ok&quot;] else &quot;✖ &quot; + r[&quot;problems&quot;][-1]))
+
+base = DeltaDesign.preset(&quot;edu_servo&quot;).copy(payload=0.010, tool=&quot;suction_20&quot;)
+v0 = base.copy(base_radius=0.07, effector_radius=0.03, upper_arm=0.08, forearm=0.16,
+               upper_arm_material=&quot;pla_print&quot;, forearm_material=&quot;pla_print&quot;)
+geometry_check(&quot;v0&quot;, v0)
+geometry_check(&quot;v1&quot;, base)
+print(&quot;v1 분류 속도 시험&quot;)
+sort_run(base)                 # 기본 속도
+sort_run(base, 0.6, 6.0)       # 욕심낸 속도
+sort_run(base, 0.3, 3.0)       # 최종</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">v0: D x H = 180 x 42 mm (요구 200 x 40) ✖ | TCP 분해능 최악 3.0 mm (요구 5) ✔
+v1: D x H = 248 x 40 mm (요구 200 x 40) ✔ | TCP 분해능 최악 3.9 mm (요구 5) ✔
+v1 분류 속도 시험
+  속도 0.19 m/s, 가속도 1.9 m/s^2: 24.0 개/분 ✖ | 피크 0.22 RMS 0.41 속도 0.35 ✔
+경고: 관절 속도 6.23 rad/s 가 모터 한계 6.00 rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요
+  속도 0.60 m/s, 가속도 6.0 m/s^2: 47.7 개/분 ✔ | 피크 0.47 RMS 0.52 속도 1.01 ✖ 모터 최고 속도 초과
+  속도 0.30 m/s, 가속도 3.0 m/s^2: 33.0 개/분 ✔ | 피크 0.24 RMS 0.42 속도 0.56 ✔</code></pre></div>
+<figure class="fig" id="fig-d08-workspace-fit"><svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="탁상형 델타: 1차 설계와 최종 설계의 작업영역, 요구 실린더">
+  <defs>
+    <marker id="arr-d08-workspace-fit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d08-workspace-fit-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M80.0 330.0 L520.0 330.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="334.0" text-anchor="end">-350</text>
+  <path class="ln" d="M80.0 280.0 L520.0 280.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="284.0" text-anchor="end">-300</text>
+  <path class="ln" d="M80.0 230.0 L520.0 230.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="234.0" text-anchor="end">-250</text>
+  <path class="ln" d="M80.0 180.0 L520.0 180.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="184.0" text-anchor="end">-200</text>
+  <path class="ln" d="M80.0 130.0 L520.0 130.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="134.0" text-anchor="end">-150</text>
+  <path class="ln" d="M80.0 80.0 L520.0 80.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="84.0" text-anchor="end">-100</text>
+  <path class="ln" d="M80.0 40.0 L80.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="80.0" y="356.0" text-anchor="middle">0</text>
+  <path class="ln" d="M180.0 40.0 L180.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="180.0" y="356.0" text-anchor="middle">50</text>
+  <path class="ln" d="M280.0 40.0 L280.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="280.0" y="356.0" text-anchor="middle">100</text>
+  <path class="ln" d="M380.0 40.0 L380.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="380.0" y="356.0" text-anchor="middle">150</text>
+  <path class="ln" d="M480.0 40.0 L480.0 340.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="480.0" y="356.0" text-anchor="middle">200</text>
+  <path class="ln" d="M80.0 340.0 L520.0 340.0" stroke-width="1.2"/>
+  <path class="ln" d="M80.0 40.0 L80.0 340.0" stroke-width="1.2"/>
+  <text class="sub" x="300.0" y="374.0" text-anchor="middle">반지름 [mm]</text>
+  <text class="sub" x="80.0" y="30.0" text-anchor="start">이펙터 중심 z [mm]</text>
+  <path d="M100.1 64.0 L132.5 70.0 L157.9 76.0 L192.0 82.0 L257.6 88.0 L260.2 94.0 L260.2 100.0 L260.2 106.0 L260.2 112.0 L260.2 118.0 L260.2 124.0 L260.2 130.0 L260.2 136.0 L260.2 142.0 L255.0 148.0 L247.1 154.0 L237.5 160.0 L227.9 166.0 L216.5 172.0 L204.2 178.0 L190.2 184.0 L174.5 190.0 L156.1 196.0 L135.1 202.0 L108.9 208.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="94.0" width="180.2" height="42.0" style="fill:var(--accent);fill-opacity:0.15;stroke:var(--accent)" stroke-width="1.2"/>
+  <text class="tag" x="560.0" y="80.0" text-anchor="start">v0: R70 r30 L80 l160</text>
+  <text x="560.0" y="98.0" text-anchor="start" font-size="12" style="fill:var(--accent)">D × H = 180 × 42 mm</text>
+  <path d="M119.3 108.0 L151.1 116.0 L191.6 124.0 L253.4 132.0 L328.0 140.0 L328.0 148.0 L328.0 156.0 L328.0 164.0 L328.0 172.0 L328.0 180.0 L328.0 188.0 L328.0 196.0 L328.0 204.0 L317.0 212.0 L304.3 220.0 L290.4 228.0 L275.4 236.0 L258.1 244.0 L239.6 252.0 L217.6 260.0 L193.3 268.0 L164.4 276.0 L129.1 284.0 L81.2 292.0" style="stroke:var(--task);fill:none;fill-opacity:1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="140.0" width="248.0" height="40.0" style="fill:var(--task);fill-opacity:0.15;stroke:var(--task)" stroke-width="1.2"/>
+  <text class="tag" x="560.0" y="150.0" text-anchor="start">v1: R80 r30 L100 l220</text>
+  <text x="560.0" y="168.0" text-anchor="start" font-size="12" style="fill:var(--task)">D × H = 248 × 40 mm</text>
+  <rect x="80.0" y="140.0" width="200.0" height="40.0" style="fill:var(--danger);fill-opacity:0;stroke:var(--danger)" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="560.0" y="240.0" text-anchor="start" font-size="12" style="fill:var(--danger)">요구: D 200 × H 40 mm (점선)</text>
+  <text class="tag" x="560.0" y="262.0" text-anchor="start">칠한 사각형 = 각 설계의</text>
+  <text class="tag" x="560.0" y="278.0" text-anchor="start">H = 40 mm 작업 실린더 (반단면)</text>
+</svg><figcaption>v0과 v1의 작업영역 반단면과 H = 40 mm 작업 실린더(칠한 사각형), 요구 실린더 D 200 × H 40 mm(빨간 점선). v0은 지름이 모자랍니다.</figcaption></figure>
+<h3 id="반복-기록">반복 기록<a class="anchor" href="#반복-기록">#</a></h3>
+<div class="table-wrap"><table><thead><tr><th>안</th><th>바꾼 것</th><th>D × H [mm]</th><th>사이클 [개/분]</th><th>피크 / RMS / 속도 비</th><th>판정</th><th>원인과 조치</th></tr></thead><tbody><tr><td>v0</td><td>R70 r30 L80 l160, 전부 PLA</td><td>180 × 42</td><td>—</td><td>—</td><td>✖</td><td>작업영역 부족 → 크기를 키움</td></tr><tr><td>v1-a</td><td>edu_servo 치수, 기본 속도 0.19 m/s</td><td>248 × 40</td><td>24.0</td><td>0.22 / 0.41 / 0.35</td><td>✖</td><td>모터 여유는 큰데 느림 → 속도↑</td></tr><tr><td>v1-b</td><td>0.6 m/s, 6 m/s²</td><td>248 × 40</td><td>47.7</td><td>0.47 / 0.52 / <strong>1.01</strong></td><td>✖</td><td>서보 최고 속도(6 rad/s) 초과 + 속도-토크 곡선 초과 → 속도↓</td></tr><tr><td><strong>최종</strong></td><td>0.3 m/s, 3 m/s²</td><td>248 × 40</td><td><strong>33.0</strong></td><td>0.24 / 0.42 / 0.56</td><td>✔</td><td>사이클 10 % 여유, 속도 비 0.56</td></tr></tbody></table></div>
+<ul><li>v0의 분해능(3.0 mm)이 v1(3.9 mm)보다 좋은 것은 팔이 짧아 야코비안이 작기 때문입니다. <strong>작은 로봇 = 정밀하지만 좁다.</strong></li><li>RC 서보에서 가장 먼저 막히는 것은 토크가 아니라 <strong>속도</strong>(6 rad/s)와 <strong>RMS</strong>(정격 0.35 N·m가 피크 1.08 N·m의 1/3)입니다.</li><li>최종안의 RMS 비 0.42는 흡착 대기(0.2 s)와 놓기 대기(0.1 s) 동안에도 팔 무게를 들고 있는 토크가 포함된 값입니다.</li></ul>
+<div class="callout callout-design"><div class="callout-title">시뮬레이터로 같은 과정 밟기</div><div class="callout-body"><ol><li><strong>설계</strong> 탭: 프리셋 <code>edu_servo</code> → 페이로드 0.01 kg, 툴 <code>suction_20</code>. R·r·L·l 슬라이더를 v0 값으로 바꾸고 재질을 <code>pla_print</code>로 → <strong>[설계 검증]</strong> 의 D×H 확인.</li><li>슬라이더를 <code>edu_servo</code> 값으로 되돌리고 아래팔 재질 <code>al_tube</code> → 다시 [설계 검증].</li><li><strong>작업</strong> 탭: 장면 "분류", 데모 "분류 데모", 궤적 설정 속도 0.6 m/s·가속도 6 m/s² → 재생 → <strong>분석</strong> 탭 ω 그래프가 한계선을 넘는 순간 확인.</li><li>속도 0.3 m/s·가속도 3 m/s²로 바꿔 다시 재생 → 검증 결과 ✔, 분당 사이클 확인.</li><li><strong>연결</strong> 탭에서 설계 JSON을 내보내 보고서에 첨부합니다.</li></ol></div></div>
+<h2 id="3단계-부품표-bom">3단계 — 부품표 (BOM)<a class="anchor" href="#3단계-부품표-bom">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>구분</th><th>카탈로그 id</th><th>수량</th><th>단위 질량</th><th>비고 (대표값, 데이터시트 확인)</th></tr></thead><tbody><tr><td>모터</td><td><code>rc_servo_mg996r</code></td><td>3</td><td>55 g</td><td>6 V, PWM 50 Hz 위치 제어, 정지 토크 1.08 N·m / 정격 0.35 N·m</td></tr><tr><td>감속기</td><td><code>none</code></td><td>—</td><td>—</td><td>서보 내장 기어</td></tr><tr><td>위팔</td><td><code>pla_print</code> (20×10, 30 %)</td><td>3 × 100 mm</td><td>12 g/개 + 허브 20 g</td><td>3D 프린팅, 서보 혼에 체결</td></tr><tr><td>아래팔 로드</td><td><code>al_tube</code> (Ø12×10)</td><td>6 × 220 mm</td><td>20.5 g/개</td><td>평행사변형 한 쌍 × 3, 간격 w = 40 mm</td></tr><tr><td>볼조인트 컵</td><td>—</td><td>12</td><td>4 g</td><td>로드 양 끝</td></tr><tr><td>이펙터 판</td><td>—</td><td>1</td><td>40 g</td><td>r = 30 mm, 3D 프린팅</td></tr><tr><td>툴</td><td><code>suction_20</code></td><td>1</td><td>30 g</td><td>길이 45 mm, −60 kPa 기준 18.8 N. 소형 진공 펌프·밸브 별도</td></tr><tr><td>제어기</td><td>아두이노 + <code>firmware/delta_servo</code></td><td>1</td><td>—</td><td>serial 백엔드 (R07)</td></tr><tr><td>전원</td><td>서보용 6 V</td><td>1</td><td>—</td><td>서보 3개 동시 정지 전류를 데이터시트로 확인해 용량 선정</td></tr></tbody></table></div>
+<p>파생값(<code>deltarobot.design.summary(design)</code>, 최종 설계): 위팔 질량 32.0 g(허브 포함), 아래팔 한 쌍 56.9 g(볼 컵 포함), <strong>이동판 질량 165.4 g — 페이로드(10 g)의 16.5배</strong>, 팔 관성 약 5.5×10⁻⁴ kg·m², 위팔 수평 자세 정적 토크(팔 자중) 0.057 N·m, 모터 3개 165 g. 사탕보다 <strong>로봇 자신의 이동 질량</strong>이 토크를 좌우한다는 것이 탁상형 델타의 특징입니다.</p>
+<h2 id="4단계-응용-프로그램-색깔별-사탕-분류">4단계 — 응용 프로그램: 색깔별 사탕 분류<a class="anchor" href="#4단계-응용-프로그램-색깔별-사탕-분류">#</a></h2>
+<p>최종 설계로 분류 장면의 사탕 6개를 색깔별 상자에 넣습니다. 흡착 실패를 확인하고, 상자가 없는 색은 건너뜁니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, DeltaRobot
+
+# D08 최종 설계: edu_servo 치수 + MG996R 직결 + 흡착컵 Ø20, 사탕 10 g
+design = DeltaDesign.preset(&quot;edu_servo&quot;).copy(payload=0.010, tool=&quot;suction_20&quot;)
+robot = DeltaRobot(design, scene=&quot;pick_place&quot;)
+robot.set_speed(0.3, 3.0)             # 설계 검증에서 정한 속도·가속도
+ARCH = 0.03                           # 아치 높이 [m]
+VACUUM = 0.2                          # 흡착 압력이 차오르는 시간 [s]
+
+bins = {b[&quot;color&quot;]: b for b in robot.bins()}
+drop_z = robot.scene.surface_z + bins[&quot;red&quot;][&quot;h&quot;] + 0.015     # 상자 위 15 mm 에서 놓기
+
+robot.home()
+t0 = robot.time
+for p in sorted(robot.parts(), key=lambda q: q[&quot;color&quot;]):      # 색깔별로 모아서
+    b = bins.get(p[&quot;color&quot;])
+    if b is None:
+        print(&quot;%s: %s 상자가 없어 건너뜀&quot; % (p[&quot;id&quot;], p[&quot;color&quot;]))
+        continue
+    robot.arch_to(p[&quot;x&quot;], p[&quot;y&quot;], p[&quot;top&quot;], height=ARCH)
+    got = robot.tool_on()
+    robot.wait(VACUUM)
+    if got is None:
+        print(&quot;%s: 흡착 실패 — 위치를 확인하세요&quot; % p[&quot;id&quot;])
+        robot.tool_off()
+        continue
+    robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], drop_z, height=ARCH)
+    robot.tool_off()
+    robot.wait(0.1)
+    print(&quot;%5.2f s  %s (%s) -&gt; 상자 %s&quot; % (robot.time, p[&quot;id&quot;], p[&quot;color&quot;], b[&quot;id&quot;]))
+robot.home()
+
+n = robot.scene.score()
+print(&quot;분류 결과:&quot;, n)
+print(&quot;평균 %.1f 개/분&quot; % (60 * n[&quot;total&quot;] / (robot.time - t0)))
+res = robot.analyze()
+print(&quot;피크 %.2f  RMS %.2f  속도 %.2f  속도-토크 %.2f  -&gt;  %s&quot; % (
+    res[&quot;peak_ratio&quot;], res[&quot;rms_ratio&quot;], res[&quot;speed_ratio&quot;], res[&quot;curve_ratio&quot;],
+    &quot;통과&quot; if res[&quot;ok&quot;] else res[&quot;problems&quot;]))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text"> 1.76 s  p2 (blue) -&gt; 상자 B
+ 3.48 s  p5 (blue) -&gt; 상자 B
+ 5.38 s  p3 (green) -&gt; 상자 C
+ 7.11 s  p6 (green) -&gt; 상자 C
+ 9.07 s  p1 (red) -&gt; 상자 A
+10.79 s  p4 (red) -&gt; 상자 A
+분류 결과: {&#x27;per_bin&#x27;: {&#x27;A&#x27;: 2, &#x27;B&#x27;: 2, &#x27;C&#x27;: 2}, &#x27;correct&#x27;: 6, &#x27;total&#x27;: 6}
+평균 32.2 개/분
+피크 0.24  RMS 0.42  속도 0.54  속도-토크 0.38  -&gt;  통과</code></pre></div>
+<p>마지막 홈 복귀까지 포함해도 평균 32.2 개/분으로 요구(30 개/분)를 넘고, 6개 모두 맞는 상자에 들어갔습니다. 분류 장면의 부품 크기·상자 위치는 설계의 작업 실린더에 맞춰 자동으로 배치되므로(<code>default_scene</code>), 설계를 바꾸면 좌표를 하드코딩하지 말고 항상 <code>robot.parts()</code>·<code>robot.bins()</code>에서 읽어야 합니다.</p>
+<div class="callout callout-tip"><div class="callout-title">URDF로 조립 확인</div><div class="callout-body"><p><code>tools/urdf-viewer.html</code>은 시뮬레이터의 마지막 설계를 불러옵니다. 최종 설계로 URDF 뷰어를 열어 θ 슬라이더를 움직여 보고, 위팔이 서보 혼에서 얼마나 돌아야 하는지(모터각 한계 −40° ~ 86°)를 3D 프린팅 부품 설계에 반영하세요. URDF는 D07에서 자세히 다룹니다.</p></div></div>
+<h2 id="평가">평가<a class="anchor" href="#평가">#</a></h2>
+<div class="callout callout-check"><div class="callout-title">평가 체크리스트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> 요구사항 표의 모든 항목에 수치와 근거가 있다.</label></li><li><label class="check-item"><input type="checkbox"> v0 → v1 → 최종의 반복 기록이 있고, 불합격 원인이 <strong>숫자</strong>로 설명되어 있다.</label></li><li><label class="check-item"><input type="checkbox"> 최종 설계의 [설계 검증] 결과와 Python 판정이 일치한다(작업 실린더 D×H).</label></li><li><label class="check-item"><input type="checkbox"> 분류 프로그램이 6개를 모두 맞는 상자에 넣고, 평균 30 개/분 이상이다.</label></li><li><label class="check-item"><input type="checkbox"> <code>robot.analyze()</code>의 피크·RMS·속도·곡선 비가 모두 1 이하이며, 가장 큰 비와 그 원인을 적었다.</label></li><li><label class="check-item"><input type="checkbox"> BOM의 모든 부품이 카탈로그 id 또는 구체적인 규격으로 적혀 있고, 모터 사양은 "대표값, 데이터시트 확인"으로 표시했다.</label></li><li><label class="check-item"><input type="checkbox"> 설계 JSON(연결 탭 내보내기)과 프로그램 파일을 제출했다.</label></li></ul></div></div>
+<div class="callout callout-mission"><div class="callout-title">팀 미션 — 40 개/분 사탕 분류기</div><div class="callout-body"><p>같은 부스에서 관람객이 늘어 <strong>40 개/분</strong>이 필요해졌습니다. 조건: 모터는 여전히 RC 서보 또는 <code>dxl_xm430_w350</code> 중 선택, D ≥ 200 mm 유지. (1) RC 서보로 가능한지 속도·가속도·아치 높이·모서리 반지름·대기 시간을 바꿔 가며 판정하고, (2) 불가능하면 XM430으로 바꿨을 때의 결과와 BOM 변화(질량·전원 전압)를 비교해, 어느 쪽을 추천할지 한 쪽 보고서로 제출하세요.</p></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>증상·메시지</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td><code>경고: 관절 속도 6.23 rad/s 가 모터 한계 6.00 rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요</code></td><td>RC 서보 최고 속도(6 rad/s) 초과. Playground는 경고만 하고 계속</td><td><code>robot.set_speed()</code>를 낮추고 <code>analyze()</code>로 확인</td></tr><tr><td><code>analyze()</code> 문제 목록에 <code>속도-토크 곡선 초과: ...</code></td><td>빨리 도는 순간 RC 서보 토크가 직선으로 감소</td><td>속도↓, 아치 모서리 반지름↑ (D06)</td></tr><tr><td><code>RMS(연속) 토크가 정격을 넘습니다 — 과열 위험</code></td><td>대기 중에도 팔 무게를 들고 있음, 정격이 피크의 1/3</td><td>팔을 가볍게(재질), 대기 시간을 홈 근처에서</td></tr><tr><td><code>흡착 실패 — 위치를 확인하세요</code> (<code>tool_on()</code>이 <code>None</code>)</td><td>목표 z가 사탕 윗면(<code>p[&quot;top&quot;]</code>)에서 12 mm 넘게 떨어짐</td><td>목표 z를 <code>p[&quot;top&quot;]</code>으로</td></tr><tr><td><code>WorkspaceError: 작업영역 밖: ... — 팔 길이로 닿지 않음</code></td><td>설계를 바꾼 뒤 예전 좌표를 그대로 씀</td><td>좌표는 <code>robot.parts()</code>·<code>robot.bins()</code>에서 읽기</td></tr><tr><td><code>ValueError: 설계 오류: effector_radius(r)는 base_radius(R)보다 작아야 합니다</code></td><td>소형화하다 R ≤ r</td><td>R − r ≥ 40 mm 정도 유지 (D03)</td></tr></tbody></table></div>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>최종 설계에서 사탕 순서를 "가까운 것부터"(현재 위치에서 가장 가까운 부품)로 바꾸는 탐욕 알고리즘을 구현하고, 개/분이 얼마나 늘어나는지 측정하세요.</li><li>모터를 <code>dxl_xm430_w350</code>으로 바꾸면 TCP 분해능·사이클·RMS 비가 어떻게 바뀌는지 판정 스크립트로 확인하고, ±1 mm 요구를 만족하는지 답하세요.</li><li>위팔 재질을 <code>al_tube</code>로 바꿨을 때와 <code>pla_print</code>일 때의 RMS 비를 비교하고, 3D 프린팅 팔의 장단점(강성·진동 포함)을 정리하세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>MG996R급 RC 서보 데이터시트 (제조사별로 토크·속도·전류가 다르므로 구입한 제품의 문서를 확인).</li><li>R07 실물: 아두이노 펌웨어·캘리브레이션 (이 강의) — 같은 설계를 serial 백엔드로 실행.</li><li>R. Clavel, "DELTA, a fast robot with parallel geometry", <em>Proc. 18th ISIR</em>, 1988.</li><li>D03 암 길이·반지름 선정, D04 모터·감속기 선정, D05 엔드이펙터 선택 (이 강의).</li></ul>
+      <nav class="pager"><a class="pager-prev" href="d07.html"><span>이전 · D07</span>URDF 모델링</a><a class="pager-next" href="d09.html"><span>다음 · D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#과제-소개">과제 소개</a><a class="toc-l2" href="#1단계-요구사항-표">1단계 — 요구사항 표</a><a class="toc-l2" href="#2단계-설계-반복-v0-v1-최종">2단계 — 설계 반복 (v0 → v1 → 최종)</a><a class="toc-l3" href="#v0-더-작고-싸게-불합격">v0: 더 작고 싸게 (불합격)</a><a class="toc-l3" href="#v1-eduservo-치수-작업영역-합격">v1: edu_servo 치수 (작업영역 합격)</a><a class="toc-l3" href="#판정-스크립트">판정 스크립트</a><a class="toc-l3" href="#반복-기록">반복 기록</a><a class="toc-l2" href="#3단계-부품표-bom">3단계 — 부품표 (BOM)</a><a class="toc-l2" href="#4단계-응용-프로그램-색깔별-사탕-분류">4단계 — 응용 프로그램: 색깔별 사탕 분류</a><a class="toc-l2" href="#평가">평가</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

@@ -3,9 +3,9 @@
     <marker id="arr-t03-top-view" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
     <marker id="arr-t03-top-view-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
   </defs>
-  <path class="ln" d="M140 225 L516 225" stroke-width="1.1" marker-end="url(#arr-t03-top-view)"/>
+  <path class="ln" d="M140 225 L492 225" stroke-width="1.1" marker-end="url(#arr-t03-top-view)"/>
   <path class="ln" d="M300 417 L300 17" stroke-width="1.1" marker-end="url(#arr-t03-top-view)"/>
-  <text class="lbl" x="517.6" y="239.4" text-anchor="start">x</text>
+  <text class="lbl" x="488" y="245" text-anchor="start">x</text>
   <text class="lbl" x="308" y="21" text-anchor="start">y</text>
   <circle style="fill:none;stroke:var(--border);stroke-dasharray:5 4" cx="300" cy="225" r="80"/>
   <path class="box-hi" d="M328 176.5 L244 225 L328 273.5 Z" stroke-width="1.4"/>
@@ -14,19 +14,19 @@
   <path style="fill:none;stroke:var(--text-dim)" d="M477.7 225 L328 225" stroke-width="1.6" stroke-dasharray="5 4"/>
   <circle class="hi" cx="328" cy="225" r="4.5"/>
   <circle class="hi" cx="477.7" cy="225" r="4.5"/>
-  <text class="lbl" x="508" y="229" text-anchor="middle">팔 1</text>
+  <text class="lbl" x="512" y="213" text-anchor="middle">팔 1</text>
   <path style="fill:none;stroke:var(--text-dim)" d="M284.2 141.7 L235.8 169.7" stroke-width="10" stroke-linecap="round"/>
   <path class="ln-hi" d="M260 155.7 L211.2 71.1" stroke-width="5" stroke-linecap="round"/>
   <path style="fill:none;stroke:var(--text-dim)" d="M211.2 71.1 L286 200.8" stroke-width="1.6" stroke-dasharray="5 4"/>
   <circle class="hi" cx="286" cy="200.8" r="4.5"/>
   <circle class="hi" cx="211.2" cy="71.1" r="4.5"/>
-  <text class="lbl" x="196" y="48.9" text-anchor="middle">팔 2</text>
+  <text class="lbl" x="194" y="45.4" text-anchor="middle">팔 2</text>
   <path style="fill:none;stroke:var(--text-dim)" d="M235.8 280.3 L284.2 308.3" stroke-width="10" stroke-linecap="round"/>
   <path class="ln-hi" d="M260 294.3 L211.2 378.9" stroke-width="5" stroke-linecap="round"/>
   <path style="fill:none;stroke:var(--text-dim)" d="M211.2 378.9 L286 249.2" stroke-width="1.6" stroke-dasharray="5 4"/>
   <circle class="hi" cx="286" cy="249.2" r="4.5"/>
   <circle class="hi" cx="211.2" cy="378.9" r="4.5"/>
-  <text class="lbl" x="196" y="409.1" text-anchor="middle">팔 3</text>
+  <text class="lbl" x="194" y="412.6" text-anchor="middle">팔 3</text>
   <path class="ln" d="M300 225 L370.2 263.4" stroke-width="1.1" marker-end="url(#arr-t03-top-view)"/>
   <text class="lbl" x="341.6" y="271.4" text-anchor="middle">R</text>
   <path class="ln-hi" d="M300 225 L328 225" stroke-width="1.4" marker-end="url(#arr-t03-top-view-hi)"/>

@@ -1,4 +1,4 @@
-<svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="직렬로봇과 델타(병렬)로봇의 구조 비교">
+<svg viewBox="0 0 760 390" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="직렬로봇과 델타(병렬)로봇의 구조 비교">
   <defs>
     <marker id="arr-t01-serial-vs-parallel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
     <marker id="arr-t01-serial-vs-parallel-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
@@ -16,42 +16,42 @@
   <rect class="box" x="237" y="107" width="26" height="26" rx="4"/>
   <text class="tag" x="250" y="124" text-anchor="middle">M3</text>
   <circle class="hi" cx="300" cy="180" r="5"/>
-  <text class="sub" x="40" y="330" text-anchor="start">모터 M2·M3가 앞 링크에 실려 함께 움직임</text>
-  <text class="sub" x="40" y="348" text-anchor="start">→ 움직이는 질량이 크고, 오차가 링크마다 누적</text>
+  <text class="sub" x="40" y="358" text-anchor="start">모터 M2·M3가 앞 링크에 실려 함께 움직임</text>
+  <text class="sub" x="40" y="376" text-anchor="start">→ 움직이는 질량이 크고, 오차가 링크마다 누적</text>
   <text class="lbl" x="560" y="28" text-anchor="middle">델타로봇 (닫힌 사슬 3개)</text>
-  <path class="box" d="M642.3 93.1 L647.8 90 L651.8 86.8 L654.2 83.4 L655 80 L654.2 76.6 L651.8 73.2 L647.8 70 L642.3 66.9 L635.4 64.1 L627.2 61.5 L617.8 59.2 L607.5 57.3 L596.4 55.8 L584.6 54.7 L572.4 54 L560 53.8 L547.6 54 L535.4 54.7 L523.6 55.8 L512.5 57.3 L502.2 59.2 L492.8 61.5 L484.6 64.1 L477.7 66.9 L472.2 70 L468.2 73.2 L465.8 76.6 L465 80 L465.8 83.4 L468.2 86.8 L472.2 90 L477.7 93.1 L484.6 95.9 L492.8 98.5 L502.2 100.8 L512.5 102.7 L523.6 104.2 L535.4 105.3 L547.6 106 L560 106.2 L572.4 106 L584.6 105.3 L596.4 104.2 L607.5 102.7 L617.8 100.8 L627.2 98.5 L635.4 95.9 Z" stroke-width="1.4"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M537.2 59.1 L582.8 59.1" stroke-width="9" stroke-linecap="round"/>
-  <path class="ln-hi" d="M560 59.1 L560 66.6" stroke-width="5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M541 66.6 L579 66.6" stroke-width="2.5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M541 66.6 L541 277.2" stroke-width="1.8"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M579 66.6 L579 277.2" stroke-width="1.8"/>
-  <circle class="hi" cx="541" cy="66.6" r="2.6"/>
-  <circle class="hi" cx="579" cy="66.6" r="2.6"/>
-  <circle class="hi" cx="541" cy="277.2" r="2.6"/>
-  <circle class="hi" cx="579" cy="277.2" r="2.6"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M505.6 95.9 L482.8 85" stroke-width="9" stroke-linecap="round"/>
-  <path class="ln-hi" d="M494.2 90.5 L414 136.3" stroke-width="5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M423.5 140.9 L404.5 131.8" stroke-width="2.5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M423.5 140.9 L546.5 292.8" stroke-width="1.8"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M404.5 131.8 L527.5 283.7" stroke-width="1.8"/>
-  <circle class="hi" cx="423.5" cy="140.9" r="2.6"/>
-  <circle class="hi" cx="404.5" cy="131.8" r="2.6"/>
-  <circle class="hi" cx="546.5" cy="292.8" r="2.6"/>
-  <circle class="hi" cx="527.5" cy="283.7" r="2.6"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M637.2 85 L614.4 95.9" stroke-width="9" stroke-linecap="round"/>
-  <path class="ln-hi" d="M625.8 90.5 L706 136.3" stroke-width="5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M715.5 131.8 L696.5 140.9" stroke-width="2.5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M715.5 131.8 L592.5 283.7" stroke-width="1.8"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M696.5 140.9 L573.5 292.8" stroke-width="1.8"/>
-  <circle class="hi" cx="715.5" cy="131.8" r="2.6"/>
-  <circle class="hi" cx="696.5" cy="140.9" r="2.6"/>
-  <circle class="hi" cx="592.5" cy="283.7" r="2.6"/>
-  <circle class="hi" cx="573.5" cy="292.8" r="2.6"/>
-  <path class="box-hi" d="M591.1 289.5 L593.7 287.9 L595.4 286.3 L595.9 284.6 L595.4 282.8 L593.7 281.2 L591.1 279.6 L587.5 278.2 L583.1 277 L578 276 L572.3 275.3 L566.2 274.8 L560 274.7 L553.8 274.8 L547.7 275.3 L542 276 L536.9 277 L532.5 278.2 L528.9 279.6 L526.3 281.2 L524.6 282.8 L524.1 284.6 L524.6 286.3 L526.3 287.9 L528.9 289.5 L532.5 290.9 L536.9 292.1 L542 293.1 L547.7 293.9 L553.8 294.3 L560 294.5 L566.2 294.3 L572.3 293.9 L578 293.1 L583.1 292.1 L587.5 290.9 Z" stroke-width="1.4"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M560 284.6 L560 335.7" stroke-width="3"/>
-  <circle class="hi" cx="560" cy="335.7" r="3.5"/>
+  <path class="box" d="M646.2 74.3 L643.5 70.1 L639.3 66.1 L633.8 62.4 L627 58.9 L619.1 55.8 L610.2 53.1 L600.4 50.9 L589.9 49.2 L578.9 48 L567.6 47.3 L556.2 47.3 L544.8 47.7 L533.7 48.7 L523 50.3 L513 52.4 L503.8 54.9 L495.5 57.9 L488.3 61.2 L482.4 64.9 L477.8 68.8 L474.6 72.9 L472.8 77.1 L472.6 81.4 L473.8 85.7 L476.5 89.9 L480.7 93.9 L486.2 97.6 L493 101.1 L500.9 104.2 L509.8 106.9 L519.6 109.1 L530.1 110.8 L541.1 112 L552.4 112.7 L563.8 112.7 L575.2 112.3 L586.3 111.3 L597 109.7 L607 107.6 L616.2 105.1 L624.5 102.1 L631.7 98.8 L637.6 95.1 L642.2 91.2 L645.4 87.1 L647.2 82.9 L647.4 78.6 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M498.9 65 L531.1 54.9" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M515 59.9 L460.2 64.8" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M446.8 69 L473.6 60.6" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M446.8 69 L530.8 258.9" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M473.6 60.6 L557.7 250.5" stroke-width="1.8"/>
+  <circle class="hi" cx="446.8" cy="69" r="2.6"/>
+  <circle class="hi" cx="473.6" cy="60.6" r="2.6"/>
+  <circle class="hi" cx="530.8" cy="258.9" r="2.6"/>
+  <circle class="hi" cx="557.7" cy="250.5" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M625.3 67.7 L632.6 83.2" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M628.9 75.4 L712.9 99.3" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M709.9 92.8 L716 105.8" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M709.9 92.8 L581.1 253.7" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M716 105.8 L587.2 266.6" stroke-width="1.8"/>
+  <circle class="hi" cx="709.9" cy="92.8" r="2.6"/>
+  <circle class="hi" cx="716" cy="105.8" r="2.6"/>
+  <circle class="hi" cx="581.1" cy="253.7" r="2.6"/>
+  <circle class="hi" cx="587.2" cy="266.6" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M555.8 107.3 L516.3 102" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M536.1 104.6 L506.9 164.1" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M523.3 166.3 L490.4 161.8" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M523.3 166.3 L568.1 272.6" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M490.4 161.8 L535.2 268.1" stroke-width="1.8"/>
+  <circle class="hi" cx="523.3" cy="166.3" r="2.6"/>
+  <circle class="hi" cx="490.4" cy="161.8" r="2.6"/>
+  <circle class="hi" cx="568.1" cy="272.6" r="2.6"/>
+  <circle class="hi" cx="535.2" cy="268.1" r="2.6"/>
+  <path class="box-hi" d="M592.6 259.6 L591.1 257.5 L588.6 255.5 L585.3 253.8 L581.3 252.2 L576.5 251 L571.3 250.1 L565.7 249.5 L560 249.3 L554.3 249.5 L548.7 250.1 L543.5 251 L538.7 252.2 L534.7 253.8 L531.4 255.5 L528.9 257.5 L527.4 259.6 L526.9 261.7 L527.4 263.9 L528.9 266 L531.4 267.9 L534.7 269.7 L538.7 271.2 L543.5 272.5 L548.7 273.4 L554.3 273.9 L560 274.1 L565.7 273.9 L571.3 273.4 L576.5 272.5 L581.3 271.2 L585.3 269.7 L588.6 267.9 L591.1 266 L592.6 263.9 L593.1 261.7 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M560 261.7 L560 307.2" stroke-width="3"/>
+  <circle class="hi" cx="560" cy="307.2" r="3.5"/>
   <text class="sub" x="745" y="52" text-anchor="end">모터 3개는 베이스에 고정</text>
-  <path class="ln" d="M700 58 L631.8 86.5" stroke-width="1.1" marker-end="url(#arr-t01-serial-vs-parallel)"/>
-  <text class="sub" x="420" y="330" text-anchor="start">움직이는 것은 가벼운 위팔·로드·이펙터뿐</text>
-  <text class="sub" x="420" y="348" text-anchor="start">→ 큰 가속도, 세 팔이 하중을 나눠 받음</text>
+  <path class="ln" d="M700 58 L634.9 71.4" stroke-width="1.1" marker-end="url(#arr-t01-serial-vs-parallel)"/>
+  <text class="sub" x="420" y="358" text-anchor="start">움직이는 것은 가벼운 위팔·로드·이펙터뿐</text>
+  <text class="sub" x="420" y="376" text-anchor="start">→ 큰 가속도, 세 팔이 하중을 나눠 받음</text>
 </svg>

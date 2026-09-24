@@ -42,7 +42,7 @@ class Svg:
                  % ("box-hi" if hi else "box", f(x), f(y), f(w), f(h), f(rx)))
 
     def rect(self, x, y, w, h, style):
-        self.add('<rect x="%s" y="%s" width="%s" height="%s" style="%s"/>' % (f(x), f(y), f(w), f(h), style))
+        self.add('<rect x="%s" y="%s" width="%s" height="%s" shape-rendering="crispEdges" style="%s"/>' % (f(x), f(y), f(w), f(h), style))
 
     def text(self, x, y, s, cls="lbl", anchor="middle", extra=""):
         self.add('<text class="%s" x="%s" y="%s" text-anchor="%s"%s>%s</text>'
@@ -175,7 +175,7 @@ def draw_delta(s: Svg, d: DeltaDesign, view: View, p, labels: bool = False, tool
 
 # --------------------------------------------------------------------- t01
 def t01_serial_vs_parallel():
-    s = Svg("t01-serial-vs-parallel", 760, 360, "직렬로봇과 델타(병렬)로봇의 구조 비교")
+    s = Svg("t01-serial-vs-parallel", 760, 390, "직렬로봇과 델타(병렬)로봇의 구조 비교")
     # --- serial arm (left)
     s.text(180, 28, "직렬로봇 (열린 사슬)")
     s.line(40, 300, 320, 300, width=1.4)
@@ -187,17 +187,17 @@ def t01_serial_vs_parallel():
         s.box(x - 13, y - 13, 26, 26, rx=4)
         s.text(x, y + 4, "M%d" % (k + 1), "tag")
     s.circle(300, 180, 5, "hi")
-    s.text(40, 330, "모터 M2·M3가 앞 링크에 실려 함께 움직임", "sub", "start")
-    s.text(40, 348, "→ 움직이는 질량이 크고, 오차가 링크마다 누적", "sub", "start")
+    s.text(40, 358, "모터 M2·M3가 앞 링크에 실려 함께 움직임", "sub", "start")
+    s.text(40, 376, "→ 움직이는 질량이 크고, 오차가 링크마다 누적", "sub", "start")
     # --- delta (right) with real geometry
     d = DeltaDesign.preset("edu_dynamixel")
-    view = View(560, 80, 760, az=-60, el=16)
+    view = View(560, 80, 700, az=-100, el=22)
     s.text(560, 28, "델타로봇 (닫힌 사슬 3개)")
     pts = draw_delta(s, d, view, (0.0, 0.0, -0.28))
     s.text(745, 52, "모터 3개는 베이스에 고정", "sub", "end")
     s.line(700, 58, pts["motor0"][0] + 6, pts["motor0"][1] - 4, arrow=True, width=1.1)
-    s.text(420, 330, "움직이는 것은 가벼운 위팔·로드·이펙터뿐", "sub", "start")
-    s.text(420, 348, "→ 큰 가속도, 세 팔이 하중을 나눠 받음", "sub", "start")
+    s.text(420, 358, "움직이는 것은 가벼운 위팔·로드·이펙터뿐", "sub", "start")
+    s.text(420, 376, "→ 큰 가속도, 세 팔이 하중을 나눠 받음", "sub", "start")
     s.write()
 
 
@@ -205,7 +205,7 @@ def t01_serial_vs_parallel():
 def t02_structure():
     s = Svg("t02-structure", 760, 460, "델타로봇의 구성 요소")
     d = DeltaDesign.preset("edu_dynamixel")
-    view = View(300, 90, 900, az=-60, el=18)
+    view = View(290, 80, 880, az=-100, el=22)
     pts = draw_delta(s, d, view, (0.03, 0.0, -0.27))
 
     def callout(key_pt, tx, ty, label, sub=None, anchor="start"):
@@ -214,18 +214,18 @@ def t02_structure():
         if sub:
             s.text(tx, ty + 17, sub, "sub", anchor)
 
-    callout(pts["base"], 560, 40, "베이스 (고정)", "모터 3개가 120° 간격")
-    callout(pts["motor0"], 600, 100, "모터 = 능동 회전관절", "축은 베이스 원의 접선 방향")
-    callout(pts["arm0"], 620, 170, "위팔 L", "모터가 직접 돌리는 링크")
-    callout(pts["elbow0"], 620, 235, "팔꿈치 (볼조인트 2개)", "간격 w")
-    callout(pts["rod0"], 620, 300, "아래팔 = 평행사변형", "길이 l 로드 2개")
-    callout(pts["eff"], 610, 380, "이펙터 (움직이는 판)", "볼조인트 6개, 병진만")
-    callout(pts["tcp"], 150, 430, "TCP (툴 끝)", "이펙터 중심 − 툴 길이", anchor="end")
+    callout(pts["base"], 560, 36, "베이스 (고정)", "모터 3개, 120° 간격")
+    callout(pts["motor0"], 575, 100, "모터 = 능동 회전관절", "축은 원의 접선 방향")
+    callout(pts["arm0"], 575, 165, "위팔 L", "모터가 직접 돌림")
+    callout(pts["elbow0"], 575, 230, "팔꿈치", "볼조인트 2개, 간격 w")
+    callout(pts["rod0"], 575, 295, "아래팔 (평행사변형)", "길이 l 로드 2개")
+    callout(pts["eff"], 575, 370, "이펙터 (움직이는 판)", "볼조인트 6개, 병진만")
+    callout(pts["tcp"], 170, 430, "TCP (툴 끝)", "이펙터 중심 − 툴 길이", anchor="end")
     s.write()
 
 
 def t02_parallelogram():
-    s = Svg("t02-parallelogram", 760, 300, "평행사변형 아래팔이 이펙터의 방향을 유지하는 원리")
+    s = Svg("t02-parallelogram", 760, 330, "평행사변형 아래팔이 이펙터의 방향을 유지하는 원리")
     w, l = 90, 190
 
     def para(x0, y0, ang, label):
@@ -239,14 +239,14 @@ def t02_parallelogram():
         s.line(*e, *c, width=6, hi=True, cap=True)
         for q in (a, b, c, e):
             s.circle(*q, 5, "hi")
-        s.text(x0 + w / 2 + dx / 2, y0 + dy + 34, label, "sub")
+        s.text(x0 + w / 2 + dx, y0 + dy + 30, label, "sub")
         return a, b, c, e
 
     s.text(40, 30, "위: 팔꿈치 막대(위팔 끝)   아래: 이펙터 쪽 막대", "sub", "start")
-    para(70, 60, 0, "θ만 바뀐 자세")
-    para(300, 60, 25, "로드가 옆으로 기운 자세")
-    para(560, 60, -30, "반대로 기운 자세")
-    s.text(380, 290, "마주 보는 두 변은 항상 평행 → 이펙터 쪽 막대는 팔꿈치 막대와 같은 방향을 유지", "lbl")
+    para(60, 60, 0, "기본 자세")
+    para(300, 60, 20, "로드가 한쪽으로 기운 자세")
+    para(590, 60, -20, "반대쪽으로 기운 자세")
+    s.text(380, 316, "마주 보는 두 변은 항상 평행 → 이펙터 쪽 막대는 팔꿈치 막대와 같은 방향을 유지", "lbl")
     s.write()
 
 
@@ -261,9 +261,9 @@ def t03_top_view():
 
     th = d.home_theta
     # axes
-    s.line(*P(-0.2, 0), *P(0.27, 0), arrow=True, width=1.1)
+    s.line(*P(-0.2, 0), *P(0.24, 0), arrow=True, width=1.1)
     s.line(*P(0, -0.24), *P(0, 0.26), arrow=True, width=1.1)
-    s.text(*P(0.272, -0.018), "x", "lbl", "start")
+    s.text(*P(0.235, -0.025), "x", "lbl", "start")
     s.text(*P(0.01, 0.255), "y", "lbl", "start")
     # base circle R and effector triangle
     s.circle(*P(0, 0), S * d.R, style="fill:none;stroke:var(--border);stroke-dasharray:5 4")
@@ -281,8 +281,8 @@ def t03_top_view():
         s.line(*P(e[0], e[1]), *P(*b), width=1.6, style=INK, dash=True)
         s.circle(*P(*b), 4.5, "hi")
         s.circle(*P(e[0], e[1]), 4.5, "hi")
-        lx, ly = P((d.R + d.L + 0.03) * c, (d.R + d.L + 0.03) * sn)
-        s.text(lx, ly + 4, "팔 %d" % (i + 1), "lbl")
+        lx, ly = P((d.R + d.L + 0.035) * c, (d.R + d.L + 0.035) * sn)
+        s.text(lx, ly - 12 if i == 0 else ly + 4, "팔 %d" % (i + 1), "lbl")
     # R and r dimension
     s.line(*P(0, 0), *P(d.R * math.cos(0.5), d.R * math.sin(-0.5)), arrow=True, width=1.1)
     s.text(*P(0.052, -0.058), "R", "lbl")
@@ -317,7 +317,7 @@ def t03_arm_plane():
     s.line(*P(-0.1, 0), *P(0.3, 0), width=1.0, dash=True)
     s.text(*P(0.3, 0.008), "z = 0 (모터축 평면)", "tag", "end")
     s.line(*P(0, 0.03), *P(0, -0.37), width=1.0, dash=True)
-    s.text(*P(0.004, 0.035), "베이스 중심축", "tag", "start")
+    s.text(*P(-0.006, -0.36), "베이스 중심축", "tag", "end")
     m = (d.R, 0.0)
     e = (d.R + d.L * math.cos(th), -d.L * math.sin(th))
     b = (p[0] + d.r, p[2])
@@ -334,7 +334,7 @@ def t03_arm_plane():
     s.circle(*P(p[0], p[2]), 4, "box")
     # theta arc (screen angle positive = clockwise = downward)
     s.arc(*P(*m), 55, 0, math.degrees(th), arrow=True, width=1.3)
-    s.text(P(*m)[0] + 64, P(*m)[1] + 26, "θ (아래로 +)", "lbl", "start")
+    s.text(P(*m)[0] + 62, P(*m)[1] - 8, "θ (아래로 +)", "lbl", "start")
     s.text(*P(d.R, 0.02), "모터", "tag")
     s.text(P(*e)[0] + 10, P(*e)[1] - 6, "E 팔꿈치", "tag", "start")
     s.text((P(*m)[0] + P(*e)[0]) / 2 + 8, (P(*m)[1] + P(*e)[1]) / 2 - 8, "L", "lbl", "start")
@@ -375,15 +375,15 @@ def t04_ik_arm_plane():
     t2 = alpha + math.pi - math.asin(K / rho)
     tsel = kin.ik_arm(d, i, p)
     other = t2 if abs(math.remainder(t1 - tsel, 2 * math.pi)) < 1e-9 else t1
-    s = Svg("t04-ik-arm-plane", 760, 440, "팔 평면에서 두 원의 교점으로 푸는 역기구학")
-    S, cx, cy = 900.0, 250.0, 90.0
+    s = Svg("t04-ik-arm-plane", 760, 470, "팔 평면에서 두 원의 교점으로 푸는 역기구학")
+    S, cx, cy = 900.0, 250.0, 120.0
 
     def P(x, z):
         return cx + S * x, cy - S * z
 
     s.line(*P(-0.2, 0), *P(0.3, 0), width=1.0, dash=True)
     s.line(*P(0, 0.06), *P(0, -0.33), width=1.0, dash=True)
-    s.text(*P(-0.195, 0.008), "z = 0", "tag", "start")
+    s.text(*P(0.3, 0.008), "z = 0", "tag", "end")
     s.text(*P(0.004, 0.055), "x′=0", "tag", "start")
     m = (d.R, 0.0)
     b = (xa + d.r, p[2])
@@ -405,20 +405,21 @@ def t04_ik_arm_plane():
     s.text(P(*m)[0], P(*m)[1] - 14, "모터 (R, 0)", "tag")
     s.text(P(*eo)[0] + 12, P(*eo)[1] - 4, "해 A: 팔꿈치 바깥 (선택)", "tag", "start")
     s.text(P(*eo)[0] + 12, P(*eo)[1] + 12, "θ = %.3f rad" % tsel, "tag", "start")
-    s.text(P(*ei)[0] - 12, P(*ei)[1] + 4, "해 B: 팔꿈치 안쪽", "tag", "end")
-    s.text(P(*ei)[0] - 12, P(*ei)[1] + 20, "θ = %.3f rad" % other, "tag", "end")
+    s.text(P(*ei)[0] - 14, P(*ei)[1] - 30, "해 B: 팔꿈치 안쪽", "tag", "end")
+    s.text(P(*ei)[0] - 14, P(*ei)[1] - 14, "θ = %.3f rad" % other, "tag", "end")
     s.text(P(*b)[0] + 12, P(*b)[1] + 4, "B′ = (x′ + r, z)", "tag", "start")
     s.text(*P(d.R + d.L + 0.005, -0.05), "반지름 L", "sub", "start")
-    s.text(*P(-0.17, -0.02), "반지름 √(l² − y′²)", "sub", "start")
-    s.box(540, 250, 210, 175)
-    s.text(552, 274, "팔 2 (φ = 120°) 의 팔 평면", "lbl", "start")
-    s.text(552, 296, "P = (0.05, −0.04, −0.26)", "sub", "start")
-    s.text(552, 316, "x′ = %.4f, y′ = %.4f" % (xa, ya), "sub", "start")
-    s.text(552, 336, "a = x′ + r − R = %.4f" % a, "sub", "start")
-    s.text(552, 356, "K = %.4f, ρ = %.4f" % (K, rho), "sub", "start")
-    s.text(552, 376, "α = atan2(a, z) = %.4f" % alpha, "sub", "start")
-    s.text(552, 396, "두 해 중 cos θ 가 큰 쪽", "sub", "start")
-    s.text(552, 414, "edu_dynamixel, 축척 일정", "sub", "start")
+    lab = (P(*b)[0] + S * rp * math.cos(math.radians(-118)), P(*b)[1] + S * rp * math.sin(math.radians(-118)))
+    s.text(lab[0] + 4, lab[1] + 24, "반지름 √(l² − y′²)", "sub", "start")
+    s.box(540, 280, 210, 175)
+    s.text(552, 304, "팔 2 (φ = 120°) 의 팔 평면", "lbl", "start")
+    s.text(552, 326, "P = (0.05, −0.04, −0.26)", "sub", "start")
+    s.text(552, 346, "x′ = %.4f, y′ = %.4f" % (xa, ya), "sub", "start")
+    s.text(552, 366, "a = x′ + r − R = %.4f" % a, "sub", "start")
+    s.text(552, 386, "K = %.4f, ρ = %.4f" % (K, rho), "sub", "start")
+    s.text(552, 406, "α = atan2(a, z) = %.4f" % alpha, "sub", "start")
+    s.text(552, 426, "두 해 중 cos θ 가 큰 쪽", "sub", "start")
+    s.text(552, 444, "edu_dynamixel, 축척 일정", "sub", "start")
     s.write()
 
 
@@ -450,7 +451,7 @@ def t05_trilateration():
     s.text(190, 400, "각 팔의 제약 |P + r·uᵢ − Eᵢ| = l", "sub")
     s.text(190, 418, "⇔ |P − Cᵢ| = l : 반지름 l 인 구 3개", "sub")
     # right: side view (x-z), real geometry at home
-    S2, cx2, cy2 = 520.0, 575.0, 205.0
+    S2, cx2, cy2 = 430.0, 590.0, 215.0
 
     def Q(x, z):
         return cx2 + S2 * x, cy2 - S2 * z
@@ -461,16 +462,16 @@ def t05_trilateration():
         s.circle(*Q(x, z), S2 * d.l, style="fill:none;%s;stroke-dasharray:6 4;stroke-width:1.2" % sty)
         s.circle(*Q(x, z), 5, "hi")
     s.text(Q(*c[0])[0] + 8, Q(*c[0])[1] - 8, "C1", "tag", "start")
-    s.text(Q(*c[1])[0] - 8, Q(*c[1])[1] - 8, "C2, C3 (겹쳐 보임)", "tag", "end")
-    s.line(*Q(-0.2, c[0][1]), *Q(0.26, c[0][1]), width=1.2, style=INK)
-    s.text(*Q(0.26, c[0][1] + 0.01), "세 중심의 평면", "tag", "end")
+    s.text(Q(*c[1])[0] - 8, Q(*c[1])[1] - 14, "C2, C3 (겹쳐 보임)", "tag", "end")
+    s.line(*Q(-0.24, c[0][1]), *Q(0.26, c[0][1]), width=1.2, style=INK)
+    s.text(*Q(0.26, c[0][1] - 0.035), "세 중심의 평면", "tag", "end")
     lo = kin.fk(d, (th, th, th))
     hi_z = 2 * c[0][1] - lo[2]
     s.line(*Q(0, lo[2]), *Q(0, hi_z), width=1.2, dash=True)
     s.circle(*Q(0, lo[2]), 6, "hi")
     s.circle(*Q(0, hi_z), 6, "box")
     s.text(Q(0, lo[2])[0] + 10, Q(0, lo[2])[1] + 18, "아래 해 z = %.4f (선택)" % lo[2], "lbl", "start")
-    s.text(Q(0, hi_z)[0] + 10, Q(0, hi_z)[1] - 6, "위 해 z = %.4f" % hi_z, "sub", "start")
+    s.text(Q(0, hi_z)[0] + 12, Q(0, hi_z)[1] + 16, "위 해 z = %.4f" % hi_z, "sub", "start")
     s.text(Q(0, c[0][1])[0] - 8, (Q(0, c[0][1])[1] + Q(0, lo[2])[1]) / 2, "h", "lbl", "end")
     s.text(Q(0, c[0][1])[0] - 8, (Q(0, c[0][1])[1] + Q(0, hi_z)[1]) / 2, "h", "lbl", "end")
     s.write()
@@ -505,7 +506,7 @@ def t06_singularity():
     s.text(570, 30, "2형 (병렬·순기구학) 특이점")
     zc = 160
     s.line(440, zc, 700, zc, width=1.0, dash=True)
-    s.text(705, zc + 4, "세 로드가 한 평면", "tag", "start")
+    s.text(700, zc + 22, "세 로드가 한 평면", "tag", "end")
     for (mx, my, ex, ey, bx) in ((420, 70, 450, zc, 540), (720, 70, 690, zc, 600)):
         s.circle(mx, my, 8, "box")
         s.line(mx, my, ex, ey, hi=True, width=6, cap=True)
@@ -514,7 +515,8 @@ def t06_singularity():
     s.line(535, zc, 605, zc, width=7, style="stroke:var(--accent-dim)", cap=True)
     s.line(570, zc - 8, 570, zc - 60, arrow=True, width=1.6, style=DANGER)
     s.line(570, zc + 8, 570, zc + 60, arrow=True, width=1.6, style=DANGER)
-    s.text(582, zc + 64, "모터를 고정해도 위아래로 움직임", "tag", "start")
+    s.text(560, zc + 56, "모터를 고정해도", "tag", "end")
+    s.text(560, zc + 72, "위아래로 움직임", "tag", "end")
     s.text(440, 300, "s₁, s₂, s₃ 가 한 평면에 놓임 → det Jx = 0", "sub", "start")
     s.text(440, 318, "순기구학의 두 해(위·아래)가 합쳐지는 곳 (h = 0)", "sub", "start")
     s.text(440, 336, "강성 상실, 작은 힘에도 큰 모터 토크 필요", "sub", "start")
@@ -558,7 +560,7 @@ def t06_cond_map():
     S, x0, y0 = 1000.0, 40.0, 25.0
     cell = S * h
     for r, c, w, cat in _runs(rows):
-        s.rect(x0 + c * cell, y0 + r * cell, w * cell + 0.3, cell + 0.3,
+        s.rect(x0 + c * cell, y0 + r * cell, w * cell + 0.6, cell + 0.6,
                "fill:var(--accent);fill-opacity:%.2f" % op[cat])
     cxs, cys = x0 + n * cell, y0 + n * cell
     s.line(cxs - 40, cys, cxs + 40, cys, width=1.0)
@@ -567,7 +569,7 @@ def t06_cond_map():
     s.text(cxs, cys - 46, "y", "tag")
     for i in range(3):
         u = kin.arm_axis(i)
-        s.text(cxs + 205 * u[0], cys - 205 * u[1] + 4, "팔 %d 방향" % (i + 1), "tag")
+        s.text(cxs + 240 * u[0], cys - 212 * u[1] + 4, "팔 %d 방향" % (i + 1), "tag")
     lx = 520
     s.text(lx, 60, "z = −0.28 m 평면 (이펙터 중심)", "lbl", "start")
     s.text(lx, 80, "edu_dynamixel, 한계 안쪽만 칠함", "sub", "start")
@@ -608,7 +610,7 @@ def t07_workspace_section():
     S, x0, y0 = 700.0, 20.0, 40.0
     cell = S * h
     for r, c, w, cat in _runs(rows):
-        s.rect(x0 + c * cell - cell / 2, y0 + r * cell - cell / 2, w * cell + 0.3, cell + 0.3, kinds[cat])
+        s.rect(x0 + c * cell - cell / 2, y0 + r * cell - cell / 2, w * cell + 0.6, cell + 0.6, kinds[cat])
     X = lambda x: x0 + (x - xs[0]) * S  # noqa: E731
     Z = lambda z: y0 + (-z) * S  # noqa: E731
     s.line(X(-0.32), Z(0), X(0.32), Z(0), width=1.0)
@@ -619,8 +621,8 @@ def t07_workspace_section():
     s.path("M%s %s L%s %s L%s %s L%s %s Z" % (f(X(-rr)), f(Z(wc["z_top"])), f(X(rr)), f(Z(wc["z_top"])),
                                               f(X(rr)), f(Z(wc["z_bottom"])), f(X(-rr)), f(Z(wc["z_bottom"]))),
            width=2.2, style="stroke:var(--text)")
-    s.text(X(rr) + 6, Z(wc["z_top"]) - 6, "작업 실린더 D %.0f × H %.0f mm" % (wc["diameter"] * 1000, wc["height"] * 1000),
-           "lbl", "start")
+    s.text(260, 473, "굵은 사각형: 작업 실린더 D %.0f × H %.0f mm (work_cylinder, H = 0.1 m)"
+           % (wc["diameter"] * 1000, wc["height"] * 1000), "sub", "start")
     for i, (k, lab) in enumerate((("ok", "사용 가능"), ("theta", "모터각 한계 초과"), ("ball", "볼조인트 각 초과"),
                                   ("elbow", "팔꿈치 각 초과"))):
         s.rect(40, 395 + 22 * i, 18, 14, kinds[k])
@@ -647,16 +649,16 @@ def t08_lumped_model():
     s.circle(*mid, 9, "wr")
     s.text(mid[0] + 14, mid[1] - 10, "m_arm @ L/2", "tag", "start")
     s.circle(*e, 11, "wr")
-    s.text(e[0] + 16, e[1] - 4, "m_elbow + ½·m_pair @ L", "tag", "start")
+    s.text(e[0] + 16, e[1] - 4, "m_elbow + ½m_pair @ L", "tag", "start")
     s.line(b[0] - 60, b[1], b[0] + 30, b[1], width=9, style="stroke:var(--accent-dim)", cap=True)
     s.circle(b[0] - 15, b[1], 13, "wr")
     s.text(b[0] - 15, b[1] + 36, "m_p = 판 + 툴 + 페이로드 + 3·½·m_pair", "tag")
     s.text(m[0] - 20, m[1] - 26, "모터 + 감속기 (반사 관성 N²·J)", "tag", "start")
-    s.text(m[0] + 6, m[1] + 60, "θ", "lbl")
+    s.text(m[0] + 52, m[1] + 22, "θ", "lbl")
     s.arc(*m, 42, 0, 30, width=1.1, arrow=True)
     s.line(b[0] + 50, b[1] - 50, b[0] + 50, b[1] + 10, width=1.4, arrow=True)
     s.text(b[0] + 56, b[1] - 20, "g", "lbl", "start")
-    s.box(420, 30, 325, 320)
+    s.box(440, 30, 310, 320)
     y = 58
     for txt, cls in (("팔 하나 (출력축 기준)", "lbl"),
                      ("I = m_arm·L²/3 + (m_elbow + ½m_pair)·L²", "sub"),
@@ -664,14 +666,14 @@ def t08_lumped_model():
                      ("k_g = m_arm·L/2 + (m_elbow + ½m_pair)·L", "sub"),
                      ("", "sub"),
                      ("이펙터 판 (세 팔 공통)", "lbl"),
-                     ("F = m_p·(a − g⃗),  g⃗ = (0, 0, −g)", "sub"),
+                     ("F = m_p·(a − g_vec),  g_vec = (0, 0, −g)", "sub"),
                      ("", "sub"),
                      ("관절 토크 (τ > 0 = 팔을 아래로)", "lbl"),
                      ("τᵢ = I·θ̈ᵢ − k_g·g·cos θᵢ + (Jᵀ·F)ᵢ", "sub"),
                      ("", "sub"),
                      ("모터축", "lbl"),
                      ("τm = τ / (N·η),  ωm = θ̇·N", "sub")):
-        s.text(436, y, txt, cls, "start")
+        s.text(454, y, txt, cls, "start")
         y += 22
     s.write()
 
@@ -689,7 +691,7 @@ def t08_speed_torque():
         s.text(x0 + v * W, y0 + H + 18, "%.2g" % v, "tag")
     curves = (("dxl_xm430_w350", "stroke:var(--accent)", "스마트 서보 / RC 서보"),
               ("stepper_nema17", "stroke:var(--warn)", "스테퍼 (끌어냄 곡선)"),
-              ("ac_servo_400w", "stroke:var(--danger)", "AC 서보 (최고속도까지 피크)"))
+              ("ac_servo_400w", "stroke:var(--danger)", "AC 서보 (피크 일정)"))
     base = DeltaDesign.preset("edu_dynamixel")
     for i, (motor, sty, lab) in enumerate(curves):
         d = base.copy(motor=motor, gearbox="none", gear_ratio=1)

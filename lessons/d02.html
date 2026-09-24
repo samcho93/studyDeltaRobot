@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D02. 설계 요구사항 정의 · studyDeltaRobot</title>
+<meta name="description" content="페이로드, 작업 실린더(D×H), 사이클 타임(Adept 사이클), 정밀도를 수치 요구사항으로 정리합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-design">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" class="active" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="d02" data-track="design">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-design">설계·시뮬레이션</span> D-1 시뮬레이터와 요구사항 &middot; 약 50분 &middot; 초급</div>
+    <h1><span class="lesson-no">D02</span>설계 요구사항 정의</h1>
+    <p class="lede">페이로드, 작업 실린더(D×H), 사이클 타임(Adept 사이클), 정밀도를 수치 요구사항으로 정리합니다.</p>
+    <div class="requires">선수 챕터: <a href="t07.html">T07</a> <a href="d01.html">D01</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>"빠르고 정확한 로봇"처럼 막연한 바람을 <strong>페이로드·작업 실린더(D×H)·사이클·정밀도</strong> 네 가지 수치 요구사항으로 바꿀 수 있습니다.</li><li>업계 표준 벤치마크인 <strong>Adept 사이클</strong>(25 mm 상승 → 305 mm 이동 → 25 mm 하강 → 복귀)을 설명하고, 작은 로봇에 맞게 축소해 쓸 수 있습니다.</li><li>요구사항 표를 만들고, 시뮬레이터 <strong>[설계 검증]</strong> 과 Python 스크립트로 설계안이 요구를 만족하는지 ✔/✖ 로 판정할 수 있습니다.</li></ul>
+<h2 id="요구사항은-숫자여야-한다">요구사항은 숫자여야 한다<a class="anchor" href="#요구사항은-숫자여야-한다">#</a></h2>
+<p>설계는 "무엇을 만족해야 하는가"가 정해져야 시작할 수 있습니다. 요구가 "적당히 빠르게"면 어떤 설계도 통과할 수 없고 어떤 설계도 떨어뜨릴 수 없습니다. 델타로봇은 거의 항상 아래 네 가지로 요구를 정리합니다.</p>
+<div class="table-wrap"><table><thead><tr><th>요구</th><th>기호·단위</th><th>무엇으로 검증하나</th><th>관련 챕터</th></tr></thead><tbody><tr><td>페이로드</td><td>m [kg]</td><td>모터 토크(피크·RMS), 툴 유지력</td><td>T08, D04, D05</td></tr><tr><td>작업 영역</td><td>작업 실린더 D × H [mm]</td><td><code>kinematics.work_cylinder(d, H)</code></td><td>T07, D03</td></tr><tr><td>속도</td><td>사이클/분 (Adept 사이클)</td><td>기록한 동작의 시간, <code>robot.analyze()</code></td><td>D04, D06</td></tr><tr><td>정밀도</td><td>분해능·반복정밀도 [mm]</td><td>야코비안 × 모터 분해능, 백래시</td><td>T06, D10</td></tr></tbody></table></div>
+<p>여기에 <strong>환경</strong>(책상 위/라인 설치, 전원 종류), <strong>예산</strong>(모터 종류가 거의 결정됨), <strong>안전</strong>(속도 제한, 비상정지)을 덧붙입니다.</p>
+<div class="callout callout-info"><div class="callout-title">페이로드와 이동판 질량은 다릅니다</div><div class="callout-body"><p>요구사항의 페이로드는 <strong>옮길 물건의 질량</strong>입니다. 모터가 실제로 움직이는 것은 이펙터 판 + 툴 + 페이로드 + 아래팔 절반을 합친 <strong>이동판 질량</strong>(<code>design.moving_plate_mass</code>)입니다. 10 g짜리 사탕을 옮기는 <code>edu_servo</code>도 이동판은 약 165 g으로 페이로드의 16배가 넘습니다 — D08에서 직접 확인합니다.</p></div></div>
+<h2 id="adept-사이클-속도-요구의-공통-언어">Adept 사이클 — 속도 요구의 공통 언어<a class="anchor" href="#adept-사이클-속도-요구의-공통-언어">#</a></h2>
+<p>"분당 몇 번"은 <strong>어떤 동작을</strong> 반복하느냐에 따라 달라집니다. 그래서 스카라·델타 로봇 업계는 오래전부터 <strong>Adept 사이클</strong>을 공통 벤치마크로 씁니다(Adept Technology가 제품 사양 비교에 쓰던 동작이라 이 이름이 붙었습니다).</p>
+<ol><li>집는 점에서 <strong>25 mm 수직 상승</strong></li><li><strong>305 mm(12인치) 수평 이동</strong></li><li><strong>25 mm 수직 하강</strong> — 놓는 점</li><li>같은 경로로 <strong>되돌아오기</strong> — 여기까지가 <strong>1 사이클</strong></li></ol>
+<figure class="fig" id="fig-d02-adept-cycle"><svg viewBox="0 0 760 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Adept 사이클: 25 mm 상승, 305 mm 이동, 25 mm 하강 후 복귀">
+  <defs>
+    <marker id="arr-d02-adept-cycle" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d02-adept-cycle-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path d="M110.9 136.2 L110.9 131.5 L110.9 126.8 L110.9 122.0 L110.9 117.3 L110.9 112.6 L110.9 107.8 L110.9 103.1 L111.0 98.4 L111.5 93.7 L112.4 89.2 L113.7 85.0 L115.4 81.0 L117.4 77.5 L119.7 74.4 L122.3 71.8 L125.0 69.8 L127.9 68.4 L130.9 67.6 L133.9 67.5 L137.0 67.5 L140.0 67.5 L143.1 67.5 L146.1 67.5 L149.1 67.5 L152.2 67.5 L155.2 67.5 L158.2 67.5 L161.3 67.5 L164.3 67.5 L167.4 67.5 L170.4 67.5 L173.4 67.5 L176.5 67.5 L179.5 67.5 L182.6 67.5 L185.6 67.5 L188.6 67.5 L191.7 67.5 L194.7 67.5 L197.7 67.5 L200.8 67.5 L203.8 67.5 L206.9 67.5 L209.9 67.5 L212.9 67.5 L216.0 67.5 L219.0 67.5 L222.0 67.5 L225.1 67.5 L228.1 67.5 L231.2 67.5 L234.2 67.5 L237.2 67.5 L240.3 67.5 L243.3 67.5 L246.3 67.5 L249.4 67.5 L252.4 67.5 L255.5 67.5 L258.5 67.5 L261.5 67.5 L264.6 67.5 L267.6 67.5 L270.6 67.5 L273.7 67.5 L276.7 67.5 L279.8 67.5 L282.8 67.5 L285.8 67.5 L288.9 67.5 L291.9 67.5 L294.9 67.5 L298.0 67.5 L301.0 67.5 L304.1 67.5 L307.1 67.5 L310.1 67.5 L313.2 67.5 L316.2 67.5 L319.2 67.5 L322.3 67.5 L325.3 67.5 L328.4 67.5 L331.4 67.5 L334.4 67.5 L337.5 67.5 L340.5 67.5 L343.5 67.5 L346.6 67.5 L349.6 67.5 L352.7 67.5 L355.7 67.5 L358.7 67.5 L361.8 67.5 L364.8 67.5 L367.8 67.5 L370.9 67.5 L373.9 67.5 L377.0 67.5 L380.0 67.5 L383.0 67.5 L386.1 67.5 L389.1 67.5 L392.2 67.5 L395.2 67.5 L398.2 67.5 L401.3 67.5 L404.3 67.5 L407.3 67.5 L410.4 67.5 L413.4 67.5 L416.5 67.5 L419.5 67.5 L422.5 67.5 L425.6 67.5 L428.6 67.5 L431.6 67.5 L434.7 67.5 L437.7 67.5 L440.8 67.5 L443.8 67.5 L446.8 67.5 L449.9 67.5 L452.9 67.5 L455.9 67.5 L459.0 67.5 L462.0 67.5 L465.1 67.5 L468.1 67.5 L471.1 67.5 L474.2 67.5 L477.2 67.5 L480.2 67.5 L483.3 67.5 L486.3 67.5 L489.4 67.5 L492.4 67.5 L495.4 67.5 L498.5 67.5 L501.5 67.5 L504.5 67.5 L507.6 67.5 L510.6 67.5 L513.7 67.5 L516.7 67.5 L519.7 67.5 L522.8 67.5 L525.8 67.5 L528.8 67.5 L531.9 67.5 L534.9 67.5 L538.0 67.5 L541.0 67.5 L544.0 67.5 L547.1 67.5 L550.1 67.5 L553.1 67.5 L556.2 67.5 L559.2 67.5 L562.3 67.5 L565.3 67.5 L568.3 67.5 L571.4 67.5 L574.4 67.5 L577.4 67.5 L580.5 67.5 L583.5 67.5 L586.6 67.5 L589.6 67.5 L592.6 67.5 L595.7 67.5 L598.7 67.5 L601.8 67.5 L604.8 67.5 L607.8 67.5 L610.9 67.5 L613.9 67.5 L616.9 67.5 L620.0 67.5 L623.0 67.5 L626.1 67.5 L629.1 67.6 L632.1 68.4 L635.0 69.8 L637.7 71.8 L640.3 74.4 L642.6 77.5 L644.6 81.0 L646.3 85.0 L647.6 89.2 L648.5 93.7 L649.0 98.4 L649.1 103.1 L649.1 107.8 L649.1 112.6 L649.1 117.3 L649.1 122.0 L649.1 126.8 L649.1 131.5 L649.1 136.3" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path class="ln" d="M80.0 136.2 L680.0 136.2" stroke-width="0.8" stroke-dasharray="5 4"/>
+  <circle cx="110.9" cy="136.2" r="4" style="fill:var(--info)"/>
+  <circle cx="649.1" cy="136.2" r="4" style="fill:var(--warn)"/>
+  <text class="tag" x="110.9" y="154.2" text-anchor="middle">집기 (pick)</text>
+  <text class="tag" x="649.1" y="154.2" text-anchor="middle">놓기 (place)</text>
+  <path class="ln" d="M110.9 51.0 L649.1 51.0" stroke-width="1.2" marker-end="url(#arr-d02-adept-cycle)"/>
+  <text class="lbl" x="380.0" y="45.0" text-anchor="middle">305 mm</text>
+  <path class="ln" d="M88.8 136.2 L88.8 67.5" stroke-width="1.2" marker-end="url(#arr-d02-adept-cycle)"/>
+  <text class="tag" x="80.8" y="105.9" text-anchor="end">25 mm</text>
+  <text class="tag" x="380.0" y="186.0" text-anchor="middle">모서리 반지름 = 높이/2 (기본값) · z 방향 1.6배 확대</text>
+  <path class="ln" d="M80.0 370.0 L680.0 370.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="374.0" text-anchor="end">0.0</text>
+  <path class="ln" d="M80.0 335.0 L680.0 335.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="339.0" text-anchor="end">0.2</text>
+  <path class="ln" d="M80.0 300.0 L680.0 300.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="304.0" text-anchor="end">0.4</text>
+  <path class="ln" d="M80.0 265.0 L680.0 265.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="269.0" text-anchor="end">0.6</text>
+  <path class="ln" d="M80.0 230.0 L680.0 230.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="234.0" text-anchor="end">0.8</text>
+  <path class="ln" d="M80.0 230.0 L80.0 370.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="80.0" y="386.0" text-anchor="middle">0</text>
+  <path class="ln" d="M184.9 230.0 L184.9 370.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="184.9" y="386.0" text-anchor="middle">0.25</text>
+  <path class="ln" d="M289.8 230.0 L289.8 370.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="289.8" y="386.0" text-anchor="middle">0.5</text>
+  <path class="ln" d="M394.7 230.0 L394.7 370.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="394.7" y="386.0" text-anchor="middle">0.75</text>
+  <path class="ln" d="M499.6 230.0 L499.6 370.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="499.6" y="386.0" text-anchor="middle">1</text>
+  <path class="ln" d="M604.5 230.0 L604.5 370.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="604.5" y="386.0" text-anchor="middle">1.25</text>
+  <path class="ln" d="M80.0 370.0 L680.0 370.0" stroke-width="1.2"/>
+  <path class="ln" d="M80.0 230.0 L80.0 370.0" stroke-width="1.2"/>
+  <text class="sub" x="380.0" y="404.0" text-anchor="middle">시간 [s]</text>
+  <text class="sub" x="80.0" y="220.0" text-anchor="start">TCP 속도 [m/s]</text>
+  <path d="M80.0 370.0 L81.5 370.0 L83.0 370.0 L84.5 369.9 L86.0 369.7 L87.5 369.5 L89.0 369.1 L90.5 368.5 L92.0 367.8 L93.5 367.0 L95.0 365.9 L96.5 364.6 L98.0 363.1 L99.5 361.3 L101.0 359.3 L102.5 357.1 L104.0 354.7 L105.5 352.0 L107.0 349.1 L108.5 346.0 L110.0 342.7 L111.5 339.2 L113.0 335.6 L114.5 331.8 L116.0 327.9 L117.5 323.8 L119.0 319.7 L120.5 315.6 L122.0 311.4 L123.5 307.2 L125.0 303.1 L126.5 299.0 L128.0 294.9 L129.5 291.0 L131.0 287.2 L132.5 283.6 L134.0 280.1 L135.5 276.8 L137.0 273.7 L138.5 270.8 L140.0 268.2 L141.5 265.7 L143.0 263.5 L144.5 261.6 L146.0 259.8 L147.5 258.3 L149.0 257.1 L150.5 256.0 L152.0 255.1 L153.5 254.4 L155.0 253.9 L156.5 253.5 L158.0 253.3 L159.5 253.1 L161.0 253.0 L162.5 253.0 L164.0 253.0 L165.5 253.0 L167.0 253.0 L168.5 253.0 L170.0 253.0 L171.5 253.0 L173.0 253.0 L174.5 253.0 L176.0 253.0 L177.5 253.0 L179.0 253.0 L180.5 253.0 L182.0 253.0 L183.5 253.0 L185.0 253.0 L186.5 253.0 L188.0 253.0 L189.5 253.0 L191.0 253.0 L192.5 253.0 L194.0 253.0 L195.5 253.0 L197.0 253.0 L198.5 253.0 L200.0 253.0 L201.5 253.0 L203.0 253.0 L204.5 253.0 L206.0 253.0 L207.5 253.0 L209.0 253.0 L210.5 253.0 L212.0 253.0 L213.5 253.0 L215.0 253.0 L216.5 253.0 L218.0 253.0 L219.5 253.0 L221.0 253.0 L222.5 253.0 L224.0 253.0 L225.5 253.0 L227.0 253.0 L228.5 253.0 L230.0 253.0 L231.5 253.0 L233.0 253.0 L234.5 253.0 L236.0 253.0 L237.5 253.0 L239.0 253.0 L240.5 253.0 L242.0 253.0 L243.5 253.0 L245.0 253.0 L246.5 253.0 L248.0 253.0 L249.5 253.0 L251.0 253.0 L252.5 253.0 L254.0 253.0 L255.5 253.0 L257.0 253.0 L258.5 253.0 L260.0 253.0 L261.5 253.0 L263.0 253.0 L264.5 253.0 L266.0 253.0 L267.5 253.0 L269.0 253.0 L270.5 253.0 L272.0 253.0 L273.5 253.0 L275.0 253.0 L276.5 253.0 L278.0 253.0 L279.5 253.0 L281.0 253.0 L282.5 253.0 L284.0 253.0 L285.5 253.0 L287.0 253.0 L288.5 253.0 L290.0 253.0 L291.5 253.0 L293.0 253.0 L294.5 253.0 L296.0 253.0 L297.5 253.0 L299.0 253.0 L300.5 253.1 L302.0 253.3 L303.5 253.5 L305.0 253.9 L306.5 254.4 L308.0 255.1 L309.5 256.0 L311.0 257.1 L312.5 258.3 L314.0 259.8 L315.5 261.6 L317.0 263.5 L318.5 265.7 L320.0 268.2 L321.5 270.8 L323.0 273.7 L324.5 276.8 L326.0 280.1 L327.5 283.6 L329.0 287.2 L330.5 291.0 L332.0 294.9 L333.5 299.0 L335.0 303.1 L336.5 307.2 L338.0 311.4 L339.5 315.6 L341.0 319.7 L342.5 323.8 L344.0 327.9 L345.5 331.8 L347.0 335.6 L348.5 339.2 L350.0 342.7 L351.5 346.0 L353.0 349.1 L354.5 352.0 L356.0 354.7 L357.5 357.1 L359.0 359.3 L360.5 361.3 L362.0 363.1 L363.5 364.6 L365.0 365.9 L366.5 367.0 L368.0 367.8 L369.5 368.5 L371.0 369.1 L372.5 369.5 L374.0 369.7 L375.5 369.9 L377.0 370.0 L378.5 370.0 L380.0 370.0 L380.0 370.0 L381.5 370.0 L383.0 370.0 L384.5 369.9 L386.0 369.7 L387.5 369.5 L389.0 369.1 L390.5 368.5 L392.0 367.8 L393.5 367.0 L395.0 365.9 L396.5 364.6 L398.0 363.1 L399.5 361.3 L401.0 359.3 L402.5 357.1 L404.0 354.7 L405.5 352.0 L407.0 349.1 L408.5 346.0 L410.0 342.7 L411.5 339.2 L413.0 335.6 L414.5 331.8 L416.0 327.9 L417.5 323.8 L419.0 319.7 L420.5 315.6 L422.0 311.4 L423.5 307.2 L425.0 303.1 L426.5 299.0 L428.0 294.9 L429.5 291.0 L431.0 287.2 L432.5 283.6 L434.0 280.1 L435.5 276.8 L437.0 273.7 L438.5 270.8 L440.0 268.2 L441.5 265.7 L443.0 263.5 L444.5 261.6 L446.0 259.8 L447.5 258.3 L449.0 257.1 L450.5 256.0 L452.0 255.1 L453.5 254.4 L455.0 253.9 L456.5 253.5 L458.0 253.3 L459.5 253.1 L461.0 253.0 L462.5 253.0 L464.0 253.0 L465.5 253.0 L467.0 253.0 L468.5 253.0 L470.0 253.0 L471.5 253.0 L473.0 253.0 L474.5 253.0 L476.0 253.0 L477.5 253.0 L479.0 253.0 L480.5 253.0 L482.0 253.0 L483.5 253.0 L485.0 253.0 L486.5 253.0 L488.0 253.0 L489.5 253.0 L491.0 253.0 L492.5 253.0 L494.0 253.0 L495.5 253.0 L497.0 253.0 L498.5 253.0 L500.0 253.0 L501.5 253.0 L503.0 253.0 L504.5 253.0 L506.0 253.0 L507.5 253.0 L509.0 253.0 L510.5 253.0 L512.0 253.0 L513.5 253.0 L515.0 253.0 L516.5 253.0 L518.0 253.0 L519.5 253.0 L521.0 253.0 L522.5 253.0 L524.0 253.0 L525.5 253.0 L527.0 253.0 L528.5 253.0 L530.0 253.0 L531.5 253.0 L533.0 253.0 L534.5 253.0 L536.0 253.0 L537.5 253.0 L539.0 253.0 L540.5 253.0 L542.0 253.0 L543.5 253.0 L545.0 253.0 L546.5 253.0 L548.0 253.0 L549.5 253.0 L551.0 253.0 L552.5 253.0 L554.0 253.0 L555.5 253.0 L557.0 253.0 L558.5 253.0 L560.0 253.0 L561.5 253.0 L563.0 253.0 L564.5 253.0 L566.0 253.0 L567.5 253.0 L569.0 253.0 L570.5 253.0 L572.0 253.0 L573.5 253.0 L575.0 253.0 L576.5 253.0 L578.0 253.0 L579.5 253.0 L581.0 253.0 L582.5 253.0 L584.0 253.0 L585.5 253.0 L587.0 253.0 L588.5 253.0 L590.0 253.0 L591.5 253.0 L593.0 253.0 L594.5 253.0 L596.0 253.0 L597.5 253.0 L599.0 253.0 L600.5 253.1 L602.0 253.3 L603.5 253.5 L605.0 253.9 L606.5 254.4 L608.0 255.1 L609.5 256.0 L611.0 257.1 L612.5 258.3 L614.0 259.8 L615.5 261.6 L617.0 263.5 L618.5 265.7 L620.0 268.2 L621.5 270.8 L623.0 273.7 L624.5 276.8 L626.0 280.1 L627.5 283.6 L629.0 287.2 L630.5 291.0 L632.0 294.9 L633.5 299.0 L635.0 303.1 L636.5 307.2 L638.0 311.4 L639.5 315.6 L641.0 319.7 L642.5 323.8 L644.0 327.9 L645.5 331.8 L647.0 335.6 L648.5 339.2 L650.0 342.7 L651.5 346.0 L653.0 349.1 L654.5 352.0 L656.0 354.7 L657.5 357.1 L659.0 359.3 L660.5 361.3 L662.0 363.1 L663.5 364.6 L665.0 365.9 L666.5 367.0 L668.0 367.8 L669.5 368.5 L671.0 369.1 L672.5 369.5 L674.0 369.7 L675.5 369.9 L677.0 370.0 L678.5 370.0 L680.0 370.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+  <path class="ln" d="M380.0 230.0 L380.0 370.0" stroke-width="1" stroke-dasharray="5 4"/>
+  <text class="tag" x="230.0" y="246.0" text-anchor="middle">가는 길</text>
+  <text class="tag" x="530.0" y="246.0" text-anchor="middle">돌아오는 길</text>
+  <text class="tag" x="380.0" y="436.0" text-anchor="middle">industrial_picker 기본값 0.67 m/s, 6.7 m/s², scurve → 1 사이클 1.43 s</text>
+</svg><figcaption>위: <code>trajectory.arch_path</code>로 만든 Adept 경로(모서리는 반지름 = 높이/2로 둥글림). 아래: 같은 경로를 <code>industrial_picker</code> 기본 속도·가속도와 S-커브로 왕복할 때의 TCP 속도. 이 설정이면 1 사이클이 1.43 s(약 42 사이클/분)입니다.</figcaption></figure>
+<p>제조사 카탈로그의 "사이클/분" 값은 보통 이 동작을 정해진 페이로드로 반복한 결과이고, 모서리를 얼마나 둥글리는지, 정지 대기(dwell)를 넣는지는 회사마다 조금씩 다릅니다. 그래서 <strong>비교할 때는 조건(페이로드·경로·대기 시간)을 같이 적는 것</strong>이 원칙입니다.</p>
+<div class="callout callout-design"><div class="callout-title">작은 로봇은 축소 Adept 사이클</div><div class="callout-body"><p><code>edu_servo</code>의 작업 실린더 지름은 약 224 mm(H = 80 mm)라 305 mm를 한 번에 갈 수 없습니다. 이럴 때는 수평 거리를 작업 실린더 지름의 70~80 % 정도로 줄인 <strong>축소 사이클</strong>을 쓰고, 요구사항 표에 그 거리를 반드시 적습니다 (예: "25/150/25 mm 축소 Adept, 40 사이클/분").</p></div></div>
+<h2 id="말로-된-요구를-수치로-바꾸기">말로 된 요구를 수치로 바꾸기<a class="anchor" href="#말로-된-요구를-수치로-바꾸기">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>고객의 말</th><th>수치 요구</th><th>계산 근거</th></tr></thead><tbody><tr><td>"사탕을 분당 30개 분류"</td><td>30 사이클/분 → 한 개당 2.0 s 이내</td><td>60 / 30</td></tr><tr><td>"흡착 0.2 s는 기다려야 해요"</td><td>움직임 예산 = 2.0 − 0.2 − 0.1(놓기) = 1.7 s</td><td>정지 대기는 사이클에서 뺀다</td></tr><tr><td>"A5 종이 전체에 그리기"</td><td>D ≥ 257 mm (종이 대각선)</td><td>√(210² + 148²) ≈ 257</td></tr><tr><td>"컨베이어 폭 200 mm + 상자 두 개"</td><td>D ≥ 컨베이어·상자를 모두 덮는 원</td><td>평면 배치도를 먼저 그린다 (D09)</td></tr><tr><td>"부품 높이 30 mm, 아치 25 mm"</td><td>H ≥ 30 + 25 + 여유</td><td>수직 이동 범위</td></tr><tr><td>"구멍에 핀을 꽂는다 (공차 ±0.5 mm)"</td><td>TCP 분해능·백래시 합 ≤ 0.5 mm</td><td>D10의 J·Δθ 계산</td></tr><tr><td>"무거운 박스도 가끔"</td><td>페이로드 = <strong>가장 무거운 경우</strong></td><td>평균이 아니라 최대</td></tr></tbody></table></div>
+<p>여유(safety margin)도 요구사항에 포함합니다. 이 강의의 검증 함수(<code>robot.analyze()</code>)는 토크에 <strong>안전율 1.2</strong>를 기본으로 곱하고, 스테퍼에는 탈조를 막기 위해 가용 토크를 1.5로 한 번 더 나눕니다(<code>dynamics.STEPPER_MARGIN</code>).</p>
+<div class="callout callout-tip"><div class="callout-title">요구사항 표는 한 페이지로</div><div class="callout-body"><p>요구사항 표는 설계가 끝날 때까지 바뀌지 않는 <strong>계약서</strong>입니다. 설계 도중 요구를 슬쩍 낮추고 싶어지면 표를 고치는 대신 "요구 변경 기록"에 이유와 함께 남기세요 (D11 보고서 양식).</p></div></div>
+<h2 id="실습-시뮬레이터-요구를-넣고-설계-검증">실습 (시뮬레이터) — 요구를 넣고 [설계 검증]<a class="anchor" href="#실습-시뮬레이터-요구를-넣고-설계-검증">#</a></h2>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html?preset=edu_dynamixel">시뮬레이터에서 열기</a></p>
+<div class="callout callout-task"><div class="callout-title">실습 A — 프리셋이 요구를 만족하는지 화면으로 확인</div><div class="callout-body"><ol><li><strong>설계</strong> 탭에서 프리셋 <code>edu_dynamixel</code>을 고르고 페이로드를 0.2 kg으로 둡니다.</li><li><strong>[설계 검증]</strong> 을 눌러 작업 실린더 D×H와 표준 사이클의 모터 검증 결과(✔/✖)를 적습니다.</li><li><strong>작업</strong> 탭에서 데모 프로그램 "Adept 사이클"을 재생하고, <strong>분석</strong> 탭에서 사이클 시간·분당 사이클을 읽습니다.</li><li>작업 탭의 궤적 설정에서 속도를 두 배로 올려 다시 재생하고, 분석 탭 검증 결과가 어떻게 바뀌는지 기록합니다.</li></ol></div></div>
+<h2 id="실습-python-요구사항-판정-스크립트">실습 (Python) — 요구사항 판정 스크립트<a class="anchor" href="#실습-python-요구사항-판정-스크립트">#</a></h2>
+<p>아래 스크립트는 요구사항 딕셔너리 <code>REQ</code>를 받아 다섯 항목을 ✔/✖ 로 판정합니다. <code>adept_cycle()</code>은 축소 Adept 사이클 한 번의 시간을, <code>tcp_resolution()</code>은 세 모터가 모두 분해능 1칸씩 틀렸을 때 TCP가 얼마나 움직이는지(<span class="math">δ p = J·δθ</span>)를 계산합니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
+from deltarobot import DeltaDesign, DeltaRobot
+from deltarobot import kinematics as kin
+
+def adept_cycle(robot, across=0.305, up=0.025):
+    &quot;&quot;&quot;Adept 사이클 1회(25 mm 상승 → across 이동 → 25 mm 하강 → 되돌아오기) 시간 [s]&quot;&quot;&quot;
+    z = robot.scene.surface_z + 0.02
+    robot.move_to(-across / 2, 0, z)
+    t0 = robot.time
+    robot.arch_to(across / 2, 0, z, height=up)
+    robot.arch_to(-across / 2, 0, z, height=up)
+    return robot.time - t0
+
+def tcp_resolution(d, p):
+    &quot;&quot;&quot;모든 모터가 분해능 1칸씩 틀릴 때 TCP 최악 오차 [m]&quot;&quot;&quot;
+    dth = math.radians(d.motor_spec[&quot;resolution_deg&quot;]) / d.ratio
+    J = kin.jacobian(d, kin.ik(d, p), p)
+    return max(math.sqrt(sum(sum(J[r][c] * s[c] * dth for c in range(3)) ** 2 for r in range(3)))
+               for s in itertools.product((-1, 1), repeat=3))
+
+def check(design, req):
+    d = design.copy(payload=req[&quot;payload&quot;])
+    c = kin.work_cylinder(d, req[&quot;H&quot;])
+    robot = DeltaRobot(d, scene=&quot;empty&quot;)
+    T = adept_cycle(robot, req[&quot;across&quot;])
+    res = robot.analyze()
+    zc = (c[&quot;z_top&quot;] + c[&quot;z_bottom&quot;]) / 2
+    acc = tcp_resolution(d, (0.0, 0.0, zc))
+    rows = [(&quot;작업 실린더 D [mm]&quot;, c[&quot;diameter&quot;] * 1000, &quot;&gt;=&quot;, req[&quot;D&quot;] * 1000),
+            (&quot;사이클 [회/분]&quot;, 60 / T, &quot;&gt;=&quot;, req[&quot;cpm&quot;]),
+            (&quot;TCP 분해능 [mm]&quot;, acc * 1000, &quot;&lt;=&quot;, req[&quot;res&quot;] * 1000),
+            (&quot;모터 검증 (피크 비)&quot;, res[&quot;peak_ratio&quot;], &quot;&lt;=&quot;, 1.0),
+            (&quot;모터 검증 (RMS 비)&quot;, res[&quot;rms_ratio&quot;], &quot;&lt;=&quot;, 1.0)]
+    for name, val, op, lim in rows:
+        ok = val &gt;= lim if op == &quot;&gt;=&quot; else val &lt;= lim
+        print(&quot;  %-18s %8.2f  (요구 %s %g)  %s&quot; % (name, val, op, lim, &quot;✔&quot; if ok else &quot;✖&quot;))
+
+REQ = {&quot;payload&quot;: 0.2, &quot;D&quot;: 0.25, &quot;H&quot;: 0.08, &quot;across&quot;: 0.20, &quot;cpm&quot;: 25, &quot;res&quot;: 0.0005}
+print(&quot;edu_dynamixel, 요구:&quot;, REQ)
+check(DeltaDesign.preset(&quot;edu_dynamixel&quot;), REQ)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">edu_dynamixel, 요구: {&#x27;payload&#x27;: 0.2, &#x27;D&#x27;: 0.25, &#x27;H&#x27;: 0.08, &#x27;across&#x27;: 0.2, &#x27;cpm&#x27;: 25, &#x27;res&#x27;: 0.0005}
+  작업 실린더 D [mm]        338.77  (요구 &gt;= 250)  ✔
+  사이클 [회/분]             25.93  (요구 &gt;= 25)  ✔
+  TCP 분해능 [mm]           0.39  (요구 &lt;= 0.5)  ✔
+  모터 검증 (피크 비)           0.18  (요구 &lt;= 1)  ✔
+  모터 검증 (RMS 비)          0.26  (요구 &lt;= 1)  ✔</code></pre></div>
+<p><code>edu_dynamixel</code>은 이 요구를 모두 만족합니다. 그런데 모터 검증 비가 0.18·0.26으로 <strong>여유가 매우 큰 반면</strong> 사이클은 25.93으로 겨우 통과합니다. 사이클이 느린 원인은 모터가 아니라 <strong>기본 속도 설정</strong>(<code>speed = 0.25·(L+l)/0.43</code> m/s)이라는 뜻입니다 — 속도를 올릴 여지가 있습니다. 이렇게 판정표는 "통과/불합격"뿐 아니라 <strong>어디에 여유가 있고 어디가 병목인지</strong>를 보여 줍니다.</p>
+<div class="callout callout-check"><div class="callout-title">스스로 확인</div><div class="callout-body"><ul><li>요구 <code>REQ[&quot;cpm&quot;]</code>을 40으로 올리면 어떤 항목이 ✖ 가 되나요? <code>DeltaRobot</code> 생성 직후 <code>robot.set_speed(0.5, 5.0)</code>을 넣으면 다시 ✔ 가 되나요?</li><li><code>REQ[&quot;res&quot;]</code>를 0.0002(0.2 mm)로 조이면 XM430(분해능 0.088°)으로 만족할 수 있나요? 만족하지 못한다면 무엇을 바꿔야 할까요?</li><li>페이로드를 0.5 kg으로 올렸을 때 피크 비와 RMS 비 중 어느 쪽이 먼저 한계에 가까워지나요?</li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>증상·메시지</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td><code>WorkspaceError: 작업영역 밖: (0.300, 0.000, -0.300) m — 팔 길이로 닿지 않음</code></td><td>Adept 305 mm를 작은 로봇에 그대로 적용</td><td>축소 사이클(작업 실린더 D의 70~80 %)을 쓰고 거리를 표에 적기</td></tr><tr><td><code>WorkspaceError: 경로 중간 작업영역 밖: ... — 모터 각도 한계</code></td><td>아치 높이가 커서 궤적 꼭대기가 작업영역 위로 나감</td><td>아치 높이를 작업 실린더 H 안으로, 또는 z를 더 낮게</td></tr><tr><td>사이클은 느린데 모터 비는 0.2 수준</td><td>기본 속도·가속도가 보수적</td><td><code>set_speed()</code>로 올려 보고 다시 판정</td></tr><tr><td>사이클 수치가 카탈로그와 크게 다름</td><td>대기 시간·경로·페이로드 조건이 다름</td><td>비교할 때 조건을 같이 적기</td></tr><tr><td><code>ValueError: 설계 오류: ...</code></td><td><code>copy()</code>에 잘못된 값(예: r ≥ R, 없는 감속비)</td><td>메시지의 항목을 고친 뒤 다시 실행</td></tr></tbody></table></div>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>여러분 주변의 "옮기는 작업"(급식 배식, 약 포장, 택배 분류 등) 하나를 골라 요구사항 표(페이로드·D×H·사이클·정밀도·환경·예산)를 작성하세요. 각 숫자에 근거를 한 줄씩 붙입니다.</li><li><code>check()</code>를 <code>industrial_picker</code>와 <code>REQ = {&quot;payload&quot;: 1.0, &quot;D&quot;: 0.6, &quot;H&quot;: 0.2, &quot;across&quot;: 0.305, &quot;cpm&quot;: 40, &quot;res&quot;: 0.0005}</code>로 실행하고 결과를 해석하세요.</li><li>판정표에 "관성비 ≤ 10" 항목을 추가하세요(<code>res[&quot;inertia_ratio&quot;]</code>). 일체형 서보는 왜 0이 나오는지 D04를 읽고 설명하세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>R. Clavel, "DELTA, a fast robot with parallel geometry", <em>Proc. 18th International Symposium on Industrial Robots</em>, 1988.</li><li>J.-P. Merlet, <em>Parallel Robots</em>, 2nd ed., Springer, 2006 — 성능 지표와 작업영역.</li><li>이 저장소 <code>docs/API.md</code> — <code>work_cylinder</code>, <code>analyze</code>, <code>set_speed</code> 정확한 이름.</li><li>T07 작업영역, T08 동역학과 모터 토크 (이 강의).</li></ul>
+      <nav class="pager"><a class="pager-prev" href="d01.html"><span>이전 · D01</span>웹 시뮬레이터 사용법</a><a class="pager-next" href="d03.html"><span>다음 · D03</span>암 길이·반지름 선정</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#요구사항은-숫자여야-한다">요구사항은 숫자여야 한다</a><a class="toc-l2" href="#adept-사이클-속도-요구의-공통-언어">Adept 사이클 — 속도 요구의 공통 언어</a><a class="toc-l2" href="#말로-된-요구를-수치로-바꾸기">말로 된 요구를 수치로 바꾸기</a><a class="toc-l2" href="#실습-시뮬레이터-요구를-넣고-설계-검증">실습 (시뮬레이터) — 요구를 넣고 [설계 검증]</a><a class="toc-l2" href="#실습-python-요구사항-판정-스크립트">실습 (Python) — 요구사항 판정 스크립트</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

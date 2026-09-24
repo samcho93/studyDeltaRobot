@@ -216,7 +216,13 @@ def main(argv: Sequence[str] = ()) -> int:
         with open(a.output, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(text)
     else:
-        sys.stdout.write(text)
+        # write UTF-8 bytes so redirection works on consoles without UTF-8 (cp949)
+        out = getattr(sys.stdout, "buffer", None)
+        if out is not None:
+            out.write(text.encode("utf-8"))
+            out.flush()
+        else:
+            sys.stdout.write(text)
     return 0
 
 

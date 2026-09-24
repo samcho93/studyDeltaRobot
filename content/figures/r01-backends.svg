@@ -1,4 +1,4 @@
-<svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeltaRobot 하나에 백엔드 네 개">
+<svg viewBox="0 0 720 365" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeltaRobot 하나에 백엔드 네 개">
   <defs>
     <marker id="arr-r01-backends" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
     <marker id="arr-r01-backends-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
@@ -35,6 +35,6 @@
   <text class="lbl mono" x="496" y="267" text-anchor="start">serial</text>
   <text class="sub" x="496" y="285" text-anchor="start">아두이노 펌웨어</text>
   <text class="tag mono" x="496" y="301" text-anchor="start">J d1 d2 d3 (115200)</text>
-  <text class="tag" x="325" y="290" text-anchor="middle">backend= 인자만 바꾸면 같은 코드가 시뮬 → PC → ROS 2 → 실물로</text>
-  <text class="sub" x="325" y="310" text-anchor="middle">serial·ros2는 모터 속도 초과를 거부, record·websim은 경고만</text>
+  <text class="tag" x="360" y="330" text-anchor="middle">backend= 인자만 바꾸면 같은 코드가 시뮬 → PC → ROS 2 → 실물로</text>
+  <text class="sub" x="360" y="350" text-anchor="middle">serial·ros2는 모터 속도 초과를 거부, record·websim은 경고만</text>
 </svg>

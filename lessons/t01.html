@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T01. 델타로봇 개요와 응용 · studyDeltaRobot</title>
+<meta name="description" content="Clavel의 발명부터 식품·제약 피킹, 3D 프린터까지 — 병렬로봇이 빠른 이유와 직렬로봇과의 차이를 봅니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-theory">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" class="active" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="t01" data-track="theory">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-theory">기초 이론·기구학</span> T-1 델타로봇 이해 &middot; 약 40분 &middot; 초급</div>
+    <h1><span class="lesson-no">T01</span>델타로봇 개요와 응용</h1>
+    <p class="lede">Clavel의 발명부터 식품·제약 피킹, 3D 프린터까지 — 병렬로봇이 빠른 이유와 직렬로봇과의 차이를 봅니다.</p>
+    
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>델타로봇이 누가, 어떤 문제를 풀려고 만든 로봇인지 설명할 수 있습니다.</li><li>직렬로봇(열린 사슬)과 병렬로봇(닫힌 사슬)의 차이를 <strong>움직이는 질량·강성·작업영역·기구학 난이도</strong> 관점에서 비교할 수 있습니다.</li><li>움직이는 질량이 작으면 가속도가 커지는 이유를 <span class="math">F = m·a</span> 수준에서 설명할 수 있습니다.</li><li>회전형(rotary)·직선형(linear) 델타와 4축(회전축 추가) 델타를 구분하고, 이 강의가 다루는 범위를 압니다.</li></ul>
+<h2 id="델타로봇은-어디서-왔나">델타로봇은 어디서 왔나<a class="anchor" href="#델타로봇은-어디서-왔나">#</a></h2>
+<p>델타로봇은 스위스 로잔 연방공과대학(EPFL)의 <strong>Reymond Clavel</strong>이 1980년대 중반에 고안한 병렬로봇입니다. 초콜릿(프랄린) 같은 가벼운 제품을 빠르게 집어 포장 상자에 넣는 작업에서 출발했다고 알려져 있습니다. Clavel은 1988년 산업용 로봇 국제 심포지엄(ISIR)에서 "DELTA, a fast robot with parallel geometry"를 발표했고, 1991년 EPFL 박사학위 논문에서 4자유도 고속 병렬로봇의 설계를 정리했습니다. 관련 특허(미국 특허 US 4,976,582)도 등록되었습니다.</p>
+<p>이후 흐름은 대략 다음과 같습니다. 연도는 제품 발표 시점에 따라 자료마다 조금씩 다르므로 "대략"으로 읽으세요.</p>
+<div class="table-wrap"><table><thead><tr><th>시기</th><th>사건</th></tr></thead><tbody><tr><td>1980년대 중반</td><td>Clavel(EPFL)의 델타 구조 고안, 특허 출원</td></tr><tr><td>1980년대 후반~1990년대</td><td>스위스 Demaurex 등이 라이선스를 받아 식품 포장용 델타 판매</td></tr><tr><td>1990년대 후반</td><td>ABB가 <strong>IRB 340 FlexPicker</strong>를 내놓으며 산업용 고속 피킹 로봇으로 널리 보급</td></tr><tr><td>2000년대~</td><td>Fanuc, Adept(현 Omron), Kawasaki, Yaskawa, Codian 등 여러 회사가 델타/병렬 피커 출시</td></tr><tr><td>2000년대~</td><td>햅틱 장치(예: EPFL 분사 기업 Force Dimension의 제품), 수술·현미경 보조 장치</td></tr><tr><td>2010년대 초</td><td>RepRap 커뮤니티의 <strong>직선형 델타 3D 프린터</strong>(예: Kossel)가 확산</td></tr></tbody></table></div>
+<div class="callout callout-info"><div class="callout-title">이 강의에서 쓰는 &quot;델타로봇&quot;</div><div class="callout-body"><p>따로 말하지 않으면 <strong>회전형 3자유도 델타</strong>(모터 3개가 위팔을 회전시키는 Clavel형)를 뜻합니다. 시뮬레이터·<code>deltarobot</code> 라이브러리·URDF 생성기가 모두 이 구조를 기준으로 합니다.</p></div></div>
+<h2 id="직렬로봇과-병렬로봇">직렬로봇과 병렬로봇<a class="anchor" href="#직렬로봇과-병렬로봇">#</a></h2>
+<p>산업 현장에서 흔히 보는 6축 다관절 로봇은 <strong>직렬로봇</strong>입니다. 베이스 → 링크 1 → 링크 2 → … → 툴이 한 줄로 이어진 <strong>열린 사슬</strong>이라서, 각 모터는 자기보다 바깥쪽에 있는 링크와 <strong>모터 전체의 무게를 들고</strong> 움직여야 합니다.</p>
+<p>델타로봇은 베이스와 이펙터(움직이는 판) 사이를 <strong>팔 세 개가 동시에</strong> 잇는 <strong>병렬로봇</strong>입니다. 각 팔이 베이스에서 이펙터까지 하나의 고리를 만들기 때문에 <strong>닫힌 사슬</strong>이 세 개 있습니다.</p>
+<figure class="fig" id="fig-t01-serial-vs-parallel"><svg viewBox="0 0 760 390" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="직렬로봇과 델타(병렬)로봇의 구조 비교">
+  <defs>
+    <marker id="arr-t01-serial-vs-parallel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-t01-serial-vs-parallel-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <text class="lbl" x="180" y="28" text-anchor="middle">직렬로봇 (열린 사슬)</text>
+  <path class="ln" d="M40 300 L320 300" stroke-width="1.4"/>
+  <rect class="box" x="80" y="270" width="60" height="30" rx="8"/>
+  <path class="ln-hi" d="M110 270 L140 170" stroke-width="7" stroke-linecap="round"/>
+  <path class="ln-hi" d="M140 170 L250 120" stroke-width="7" stroke-linecap="round"/>
+  <path class="ln-hi" d="M250 120 L300 180" stroke-width="7" stroke-linecap="round"/>
+  <rect class="box" x="97" y="257" width="26" height="26" rx="4"/>
+  <text class="tag" x="110" y="274" text-anchor="middle">M1</text>
+  <rect class="box" x="127" y="157" width="26" height="26" rx="4"/>
+  <text class="tag" x="140" y="174" text-anchor="middle">M2</text>
+  <rect class="box" x="237" y="107" width="26" height="26" rx="4"/>
+  <text class="tag" x="250" y="124" text-anchor="middle">M3</text>
+  <circle class="hi" cx="300" cy="180" r="5"/>
+  <text class="sub" x="40" y="358" text-anchor="start">모터 M2·M3가 앞 링크에 실려 함께 움직임</text>
+  <text class="sub" x="40" y="376" text-anchor="start">→ 움직이는 질량이 크고, 오차가 링크마다 누적</text>
+  <text class="lbl" x="560" y="28" text-anchor="middle">델타로봇 (닫힌 사슬 3개)</text>
+  <path class="box" d="M646.2 74.3 L643.5 70.1 L639.3 66.1 L633.8 62.4 L627 58.9 L619.1 55.8 L610.2 53.1 L600.4 50.9 L589.9 49.2 L578.9 48 L567.6 47.3 L556.2 47.3 L544.8 47.7 L533.7 48.7 L523 50.3 L513 52.4 L503.8 54.9 L495.5 57.9 L488.3 61.2 L482.4 64.9 L477.8 68.8 L474.6 72.9 L472.8 77.1 L472.6 81.4 L473.8 85.7 L476.5 89.9 L480.7 93.9 L486.2 97.6 L493 101.1 L500.9 104.2 L509.8 106.9 L519.6 109.1 L530.1 110.8 L541.1 112 L552.4 112.7 L563.8 112.7 L575.2 112.3 L586.3 111.3 L597 109.7 L607 107.6 L616.2 105.1 L624.5 102.1 L631.7 98.8 L637.6 95.1 L642.2 91.2 L645.4 87.1 L647.2 82.9 L647.4 78.6 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M498.9 65 L531.1 54.9" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M515 59.9 L460.2 64.8" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M446.8 69 L473.6 60.6" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M446.8 69 L530.8 258.9" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M473.6 60.6 L557.7 250.5" stroke-width="1.8"/>
+  <circle class="hi" cx="446.8" cy="69" r="2.6"/>
+  <circle class="hi" cx="473.6" cy="60.6" r="2.6"/>
+  <circle class="hi" cx="530.8" cy="258.9" r="2.6"/>
+  <circle class="hi" cx="557.7" cy="250.5" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M625.3 67.7 L632.6 83.2" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M628.9 75.4 L712.9 99.3" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M709.9 92.8 L716 105.8" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M709.9 92.8 L581.1 253.7" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M716 105.8 L587.2 266.6" stroke-width="1.8"/>
+  <circle class="hi" cx="709.9" cy="92.8" r="2.6"/>
+  <circle class="hi" cx="716" cy="105.8" r="2.6"/>
+  <circle class="hi" cx="581.1" cy="253.7" r="2.6"/>
+  <circle class="hi" cx="587.2" cy="266.6" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M555.8 107.3 L516.3 102" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M536.1 104.6 L506.9 164.1" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M523.3 166.3 L490.4 161.8" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M523.3 166.3 L568.1 272.6" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M490.4 161.8 L535.2 268.1" stroke-width="1.8"/>
+  <circle class="hi" cx="523.3" cy="166.3" r="2.6"/>
+  <circle class="hi" cx="490.4" cy="161.8" r="2.6"/>
+  <circle class="hi" cx="568.1" cy="272.6" r="2.6"/>
+  <circle class="hi" cx="535.2" cy="268.1" r="2.6"/>
+  <path class="box-hi" d="M592.6 259.6 L591.1 257.5 L588.6 255.5 L585.3 253.8 L581.3 252.2 L576.5 251 L571.3 250.1 L565.7 249.5 L560 249.3 L554.3 249.5 L548.7 250.1 L543.5 251 L538.7 252.2 L534.7 253.8 L531.4 255.5 L528.9 257.5 L527.4 259.6 L526.9 261.7 L527.4 263.9 L528.9 266 L531.4 267.9 L534.7 269.7 L538.7 271.2 L543.5 272.5 L548.7 273.4 L554.3 273.9 L560 274.1 L565.7 273.9 L571.3 273.4 L576.5 272.5 L581.3 271.2 L585.3 269.7 L588.6 267.9 L591.1 266 L592.6 263.9 L593.1 261.7 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M560 261.7 L560 307.2" stroke-width="3"/>
+  <circle class="hi" cx="560" cy="307.2" r="3.5"/>
+  <text class="sub" x="745" y="52" text-anchor="end">모터 3개는 베이스에 고정</text>
+  <path class="ln" d="M700 58 L634.9 71.4" stroke-width="1.1" marker-end="url(#arr-t01-serial-vs-parallel)"/>
+  <text class="sub" x="420" y="358" text-anchor="start">움직이는 것은 가벼운 위팔·로드·이펙터뿐</text>
+  <text class="sub" x="420" y="376" text-anchor="start">→ 큰 가속도, 세 팔이 하중을 나눠 받음</text>
+</svg><figcaption>왼쪽: 직렬로봇은 모터가 링크 위에 실려 함께 움직입니다. 오른쪽: 델타로봇(edu_dynamixel 치수)은 세 모터가 베이스에 고정되고, 가벼운 팔·로드·이펙터만 움직입니다.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>비교 항목</th><th>직렬로봇 (예: 6축 다관절)</th><th>델타(병렬)로봇</th></tr></thead><tbody><tr><td>사슬 구조</td><td>열린 사슬 1개</td><td>닫힌 사슬 3개</td></tr><tr><td>모터 위치</td><td>각 관절 (앞 링크에 실림)</td><td>모두 베이스에 고정</td></tr><tr><td>움직이는 질량</td><td>큼 (링크 + 모터 + 감속기)</td><td>작음 (가벼운 팔·로드·이펙터)</td></tr><tr><td>가속도·사이클 타임</td><td>보통</td><td>매우 빠름 (고속 피킹에 특화)</td></tr><tr><td>강성·정밀도</td><td>링크 오차가 끝단에서 누적</td><td>팔 세 개가 하중을 나눠 받음, 오차가 누적되지 않고 평균되는 경향</td></tr><tr><td>작업영역</td><td>넓음 (로봇 크기 대비)</td><td>좁음, 아래쪽 버섯/돔 모양</td></tr><tr><td>가반하중</td><td>수 kg ~ 수백 kg</td><td>보통 수 kg 이하 (대형 모델 예외)</td></tr><tr><td>자세(방향)</td><td>6자유도 (위치 + 방향)</td><td>기본 3자유도 병진 (+ 선택적 회전축)</td></tr><tr><td>역기구학</td><td>비교적 어려움 (해가 여러 개)</td><td><strong>쉬움</strong> (팔마다 따로, 닫힌 해)</td></tr><tr><td>순기구학</td><td>쉬움 (행렬 곱)</td><td><strong>어려움</strong> (연립 방정식, 두 해)</td></tr><tr><td>설치</td><td>바닥·벽</td><td>보통 천장·프레임에 거꾸로 매닮</td></tr></tbody></table></div>
+<p>마지막 두 줄이 이 강의에서 특히 중요합니다. 직렬로봇은 관절각을 알면 끝단 위치가 곧바로 나오지만(순기구학이 쉬움), 델타로봇은 <strong>끝단 위치를 알면 모터각이 팔마다 따로 쉽게 나오고</strong>(T04), 반대로 모터각에서 위치를 구하려면 세 구의 교점을 풀어야 합니다(T05).</p>
+<h2 id="왜-델타는-빠른가-움직이는-질량">왜 델타는 빠른가 — 움직이는 질량<a class="anchor" href="#왜-델타는-빠른가-움직이는-질량">#</a></h2>
+<p>모터가 낼 수 있는 토크(힘)는 정해져 있습니다. 뉴턴 제2법칙 <span class="math">a = F / m</span>에서 같은 힘으로 더 큰 가속도를 내려면 <strong>움직이는 질량 m을 줄여야</strong> 합니다. 회전 운동에서도 마찬가지로 <span class="math">θ̈ = τ / I</span>이므로 관성 모멘트 I가 작을수록 빠르게 가감속합니다.</p>
+<ul><li>델타는 모터·감속기(로봇에서 가장 무거운 부품)를 <strong>베이스에 고정</strong>합니다. 움직이는 것은 위팔, 탄소섬유 로드, 작은 이펙터 판뿐입니다.</li><li>평행사변형 로드는 양끝이 볼조인트라서 이상적으로는 <strong>축 방향 힘(당김·밀림)만</strong> 전달합니다. 굽힘 하중이 거의 없으니 가늘고 가벼운 관(탄소섬유 등)으로 충분합니다.</li><li>페이로드를 세 팔이 나눠 받으므로 팔 하나가 감당하는 하중도 작습니다.</li></ul>
+<p>pick &amp; place 로봇은 거리가 짧은 이동(수백 mm)을 반복합니다. 이런 짧은 이동에서는 최고 속도보다 <strong>가속·감속 시간</strong>이 사이클 타임을 좌우하기 때문에, 가속도가 큰 델타가 유리합니다. 업계에서는 "25 mm 올리고, 305 mm 옮기고, 25 mm 내리고, 다시 돌아오는" <strong>Adept 사이클</strong>로 속도를 비교하곤 하며, 고속 델타는 이 사이클을 초당 여러 번 반복하는 성능을 내세웁니다(정확한 수치는 제조사 사양서를 확인하세요). 시뮬레이터 <strong>작업</strong> 탭의 데모 프로그램 "Adept 사이클"이 바로 이 동작입니다.</p>
+<div class="callout callout-design"><div class="callout-title">속도의 대가</div><div class="callout-body"><p>델타는 빠른 대신 작업영역이 좁고, 가반하중이 작고, 로드가 길어지면 강성이 떨어집니다. "무거운 물건을 멀리" 옮기는 일에는 직렬로봇이나 갠트리(직교) 로봇이 더 맞을 수 있습니다. 설계 트랙(D02)에서 요구사항으로 이 선택을 정리합니다.</p></div></div>
+<h2 id="응용-분야">응용 분야<a class="anchor" href="#응용-분야">#</a></h2>
+<ul><li><strong>식품·제과</strong>: 초콜릿·쿠키·빵 정렬 및 포장. 위생을 위해 스테인리스·세척형(wash-down) 모델이 많습니다.</li><li><strong>제약·화장품</strong>: 블리스터·튜브·작은 병의 피킹과 박스 적재.</li><li><strong>전자·소형 조립</strong>: 작은 부품의 정렬, 트레이 투입, 검사 라인.</li><li><strong>물류</strong>: 컨베이어 위 소형 물품 분류(비전 + 컨베이어 트래킹, R08 캡스톤).</li><li><strong>3D 프린팅</strong>: 직선형 델타 프린터. 높은 빌드 높이와 빠른 헤드 이동이 장점입니다.</li><li><strong>햅틱·의료</strong>: 델타 구조의 햅틱 마스터 장치(손잡이의 3차원 위치를 읽고 힘을 되돌려 줌), 수술 보조 장치.</li></ul>
+<h2 id="델타로봇의-변형">델타로봇의 변형<a class="anchor" href="#델타로봇의-변형">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>변형</th><th>구동 방식</th><th>특징</th><th>대표 예</th></tr></thead><tbody><tr><td>회전형 델타 (이 강의)</td><td>베이스의 모터 3개가 위팔을 <strong>회전</strong></td><td>고속, 작업영역이 버섯 모양</td><td>산업용 피킹 델타</td></tr><tr><td>직선형 델타</td><td>수직(또는 수평) 레일 위 캐리지 3개가 <strong>직선</strong> 이동</td><td>높이 방향으로 작업영역을 늘리기 쉬움</td><td>델타 3D 프린터</td></tr><tr><td>4축 델타</td><td>3자유도 델타 + 가운데 <strong>신축 회전축</strong>(텔레스코픽 샤프트 + 유니버설 조인트)</td><td>이펙터의 수직축 회전(yaw) 추가</td><td>Clavel의 원래 설계, 대부분의 산업용 피커</td></tr><tr><td>4팔 병렬 피커</td><td>팔 4개 + 특수 이펙터</td><td>회전을 팔로 만들어 신축축 제거</td><td>H4 계열 설계(예: Adept Quattro)</td></tr></tbody></table></div>
+<p>직선형 델타도 "평행사변형 로드 + 이펙터"라는 아래쪽 구조는 같습니다. 모터각 θ 대신 캐리지 높이가 입력이 될 뿐이라, 이 강의의 역기구학·순기구학 아이디어(구와 원/직선의 교차)를 그대로 옮길 수 있습니다.</p>
+<h2 id="실습-시뮬레이터-둘러보기">실습 — 시뮬레이터 둘러보기<a class="anchor" href="#실습-시뮬레이터-둘러보기">#</a></h2>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html?preset=edu_dynamixel">시뮬레이터에서 열기</a></p>
+<div class="callout callout-task"><div class="callout-title">5분 관찰</div><div class="callout-body"><ol><li>시뮬레이터를 열고 <strong>작업</strong> 탭에서 데모 프로그램 "Adept 사이클"을 재생합니다. 세 모터가 <strong>동시에</strong> 조금씩 움직여 이펙터가 직선으로 가는 모습을 봅니다.</li><li>이펙터 판이 이동 중에도 <strong>항상 수평</strong>을 유지하는지 확인합니다(이유는 T02).</li><li><strong>설계</strong> 탭에서 프리셋을 <code>industrial_picker</code>로 바꾸고 같은 데모를 재생합니다. 크기가 커져도 구조는 같다는 점을 확인합니다.</li><li><strong>분석</strong> 탭의 "작업영역 점구름"을 켜고, 작업영역이 베이스 아래쪽의 둥근 덩어리 모양임을 봅니다(T07).</li></ol></div></div>
+<div class="callout callout-check"><div class="callout-title">스스로 점검</div><div class="callout-body"><ul><li>직렬로봇에서 손목 모터를 무거운 것으로 바꾸면 어깨 모터에는 어떤 영향이 있을까요? 델타에서는요?</li><li>델타로봇에서 "순기구학이 역기구학보다 어렵다"는 말의 의미를 한 문장으로 설명해 보세요.</li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="1-델타는-3자유도니까-물건을-돌려서-놓을-수-있다-는-오해">1) "델타는 3자유도니까 물건을 돌려서 놓을 수 있다"는 오해<a class="anchor" href="#1-델타는-3자유도니까-물건을-돌려서-놓을-수-있다-는-오해">#</a></h3>
+<ul><li>원인: 3자유도 델타의 이펙터는 <strong>병진(x, y, z)만</strong> 합니다. 평행사변형이 방향을 고정하기 때문입니다(T02).</li><li>해결: 물건을 돌려야 하면 4축 델타(가운데 회전축)나 이펙터 위 별도 회전 모터가 필요합니다. 이 강의의 시뮬레이터·라이브러리는 3자유도만 다룹니다.</li></ul>
+<h3 id="2-작업영역을-로봇-크기로-착각">2) 작업영역을 로봇 크기로 착각<a class="anchor" href="#2-작업영역을-로봇-크기로-착각">#</a></h3>
+<ul><li>원인: 베이스 지름이 크다고 작업영역이 그만큼 넓지 않습니다. 실제로 쓸 수 있는 영역은 베이스 아래쪽의 <strong>작업 실린더</strong>(지름 D × 높이 H)입니다.</li><li>해결: 산업용 사양서도 작업영역을 "D × H mm"로 표기합니다. T07에서 <code>work_cylinder()</code>로 직접 계산합니다.</li></ul>
+<h3 id="3-시뮬레이터를-열었는데-이전에-쓰던-설계가-나옴">3) 시뮬레이터를 열었는데 이전에 쓰던 설계가 나옴<a class="anchor" href="#3-시뮬레이터를-열었는데-이전에-쓰던-설계가-나옴">#</a></h3>
+<ul><li>원인: 현재 설계는 브라우저 <code>localStorage[&#x27;studydelta.design.v1&#x27;]</code>에 저장되어 다음 방문 때 복원됩니다.</li><li>해결: 주소에 <code>?preset=edu_dynamixel</code>처럼 프리셋을 붙여 열거나, <strong>설계</strong> 탭에서 프리셋을 다시 선택합니다.</li></ul>
+<h3 id="4-제조사-속도-수치를-그대로-비교">4) 제조사 속도 수치를 그대로 비교<a class="anchor" href="#4-제조사-속도-수치를-그대로-비교">#</a></h3>
+<ul><li>원인: 사이클 타임은 페이로드, 이동 거리, 아치 높이, 궤적 프로파일에 따라 크게 달라집니다.</li><li>해결: 같은 조건(예: Adept 사이클, 같은 페이로드)인지 먼저 확인합니다. 이 강의의 카탈로그 값도 교육용 대표값이므로 실제 선정 시 데이터시트를 확인하세요.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>주변(식품·물류·전자)에서 델타로봇이 쓰일 만한 공정 하나를 골라, 직렬로봇 대신 델타를 쓰는 이유와 델타의 약점을 각각 두 가지씩 쓰세요.</li><li>직렬로봇과 델타로봇 비교표에서 "강성" 행을 자신의 말로 설명하세요. 오차가 왜 "누적"되는지 링크 3개짜리 직렬 팔로 예를 드세요.</li><li>시뮬레이터에서 <code>edu_servo</code>와 <code>industrial_picker</code> 프리셋의 설계 탭 파생값(움직이는 판 질량, 팔 관성)을 기록하고, 크기 비율과 질량·관성 비율을 비교하세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>R. Clavel, "DELTA, a fast robot with parallel geometry," <em>Proc. 18th International Symposium on Industrial Robots (ISIR)</em>, Lausanne, 1988.</li><li>R. Clavel, <em>Conception d'un robot parallèle rapide à 4 degrés de liberté</em>, 박사학위 논문, EPFL, 1991.</li><li>R. Clavel, "Device for the movement and positioning of an element in space," 미국 특허 US 4,976,582 (1990).</li><li>J.-P. Merlet, <em>Parallel Robots</em>, 2nd ed., Springer, 2006 — 병렬로봇 전반의 표준 교재.</li><li>B. Siciliano, O. Khatib (eds.), <em>Springer Handbook of Robotics</em>, Springer — "Parallel Mechanisms and Robots" 장.</li><li>이 사이트: <a href="../sim/index.html">3D 시뮬레이터</a> · 다음 챕터 <a href="../lessons/t02.html">T02 구조와 자유도</a></li></ul>
+      <nav class="pager"><span class="pager-prev disabled"></span><a class="pager-next" href="t02.html"><span>다음 · T02</span>구조와 자유도</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#델타로봇은-어디서-왔나">델타로봇은 어디서 왔나</a><a class="toc-l2" href="#직렬로봇과-병렬로봇">직렬로봇과 병렬로봇</a><a class="toc-l2" href="#왜-델타는-빠른가-움직이는-질량">왜 델타는 빠른가 — 움직이는 질량</a><a class="toc-l2" href="#응용-분야">응용 분야</a><a class="toc-l2" href="#델타로봇의-변형">델타로봇의 변형</a><a class="toc-l2" href="#실습-시뮬레이터-둘러보기">실습 — 시뮬레이터 둘러보기</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#1-델타는-3자유도니까-물건을-돌려서-놓을-수-있다-는-오해">1) &quot;델타는 3자유도니까 물건을 돌려서 놓을 수 있다&quot;는 오해</a><a class="toc-l3" href="#2-작업영역을-로봇-크기로-착각">2) 작업영역을 로봇 크기로 착각</a><a class="toc-l3" href="#3-시뮬레이터를-열었는데-이전에-쓰던-설계가-나옴">3) 시뮬레이터를 열었는데 이전에 쓰던 설계가 나옴</a><a class="toc-l3" href="#4-제조사-속도-수치를-그대로-비교">4) 제조사 속도 수치를 그대로 비교</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

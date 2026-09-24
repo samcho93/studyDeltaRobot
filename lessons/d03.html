@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D03. 암 길이·반지름 선정 · studyDeltaRobot</title>
+<meta name="description" content="L, l, R−r 비율이 작업영역·속도·강성·토크에 주는 영향을 파라미터 스윕으로 비교합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-design">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" class="active" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="d03" data-track="design">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-design">설계·시뮬레이션</span> D-2 설계 요소 선정 &middot; 약 90분 &middot; 중급</div>
+    <h1><span class="lesson-no">D03</span>암 길이·반지름 선정</h1>
+    <p class="lede">L, l, R−r 비율이 작업영역·속도·강성·토크에 주는 영향을 파라미터 스윕으로 비교합니다.</p>
+    <div class="requires">선수 챕터: <a href="t06.html">T06</a> <a href="t07.html">T07</a> <a href="d02.html">D02</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a><a class="ghost-btn" href="../tools/playground.html">Python Playground</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>치수 파라미터 R, r, L, l, w 가운데 <strong>기구학을 실제로 바꾸는 조합</strong>(R−r, l/L, 전체 크기)을 구분할 수 있습니다.</li><li>l/L 비와 R−r 이 작업 실린더 D×H, 속도 이득, 정적 토크, 조건수에 주는 영향을 <strong>파라미터 스윕</strong>으로 비교할 수 있습니다.</li><li>요구 작업 실린더에서 출발해 치수를 정하는 절차를 따라 설계안을 만들고, 시뮬레이터에서 확인할 수 있습니다.</li></ul>
+<h2 id="어떤-치수가-무엇을-바꾸나">어떤 치수가 무엇을 바꾸나<a class="anchor" href="#어떤-치수가-무엇을-바꾸나">#</a></h2>
+<p>T03에서 정의한 다섯 치수를 다시 봅시다. 역기구학 <code>ik_arm()</code>을 보면 R과 r은 항상 <code>a = x + r − R</code> <strong>꼴로만</strong> 등장합니다. 즉 기구학(작업영역·야코비안)은 R과 r 각각이 아니라 <strong>R − r</strong> 에만 의존합니다. 따로 의미가 있는 것은 질량·크기(모터 배치 공간, 이펙터 판 크기)입니다.</p>
+<div class="table-wrap"><table><thead><tr><th>치수</th><th>기구학에 주는 영향</th><th>그 밖의 영향</th></tr></thead><tbody><tr><td>R − r</td><td>팔이 벌어진 정도. 작을수록 작업영역이 넓고 속도 이득↑, 대신 조건수↑</td><td>R: 모터 3개가 들어갈 공간, r: 툴 장착 공간</td></tr><tr><td>L (위팔)</td><td>작업영역의 크기 스케일, 속도 이득 ∝ L</td><td>팔 관성 ∝ L², 중력 토크 ∝ L</td></tr><tr><td>l (아래팔)</td><td>l/L 비로 작업영역 모양과 높이 결정</td><td>로봇 전체 높이, 로드 질량·진동</td></tr><tr><td>w (로드 간격)</td><td><strong>기구학에는 없음</strong> (평행사변형이라 이펙터 자세만 유지)</td><td>볼조인트 각도 여유, 이펙터 회전 강성, 팔꿈치 질량</td></tr></tbody></table></div>
+<p><code>DeltaDesign.validate()</code>는 l ≤ L 이면 "보통 l ≈ 2~2.5 L" 이라는 경고를 만듭니다. 이 범위가 왜 흔한지 숫자로 확인해 봅시다.</p>
+<div class="callout callout-info"><div class="callout-title">네 가지 비교 지표</div><div class="callout-body"><ul><li><strong>작업 실린더 D (H = 100 mm)</strong> — <code>kinematics.work_cylinder(d, 0.10)</code></li><li><strong>속도 이득</strong> — 중심에서 야코비안의 최대 특이값 σ_max [m/s per rad/s]. 모터가 1 rad/s로 돌 때 TCP가 가장 빨리 움직이는 방향의 속도. 크면 빠르지만, 같은 모터 분해능·백래시가 TCP에서 그만큼 크게 보입니다.</li><li><strong>정적 토크</strong> — 중심에서 이동판 무게를 들고 있을 때 가장 큰 팔의 출력축 토크 (<code>dynamics.static_torques</code>)</li><li><strong>조건수 κ</strong> — σ_max/σ_min. 1이면 모든 방향이 같은 성능(등방성), 클수록 특정 방향이 둔해집니다. 중심과 작업 실린더 가장자리(반지름의 90 %)에서 봅니다.</li></ul></div></div>
+<h2 id="파라미터-스윕">파라미터 스윕<a class="anchor" href="#파라미터-스윕">#</a></h2>
+<p><code>edu_dynamixel</code>(R = 100, r = 35, L = 130, l = 300 mm)을 기준으로 한 번에 <strong>한 가지만</strong> 바꿉니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+from deltarobot import DeltaDesign
+from deltarobot import kinematics as kin
+from deltarobot import dynamics as dyn
+
+base = DeltaDesign.preset(&quot;edu_dynamixel&quot;)      # R=0.10 r=0.035 L=0.13 l=0.30
+H = 0.10                                          # 요구 작업 높이 [m]
+
+def metrics(d):
+    c = kin.work_cylinder(d, H)
+    rc = c[&quot;diameter&quot;] / 2
+    zc = (c[&quot;z_top&quot;] + c[&quot;z_bottom&quot;]) / 2
+    centre = (0.0, 0.0, zc)
+    th = kin.ik(d, centre)
+    gain = kin.singular_values(kin.jacobian(d, th, centre))[-1]   # 최대 속도 이득 [m/s per rad/s]
+    tau = max(abs(t) for t in dyn.static_torques(d, centre))       # 출력축 정적 토크 [N·m]
+    k_c = kin.condition_number(d, th, centre)
+    k_e = max(kin.condition_number(d, kin.ik(d, p), p)
+              for p in [(0.9 * rc * math.cos(a), 0.9 * rc * math.sin(a), zc)
+                        for a in (0, math.pi / 3, 2 * math.pi / 3, math.pi)])
+    return c[&quot;diameter&quot;] * 1000, zc * 1000, gain, tau, k_c, k_e
+
+print(&quot;① l/L 스윕 (L = 130 mm 고정)&quot;)
+print(&quot; l/L  l[mm] | D[mm] z중심[mm] | 속도이득 정적토크 | 조건수 중심 가장자리&quot;)
+for k in (1.5, 2.0, 2.3, 2.5, 3.0):
+    d = base.copy(forearm=round(k * base.upper_arm, 4))
+    D, zc, g, tau, kc, ke = metrics(d)
+    print(&quot; %.1f  %4.0f  | %5.0f  %6.0f   |  %.3f    %.3f   |  %.2f    %.2f&quot; % (
+        k, d.forearm * 1000, D, zc, g, tau, kc, ke))
+
+print(&quot;② R−r 스윕 (r = 35, L = 130, l = 300 mm 고정)&quot;)
+print(&quot; R−r  R[mm] | D[mm] z중심[mm] | 속도이득 정적토크 | 조건수 중심 가장자리&quot;)
+for dr in (0.03, 0.065, 0.1, 0.13):
+    d = base.copy(base_radius=round(base.effector_radius + dr, 4))
+    D, zc, g, tau, kc, ke = metrics(d)
+    print(&quot; %3.0f  %4.0f  | %5.0f  %6.0f   |  %.3f    %.3f   |  %.2f    %.2f&quot; % (
+        dr * 1000, d.base_radius * 1000, D, zc, g, tau, kc, ke))
+
+print(&quot;③ 크기 스윕 (l/L = 2.3 유지)&quot;)
+print(&quot;  L    l   | D[mm] z중심[mm] | 속도이득 정적토크 | 조건수 중심 가장자리&quot;)
+for L in (0.10, 0.13, 0.16):
+    d = base.copy(upper_arm=L, forearm=round(2.3 * L, 4))
+    D, zc, g, tau, kc, ke = metrics(d)
+    print(&quot; %3.0f  %3.0f  | %5.0f  %6.0f   |  %.3f    %.3f   |  %.2f    %.2f&quot; % (
+        L * 1000, d.forearm * 1000, D, zc, g, tau, kc, ke))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">① l/L 스윕 (L = 130 mm 고정)
+ l/L  l[mm] | D[mm] z중심[mm] | 속도이득 정적토크 | 조건수 중심 가장자리
+ 1.5   195  |   213    -154   |  0.145    0.403   |  1.45    1.65
+ 2.0   260  |   285    -224   |  0.132    0.299   |  1.36    2.01
+ 2.3   299  |   310    -273   |  0.158    0.288   |  1.74    2.39
+ 2.5   325  |   324    -301   |  0.172    0.284   |  1.97    2.60
+ 3.0   390  |   381    -364   |  0.204    0.279   |  2.49    3.15
+② R−r 스윕 (r = 35, L = 130, l = 300 mm 고정)
+ R−r  R[mm] | D[mm] z중심[mm] | 속도이득 정적토크 | 조건수 중심 가장자리
+  30    65  |   339    -274   |  0.184    0.267   |  2.27    2.97
+  65   100  |   311    -274   |  0.158    0.288   |  1.75    2.39
+ 100   135  |   258    -263   |  0.137    0.313   |  1.35    1.82
+ 130   165  |   228    -242   |  0.120    0.348   |  1.03    1.46
+③ 크기 스윕 (l/L = 2.3 유지)
+  L    l   | D[mm] z중심[mm] | 속도이득 정적토크 | 조건수 중심 가장자리
+ 100  230  |   178    -215   |  0.117    0.225   |  1.56    1.94
+ 130  299  |   310    -273   |  0.158    0.288   |  1.74    2.39
+ 160  368  |   415    -330   |  0.199    0.354   |  1.88    2.61</code></pre></div>
+<figure class="fig" id="fig-d03-ratio-effect"><svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="l/L 비에 따른 작업영역 단면과 작업 실린더">
+  <defs>
+    <marker id="arr-d03-ratio-effect" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d03-ratio-effect-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M80.0 372.9 L560.0 372.9" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="376.9" text-anchor="end">-550</text>
+  <path class="ln" d="M80.0 302.1 L560.0 302.1" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="306.1" text-anchor="end">-450</text>
+  <path class="ln" d="M80.0 231.2 L560.0 231.2" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="235.2" text-anchor="end">-350</text>
+  <path class="ln" d="M80.0 160.4 L560.0 160.4" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="164.4" text-anchor="end">-250</text>
+  <path class="ln" d="M80.0 89.6 L560.0 89.6" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="74.0" y="93.6" text-anchor="end">-150</text>
+  <path class="ln" d="M80.0 40.0 L80.0 380.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="80.0" y="396.0" text-anchor="middle">0</text>
+  <path class="ln" d="M172.3 40.0 L172.3 380.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="172.3" y="396.0" text-anchor="middle">50</text>
+  <path class="ln" d="M264.6 40.0 L264.6 380.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="264.6" y="396.0" text-anchor="middle">100</text>
+  <path class="ln" d="M356.9 40.0 L356.9 380.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="356.9" y="396.0" text-anchor="middle">150</text>
+  <path class="ln" d="M449.2 40.0 L449.2 380.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="449.2" y="396.0" text-anchor="middle">200</text>
+  <path class="ln" d="M541.5 40.0 L541.5 380.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="541.5" y="396.0" text-anchor="middle">250</text>
+  <path class="ln" d="M80.0 380.0 L560.0 380.0" stroke-width="1.2"/>
+  <path class="ln" d="M80.0 40.0 L80.0 380.0" stroke-width="1.2"/>
+  <text class="sub" x="320.0" y="414.0" text-anchor="middle">반지름 [mm] (중심축 기준)</text>
+  <text class="sub" x="80.0" y="30.0" text-anchor="start">이펙터 중심 z [mm]</text>
+  <path d="M82.2 40.0 L97.4 40.0 L118.2 40.0 L151.4 40.9 L217.8 46.6 L250.4 52.4 L283.1 58.2 L283.1 63.9 L283.1 69.7 L283.1 75.4 L283.1 81.2 L283.1 86.9 L283.1 92.7 L283.1 98.4 L283.1 104.2 L283.1 109.9 L283.1 115.7 L281.9 121.5 L276.3 127.2 L269.6 133.0 L262.2 138.7 L254.4 144.5 L244.8 150.2 L234.7 156.0 L223.4 161.7 L210.5 167.5 L196.4 173.3 L180.1 179.0 L162.1 184.8 L140.8 190.5 L116.0 196.3 L85.1 202.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="58.2" width="196.3" height="69.1" style="fill:var(--accent);fill-opacity:0.08;stroke:var(--accent)" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <path d="M110.2 80.0 L159.4 86.9 L197.5 93.8 L248.0 100.7 L346.4 107.6 L350.4 114.6 L350.4 121.5 L350.4 128.4 L350.4 135.3 L350.4 142.2 L350.4 149.1 L350.4 156.0 L350.4 162.9 L350.4 169.8 L343.2 176.7 L330.7 183.6 L316.9 190.5 L301.8 197.4 L284.8 204.3 L266.4 211.2 L245.4 218.1 L221.8 225.1 L194.8 232.0 L162.7 238.9 L123.3 245.8" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="107.6" width="263.2" height="69.1" style="fill:var(--danger);fill-opacity:0.08;stroke:var(--danger)" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <path d="M85.7 104.9 L131.3 112.5 L174.8 120.1 L231.8 127.7 L344.3 135.3 L391.4 142.9 L391.4 150.5 L391.4 158.1 L391.4 165.7 L391.4 173.3 L391.4 180.9 L391.4 188.4 L391.4 196.0 L381.4 203.6 L365.7 211.2 L348.6 218.8 L329.4 226.4 L308.0 234.0 L283.8 241.6 L257.4 249.2 L226.8 256.8 L190.4 264.4 L146.3 272.0 L87.1 279.6" style="stroke:var(--warn);fill:none;fill-opacity:1" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="142.9" width="285.7" height="68.4" style="fill:var(--warn);fill-opacity:0.08;stroke:var(--warn)" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <path d="M107.0 128.4 L152.0 136.4 L210.5 144.5 L311.0 152.5 L418.2 160.6 L418.2 168.7 L418.2 176.7 L418.2 184.8 L418.2 192.8 L418.2 200.9 L418.2 208.9 L415.2 217.0 L398.0 225.1 L379.2 233.1 L358.2 241.2 L335.8 249.2 L309.5 257.3 L281.0 265.3 L248.0 273.4 L209.0 281.5 L161.8 289.5 L98.0 297.6" style="stroke:var(--task);fill:none;fill-opacity:1" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="160.6" width="299.2" height="72.5" style="fill:var(--task);fill-opacity:0.08;stroke:var(--task)" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <path d="M91.8 176.7 L154.2 185.9 L244.5 195.1 L485.8 204.3 L485.8 213.5 L485.8 222.8 L485.8 232.0 L485.8 241.2 L485.8 250.4 L479.1 259.6 L456.3 268.8 L431.8 278.0 L404.0 287.2 L373.6 296.4 L339.9 305.6 L301.1 314.8 L255.5 324.0 L199.8 333.3 L124.7 342.5" style="stroke:var(--info);fill:none;fill-opacity:1" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="80.0" y="204.3" width="351.8" height="73.7" style="fill:var(--info);fill-opacity:0.08;stroke:var(--info)" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text class="sub" x="585.0" y="56.0" text-anchor="start">l/L · l [mm] → D [mm]</text>
+  <path d="M585.0 78.0 L609.0 78.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="615.0" y="82.0" text-anchor="start">1.5 · l 195 → D 213</text>
+  <path d="M585.0 102.0 L609.0 102.0" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="615.0" y="106.0" text-anchor="start">2.0 · l 260 → D 285</text>
+  <path d="M585.0 126.0 L609.0 126.0" style="stroke:var(--warn);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="615.0" y="130.0" text-anchor="start">2.3 · l 299 → D 310</text>
+  <path d="M585.0 150.0 L609.0 150.0" style="stroke:var(--task);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="615.0" y="154.0" text-anchor="start">2.5 · l 325 → D 324</text>
+  <path d="M585.0 174.0 L609.0 174.0" style="stroke:var(--info);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="615.0" y="178.0" text-anchor="start">3.0 · l 390 → D 381</text>
+  <text class="tag" x="585.0" y="210.0" text-anchor="start">실선: 높이별 최대 반지름</text>
+  <text class="tag" x="585.0" y="228.0" text-anchor="start">(한 원 전체가 도달 가능)</text>
+  <text class="tag" x="585.0" y="252.0" text-anchor="start">점선 사각형: H = 100 mm</text>
+  <text class="tag" x="585.0" y="270.0" text-anchor="start">작업 실린더 (반단면)</text>
+  <text class="tag" x="585.0" y="300.0" text-anchor="start">L = 130, R = 100, r = 35 mm</text>
+</svg><figcaption>l/L만 바꾼 다섯 설계의 작업영역 반단면(<code>work_cylinder(d, 0.10)[&quot;profile&quot;]</code>, 높이마다 한 바퀴 전체가 도달 가능한 최대 반지름)과 H = 100 mm 작업 실린더(점선 사각형).</figcaption></figure>
+<h3 id="결과-읽기">결과 읽기<a class="anchor" href="#결과-읽기">#</a></h3>
+<p><strong>① l/L — 작업영역은 커지지만 "공짜"가 아닙니다.</strong> 아래팔을 1.5L에서 3L로 늘리면 D는 213 → 381 mm로 커지지만, 작업 실린더의 중심이 −154 → −364 mm로 <strong>210 mm나 내려갑니다.</strong> 로봇 프레임이 그만큼 높아져야 하고, 긴 로드는 무겁고 휘기 쉽습니다. 조건수도 가장자리 기준 1.65 → 3.15로 나빠집니다. 조건수가 가장 좋은 것은 l/L = 2.0 부근(중심 1.36)이고, 2.0~2.5 구간이 "넓이 대비 높이·조건수" 균형이 맞는 구간입니다. 이것이 <code>validate()</code>가 말하는 "보통 l ≈ 2~2.5 L" 의 근거입니다.</p>
+<p><strong>② R − r — 넓이와 등방성의 교환.</strong> R − r을 30 → 130 mm로 키우면 D는 339 → 228 mm로 줄고 정적 토크는 0.267 → 0.348 N·m로 늘지만, 조건수는 2.27 → 1.03(중심)으로 <strong>거의 완벽한 등방성</strong>이 됩니다. 팔이 넓게 벌어질수록 세 팔이 이펙터를 서로 다른 방향에서 붙잡기 때문입니다. 반대로 R − r을 너무 줄이면 세 팔이 거의 평행해져 옆 방향이 둔해집니다(특이점 쪽).</p>
+<p><strong>③ 크기 — 비율을 유지하면 모양은 닮은꼴.</strong> L을 100 → 160 mm로 키우면(l/L = 2.3 유지) D는 178 → 415 mm로 늘고, 속도 이득(0.117 → 0.199)과 정적 토크(0.225 → 0.354 N·m)가 같이 커집니다. 같은 모터로 <strong>더 빠르지만 더 약한</strong> 로봇이 됩니다. (R, r은 고정했으므로 조건수가 조금씩 달라집니다. 완전한 닮은꼴을 원하면 R, r도 같은 비율로 키워야 합니다.)</p>
+<div class="callout callout-warn"><div class="callout-title">정적 토크와 속도 이득이 항상 같이 움직이지는 않습니다</div><div class="callout-body"><p>정적 토크는 <strong>중력 방향(z) 성분</strong>과 팔 자중(<code>gravity_moment · g · cos θ</code>)으로 정해지고, 속도 이득은 <strong>가장 빠른 방향</strong>의 값입니다. ① 에서 l/L이 커질 때 속도 이득은 커지는데 정적 토크가 약간 줄어드는 것은, 작업 높이가 내려가 위팔이 더 아래로 기울고(cos θ↓) z 방향 이득은 오히려 작아지기 때문입니다. 표 하나만 보고 결론 내리지 말고 <strong>실제 동작의 토크</strong>(D04, D06)로 다시 확인하세요.</p></div></div>
+<h2 id="치수-선정-절차">치수 선정 절차<a class="anchor" href="#치수-선정-절차">#</a></h2>
+<ol><li><strong>요구 작업 실린더 D × H</strong>를 정한다 (D02).</li><li><strong>l/L = 2.0~2.5</strong>에서 출발한다. 로봇 높이 제약이 크면 2.0 쪽, 넓이가 중요하면 2.5 쪽.</li><li><strong>R − r</strong>을 정한다. 이펙터 판에 툴을 달 공간(r)과 모터 3개가 들어갈 공간(R)을 먼저 확보하고, 조건수(가장자리)가 너무 크면 R − r을 키운다. 이 강의에서는 <strong>가장자리 조건수 ≤ 2.5</strong>를 권장 기준으로 씁니다(업계 공통 값이 아니라 교육용 기준입니다).</li><li><strong>L로 크기를 맞춘다.</strong> D가 부족하면 비율을 유지한 채 L을 키운다. D가 넉넉하면 줄여서 관성과 토크를 아낀다.</li><li><strong>w</strong>는 볼조인트 각도(<code>ball_joint_limit</code>)와 이펙터가 비틀리지 않을 강성을 보고 정한다(보통 이펙터 판 크기와 비슷하게).</li><li>시뮬레이터 <strong>[설계 검증]</strong>, 분석 탭의 <strong>작업영역 점구름·작업 실린더 표시</strong>로 확인한다.</li></ol>
+<div class="callout callout-design"><div class="callout-title">D는 &quot;원 한 바퀴 전체&quot;가 기준</div><div class="callout-body"><p><code>work_cylinder()</code>는 높이마다 <strong>24방향 모두</strong> 도달 가능한 최대 반지름을 구하고, 높이 H 구간에서 그 최솟값을 지름으로 씁니다. 작업영역 점구름이 삼각형에 가까운 모양이라 어떤 방향으로는 더 멀리 가지만, 요구사항은 "어느 방향이든 되는 영역"으로 약속해야 안전합니다.</p></div></div>
+<h2 id="실습-시뮬레이터">실습 (시뮬레이터)<a class="anchor" href="#실습-시뮬레이터">#</a></h2>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html?preset=edu_dynamixel">시뮬레이터에서 열기</a></p>
+<div class="callout callout-task"><div class="callout-title">실습 A — 슬라이더로 스윕 재현</div><div class="callout-body"><ol><li><strong>설계</strong> 탭에서 <code>edu_dynamixel</code>을 고르고 l 슬라이더를 195 → 390 mm로 움직이며 <strong>[설계 검증]</strong> 의 D×H를 기록합니다.</li><li><strong>분석</strong> 탭에서 작업영역 점구름과 작업 실린더 표시를 켜고, l을 바꿀 때 실린더가 <strong>아래로 내려가는</strong> 것을 확인합니다.</li><li><strong>조그</strong> 탭에서 TCP를 작업 실린더 가장자리로 옮겨 조건수 표시를 읽고, Python 표의 "가장자리" 값과 비교합니다.</li><li>R을 65 mm와 165 mm로 바꿔 같은 과정을 반복합니다.</li></ol></div></div>
+<div class="callout callout-check"><div class="callout-title">스스로 확인</div><div class="callout-body"><ul><li>R과 r을 <strong>둘 다 20 mm씩</strong> 키우면 작업 실린더는 어떻게 되나요? (힌트: <code>ik_arm</code>의 <code>a = x + r − R</code>)</li><li>l/L = 1.5 설계의 중심 정적 토크가 가장 큰 이유를 위팔 각도 θ로 설명해 보세요 (<code>kin.ik(d, centre)</code>를 출력해 보면 됩니다).</li><li>w를 0.02 → 0.08 m로 바꿔도 작업 실린더가 그대로인 이유는 무엇인가요? 그래도 w를 신경 써야 하는 이유는?</li></ul></div></div>
+<div class="callout callout-mission"><div class="callout-title">팀 미션 — 가장 작은 로봇 찾기</div><div class="callout-body"><p>요구: D ≥ 300 mm, H = 100 mm, 가장자리 조건수 ≤ 2.5, 페이로드 0.2 kg. 모터는 <code>dxl_xm430_w350</code>으로 고정. <code>metrics()</code>를 이용해 <strong>L이 가장 작은</strong> 설계를 찾으세요. l/L, R − r, L을 바꾼 기록(최소 6개 설계)을 표로 남기고, 최종안의 정적 토크가 XM430 정격(1.4 N·m, 대표값)의 몇 %인지 보고합니다. 가장 작은 L을 찾은 팀이 이깁니다.</p></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>증상·메시지</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td><code>ValueError: 설계 오류: effector_radius(r)는 base_radius(R)보다 작아야 합니다</code></td><td>스윕에서 R − r ≤ 0</td><td>스윕 범위를 R &gt; r 로 제한</td></tr><tr><td><code>validate()</code>가 <code>forearm(l)이 upper_arm(L)보다 짧으면 ...</code> 을 돌려줌</td><td>l ≤ L. <code>DeltaRobot</code>은 이 경고로는 멈추지 않음</td><td>l/L ≥ 2 에서 시작</td></tr><tr><td><code>kin.ik()</code>에서 <code>Unreachable</code></td><td>작업 실린더 D가 0 (중심조차 도달 불가)</td><td><code>work_cylinder()</code>의 <code>diameter</code>가 0인지 먼저 확인</td></tr><tr><td>조건수가 <code>inf</code></td><td>특이 자세(세 팔이 평행에 가까움) 또는 도달 불가</td><td>R − r을 키우거나 해당 높이를 피함</td></tr><tr><td>스윕이 느림</td><td><code>work_cylinder</code>는 높이 41개 × 24방향 × 이분탐색을 수행</td><td>설계 수를 줄이거나 H를 고정해 한 번씩만 계산</td></tr></tbody></table></div>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>l/L = 2.0, 2.3, 2.5 세 설계에 대해 D04의 방법으로 Adept 사이클 피크 토크를 비교하세요. 작업영역 표와 같은 순서가 나오나요?</li><li><code>edu_servo</code>를 기준으로 ① ~ ③ 스윕을 다시 하고, 교육용 소형 델타에 맞는 l/L과 R − r을 제안하세요.</li><li>(심화) 작업 실린더 가장자리 24방향 전부에서 조건수를 계산해 최댓값이 나오는 방향을 찾고, 그 방향이 팔 방위각 φᵢ와 어떤 관계인지 설명하세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>R. Clavel, "DELTA, a fast robot with parallel geometry", <em>Proc. 18th ISIR</em>, 1988.</li><li>J.-P. Merlet, <em>Parallel Robots</em>, 2nd ed., Springer, 2006 — 조건수·등방성·작업영역 최적화.</li><li>F. Pierrot, C. Reynaud, A. Fournier, "DELTA: a simple and efficient parallel robot", <em>Robotica</em>, 8(2), 1990.</li><li>T06 야코비안·속도·특이점, T07 작업영역 (이 강의), <code>docs/API.md</code> §4.</li></ul>
+      <nav class="pager"><a class="pager-prev" href="d02.html"><span>이전 · D02</span>설계 요구사항 정의</a><a class="pager-next" href="d04.html"><span>다음 · D04</span>모터·감속기 선정</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#어떤-치수가-무엇을-바꾸나">어떤 치수가 무엇을 바꾸나</a><a class="toc-l2" href="#파라미터-스윕">파라미터 스윕</a><a class="toc-l3" href="#결과-읽기">결과 읽기</a><a class="toc-l2" href="#치수-선정-절차">치수 선정 절차</a><a class="toc-l2" href="#실습-시뮬레이터">실습 (시뮬레이터)</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

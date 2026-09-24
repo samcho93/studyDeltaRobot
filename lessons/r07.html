@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R07. 실물: 아두이노 펌웨어·캘리브레이션 · studyDeltaRobot</title>
+<meta name="description" content="RC 서보 델타를 조립하고 영점·방향을 캘리브레이션한 뒤, serial 백엔드로 같은 파이썬 코드를 실물에서 실행합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-control">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" class="active" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="r07" data-track="control">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-control">Python·ROS 2·실물</span> R-3 실물과 캡스톤 &middot; 약 150분 &middot; 고급</div>
+    <h1><span class="lesson-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</h1>
+    <p class="lede">RC 서보 델타를 조립하고 영점·방향을 캘리브레이션한 뒤, serial 백엔드로 같은 파이썬 코드를 실물에서 실행합니다.</p>
+    <div class="requires">선수 챕터: <a href="r03.html">R03</a> <a href="d08.html">D08</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../tools/playground.html">Python Playground</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li><code>edu_servo</code> 설계(3D 프린팅 + MG996R)의 부품을 준비하고, 서보 전원과 신호를 <strong>공통 접지</strong>로 안전하게 배선합니다.</li><li><code>firmware/delta_servo</code> 스케치를 올리고 시리얼 모니터에서 <code>J</code>·<code>T</code>·<code>E</code>·<code>R</code>·<code>?</code> 프로토콜을 직접 시험합니다.</li><li>영점(위팔 수평 = 0°)·방향(아래로 +)·펄스 기울기를 캘리브레이션해 <strong>라이브러리의 θ와 실물 팔의 각도</strong>를 일치시킵니다.</li><li>Playground 드라이런으로 검증한 코드를 <code>backend=&quot;serial&quot;</code>로 바꿔 실물에서 실행합니다.</li></ul>
+<h2 id="준비물-eduservo-1대-기준">준비물 (edu_servo 1대 기준)<a class="anchor" href="#준비물-eduservo-1대-기준">#</a></h2>
+<p><code>edu_servo</code> 프리셋의 치수: R = 80 mm, r = 30 mm, L = 100 mm, l = 220 mm, w = 40 mm, 페이로드 50 g, 흡착컵 툴(<code>suction_20</code>). D08에서 설계·검증한 값입니다.</p>
+<div class="table-wrap"><table><thead><tr><th>부품</th><th>수량</th><th>비고</th></tr></thead><tbody><tr><td>3D 프린팅 베이스·위팔·이펙터</td><td>1식</td><td>PLA, 위팔 길이 100 mm(축 중심 → 팔꿈치 볼 중심)</td></tr><tr><td>MG996R 서보 (또는 호환품)</td><td>3</td><td>금속 기어, 혼(horn) 포함. 사양은 제조사 데이터시트 확인</td></tr><tr><td>아래팔 로드 (탄소 또는 알루미늄 튜브)</td><td>6</td><td>볼 중심 간 220 mm, 같은 팔의 두 로드는 <strong>길이가 정확히 같게</strong></td></tr><tr><td>볼조인트 (M3 볼링크 또는 자석 볼조인트)</td><td>12</td><td>로드 양 끝. 각도 여유 ±35° 이상</td></tr><tr><td>Arduino Uno 또는 Nano</td><td>1</td><td>USB 케이블 포함</td></tr><tr><td>서보 전원 6 V, 5 A 이상 (SMPS 또는 BEC)</td><td>1</td><td><strong>USB·아두이노 5V 핀 전원 금지</strong></td></tr><tr><td>전해 커패시터 1000 µF 이상 (10 V 이상)</td><td>1</td><td>서보 전원 단자 옆</td></tr><tr><td>로직레벨 N-MOSFET(예: IRLZ44N) + 220 Ω, 10 kΩ, 또는 릴레이 모듈</td><td>1</td><td>툴(펌프·전자석) 구동</td></tr><tr><td>플라이백 다이오드 (1N4007 / 1N5819)</td><td>1</td><td>펌프·전자석 양단</td></tr><tr><td>소형 진공 펌프 + 흡착컵 Ø20 mm, 실리콘 튜브</td><td>1</td><td>또는 전자석 모듈(철 부품 전용)</td></tr><tr><td>전원 스위치(물리 비상정지용)</td><td>1</td><td>서보 전원 + 라인에 직렬</td></tr><tr><td>수평 지그(3D 프린팅 직각 블록), 각도기</td><td>1</td><td>캘리브레이션용</td></tr></tbody></table></div>
+<h2 id="배선">배선<a class="anchor" href="#배선">#</a></h2>
+<figure class="fig" id="fig-r07-wiring"><svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RC 서보 델타 배선도">
+  <defs>
+    <marker id="arr-r07-wiring" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r07-wiring-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="20" y="30" width="170" height="110" rx="10"/>
+  <text class="lbl" x="105" y="56" text-anchor="middle">Arduino Uno/Nano</text>
+  <text class="sub mono" x="105" y="78" text-anchor="middle">D9 · D10 · D11 → 서보</text>
+  <text class="sub mono" x="105" y="96" text-anchor="middle">D7 → 툴 (MOSFET)</text>
+  <text class="sub mono" x="105" y="114" text-anchor="middle">USB ↔ PC 115200</text>
+  <rect class="box" x="20" y="220" width="170" height="90" rx="10"/>
+  <text class="lbl" x="105" y="248" text-anchor="middle">PC</text>
+  <text class="sub mono" x="105" y="268" text-anchor="middle">backend="serial"</text>
+  <text class="tag mono" x="105" y="288" text-anchor="middle">port="COM3" 등</text>
+  <path class="ln" d="M105 218 L105 142" stroke-width="2" marker-end="url(#arr-r07-wiring)" marker-start="url(#arr-r07-wiring)"/>
+  <text class="tag" x="112" y="185" text-anchor="start">USB</text>
+  <rect class="box" x="270" y="220" width="170" height="90" rx="10"/>
+  <text class="lbl" x="355" y="248" text-anchor="middle">서보 전원 6 V 5 A</text>
+  <text class="sub dg" x="355" y="268" text-anchor="middle">USB 전원 사용 금지</text>
+  <text class="tag" x="355" y="288" text-anchor="middle">GND를 아두이노와 공통</text>
+  <rect class="box" x="520" y="30" width="180" height="48" rx="8"/>
+  <text class="lbl" x="610" y="50" text-anchor="middle">MG996R 서보 1</text>
+  <text class="sub mono" x="610" y="68" text-anchor="middle">신호 D9 · 6 V · GND</text>
+  <path class="ln-hi" d="M190 60 L518 54" stroke-width="1.6" marker-end="url(#arr-r07-wiring-hi)"/>
+  <path class="ln" d="M440 240 L518 60" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <rect class="box" x="520" y="92" width="180" height="48" rx="8"/>
+  <text class="lbl" x="610" y="112" text-anchor="middle">MG996R 서보 2</text>
+  <text class="sub mono" x="610" y="130" text-anchor="middle">신호 D10 · 6 V · GND</text>
+  <path class="ln-hi" d="M190 70 L518 116" stroke-width="1.6" marker-end="url(#arr-r07-wiring-hi)"/>
+  <path class="ln" d="M440 240 L518 122" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <rect class="box" x="520" y="154" width="180" height="48" rx="8"/>
+  <text class="lbl" x="610" y="174" text-anchor="middle">MG996R 서보 3</text>
+  <text class="sub mono" x="610" y="192" text-anchor="middle">신호 D11 · 6 V · GND</text>
+  <path class="ln-hi" d="M190 80 L518 178" stroke-width="1.6" marker-end="url(#arr-r07-wiring-hi)"/>
+  <path class="ln" d="M440 240 L518 184" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <rect class="box" x="520" y="230" width="180" height="70" rx="8"/>
+  <text class="lbl" x="610" y="256" text-anchor="middle">툴: 흡착 펌프 / 전자석</text>
+  <text class="sub" x="610" y="276" text-anchor="middle">MOSFET 모듈 또는 릴레이</text>
+  <text class="tag" x="610" y="292" text-anchor="middle">(유도성 부하는 다이오드)</text>
+  <path class="ln" d="M190 110 L518 262" stroke-width="1.6" marker-end="url(#arr-r07-wiring)"/>
+  <text class="sub" x="360" y="340" text-anchor="middle">점선: 6 V 서보 전원 — 신호선(실선)과 GND는 반드시 공통으로 연결</text>
+</svg><figcaption>신호는 아두이노 D9·D10·D11(서보), D7(툴). 서보 전원은 별도 6 V로 공급하고 GND를 반드시 공통으로 묶습니다.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>신호</th><th>아두이노 핀</th><th>연결</th></tr></thead><tbody><tr><td>서보 1 (팔 1, +x 방향, φ = 0°)</td><td>D9</td><td>MG996R 주황(신호)</td></tr><tr><td>서보 2 (팔 2, φ = 120°)</td><td>D10</td><td>MG996R 주황</td></tr><tr><td>서보 3 (팔 3, φ = 240°)</td><td>D11</td><td>MG996R 주황</td></tr><tr><td>툴 출력</td><td>D7</td><td>MOSFET 게이트(220 Ω 직렬, 10 kΩ 풀다운) 또는 릴레이 모듈 IN</td></tr><tr><td>서보 전원 +</td><td>—</td><td>6 V 전원 → 서보 빨강 (전원 스위치 경유)</td></tr><tr><td>GND</td><td>GND</td><td>서보 전원 GND ↔ 아두이노 GND ↔ 툴 전원 GND <strong>공통</strong></td></tr></tbody></table></div>
+<ul><li><strong>팔 번호와 핀 순서를 지킵니다.</strong> 팔 1이 +x 방향이고, 위에서 볼 때 반시계 방향으로 팔 2(120°), 팔 3(240°)입니다. 순서가 바뀌면 IK가 엉뚱한 팔을 움직입니다.</li><li>MG996R은 멈춰서 힘을 받을 때(stall) 한 개에 2 A 이상 흐를 수 있어, USB 전원으로는 아두이노가 리셋됩니다.</li><li>펌프·전자석은 유도성 부하라 끌 때 역기전력이 생깁니다. 다이오드를 부하 양단에 <strong>캐소드를 + 쪽으로</strong> 답니다.</li><li>active-LOW 릴레이 모듈이면 스케치의 <code>TOOL_ACTIVE_HIGH = false</code>로 바꿉니다.</li></ul>
+<h2 id="펌웨어-올리기와-프로토콜-시험">펌웨어 올리기와 프로토콜 시험<a class="anchor" href="#펌웨어-올리기와-프로토콜-시험">#</a></h2>
+<ol><li>Arduino IDE에서 <code>firmware/delta_servo/delta_servo.ino</code>를 열고 보드(Uno/Nano)와 포트를 고른 뒤 업로드합니다. 표준 <code>Servo</code> 라이브러리만 씁니다.</li><li>시리얼 모니터를 <strong>115200 baud, 줄 끝 "새 줄(Newline)"</strong> 로 엽니다. 부팅하면 <code>READY delta_servo</code>가 나오고 서보가 20°(홈, 0.35 rad)로 갑니다.</li><li>아래 명령을 한 줄씩 보냅니다.</li></ol>
+<div class="table-wrap"><table><thead><tr><th>명령</th><th>뜻</th><th>응답</th></tr></thead><tbody><tr><td><code>J d1 d2 d3</code></td><td>모터 목표각[°] (0 = 수평, + = 아래)</td><td>없음</td></tr><tr><td><code>T 1</code> / <code>T 0</code></td><td>툴 켬 / 끔</td><td>없음</td></tr><tr><td><code>?</code></td><td>상태</td><td><code>OK d1 d2 d3 tool</code></td></tr><tr><td><code>E</code></td><td>비상정지: 서보 힘 풀림(detach), 툴 끔, 이후 <code>J</code>·<code>T</code> 무시</td><td><code>ESTOP</code></td></tr><tr><td><code>R</code></td><td>비상정지 해제: 마지막 각도로 다시 힘을 줌</td><td><code>READY</code></td></tr></tbody></table></div>
+<ul><li>잘못된 명령에는 <code>ERR ...</code>(예: <code>ERR J needs 3 numbers</code>, 비상정지 중 <code>ERR estop (send R)</code>)로 답합니다.</li><li>줄 맨 앞의 <code>E</code>는 줄바꿈을 기다리지 않고 <strong>즉시</strong> 실행됩니다.</li><li>펌웨어는 θ를 <strong>−40°~+85°</strong> 로 자르고(설계 한계 −0.7~1.5 rad), 10 ms마다 각 서보를 목표 쪽으로 최대 <strong>200°/s</strong>만 움직입니다(슬루율 제한). 명령이 튀거나 끊겨도 팔이 휘두르지 않게 하는 장치입니다.</li></ul>
+<h2 id="캘리브레이션-라이브러리의-실물의">캘리브레이션: 라이브러리의 θ = 실물의 θ<a class="anchor" href="#캘리브레이션-라이브러리의-실물의">#</a></h2>
+<p>라이브러리는 "위팔이 수평이면 θ = 0, 아래로 내려가면 +"라고 가정합니다(CLAUDE.md 좌표 규약). 서보는 펄스 폭(µs)만 알 뿐이라, 펌웨어가 각도를 펄스로 바꿉니다.</p>
+<figure class="fig" id="fig-r07-calib"><svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="모터각 영점과 방향 캘리브레이션">
+  <defs>
+    <marker id="arr-r07-calib" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r07-calib-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="120" y="50" width="60" height="80" rx="6"/>
+  <text class="sub" x="150" y="148" text-anchor="middle">서보</text>
+  <circle class="hi" cx="180" cy="90" r="6"/>
+  <path class="ln-hi" d="M180 90 L330 90" stroke-width="6"/>
+  <text class="lbl" x="340" y="94" text-anchor="start">θ = 0° : 위팔 수평</text>
+  <path class="ln" d="M180 90 L302.873 176.036" stroke-width="4" stroke-dasharray="5 4"/>
+  <text class="tag" x="310.873" y="180.036" text-anchor="start">θ = +35° : 아래로 (홈 0.35 rad ≈ 20°)</text>
+  <path class="ln" d="M240 90 A60 60 0 0 1 229.149 124.415" stroke-width="1.6" marker-end="url(#arr-r07-calib)"/>
+  <text class="lbl hi" x="250" y="124" text-anchor="start">+</text>
+  <rect class="box" x="20" y="190" width="680" height="76" rx="8"/>
+  <text class="lbl mono" x="36" y="214" text-anchor="start">펌웨어 변환:  pulse_us = ZERO_US[i] + DIR[i] × US_PER_DEG[i] × θ[°]</text>
+  <text class="sub" x="36" y="236" text-anchor="start">ZERO_US: 수평 지그에서 찾은 펄스 · DIR: 펄스↑일 때 팔이 아래로 가면 +1 · US_PER_DEG: 약 10~11 µs/°(측정)</text>
+  <text class="tag" x="36" y="256" text-anchor="start">θ는 −40°…+85°로 제한, 슬루율 200°/s — J 0 0 0에서 세 팔이 모두 수평이면 영점 완료</text>
+</svg><figcaption>영점은 위팔 수평, 방향은 아래로 +. 펌웨어는 팔마다 영점 펄스·방향·기울기로 각도를 펄스로 바꿉니다.</figcaption></figure>
+<p>펌웨어 상단의 배열 세 개가 보정값입니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">pulse_us = ZERO_US[i] + DIR[i] * US_PER_DEG[i] * theta_deg
+float ZERO_US[3]    = {1500.0, 1500.0, 1500.0};   // 위팔이 정확히 수평일 때 펄스
+int8_t DIR[3]       = {+1, +1, +1};               // 펄스↑일 때 팔이 아래로 가면 +1, 위로 가면 -1
+float US_PER_DEG[3] = {10.3, 10.3, 10.3};         // 1°당 펄스 (MG996R 약 10~11, 개체차 큼)</code></pre></div>
+<p>절차(펌웨어 README와 같음):</p>
+<ol><li><strong>위팔을 빼고</strong> 혼만 단 상태에서 업로드합니다. <code>J 0 0 0</code>을 보내면 기본 영점 1500 µs로 갑니다.</li><li>수평 지그를 베이스에 대고 위팔을 혼에 끼웁니다. 스플라인 한 칸 오차는 <code>ZERO_US</code>로 보정하므로 최대한 수평에 가깝게만 끼우면 됩니다.</li><li><strong>방향 확인</strong>: <code>J 10 10 10</code>에서 세 팔이 모두 <strong>아래로</strong> 내려가야 합니다. 올라가는 팔은 <code>DIR[i] = -1</code>로 바꿉니다. 서보를 베이스에 거울 대칭으로 달면 흔히 생깁니다.</li><li><strong>영점</strong>: 팔마다 <code>J 1.5 0 0</code>처럼 조금씩 바꿔 가며 지그와 정확히 맞는 각도 aᵢ를 찾고 <code>ZERO_US[i] += DIR[i] * US_PER_DEG[i] * aᵢ</code>로 고칩니다. 다시 올린 뒤 <code>J 0 0 0</code>에서 세 팔이 모두 수평인지 확인합니다.</li><li><strong>기울기</strong>: <code>J 45 45 45</code>에서 각도기로 실제 각도 bᵢ를 재고 <code>US_PER_DEG[i] *= 45 / bᵢ</code>로 고칩니다.</li><li>로드와 이펙터를 조립하고 <code>J 20 20 20</code> → <code>J 40 40 40</code>으로 천천히 움직이며 걸림을 확인합니다. 세 팔이 같은 각도면 이펙터는 베이스 <strong>정중앙 아래</strong>에 수평으로 있어야 합니다. 자로 베이스 가장자리에서 이펙터까지 거리를 세 방향에서 재 대칭을 확인합니다.</li><li>보정값을 스케치와 실험 노트에 적어 둡니다. 서보를 교체하면 그 팔만 다시 합니다.</li></ol>
+<div class="callout callout-tip"><div class="callout-title">캘리브레이션 결과 확인</div><div class="callout-body"><p>TCP 높이로 검증할 수 있습니다. 홈(세 팔 20°)에서 라이브러리가 계산한 TCP는 베이스(모터축 평면) 아래 <strong>245.7 mm</strong>입니다(R01). 실측값이 몇 mm 이상 다르면 영점이나 로드 길이를 다시 확인합니다. 세 팔이 같은 오차로 틀어지면 이펙터가 위아래로, 한 팔만 틀어지면 옆으로 치우칩니다.</p></div></div>
+<h2 id="드라이런-playground에서-먼저">드라이런: Playground에서 먼저<a class="anchor" href="#드라이런-playground에서-먼저">#</a></h2>
+<p>실물에 보내기 전에 **같은 동작을 <code>record</code> 백엔드로 돌려<strong> 모터 부하, 각도 범위, 최대 모터 속도를 확인합니다. 펌웨어 슬루율(200°/s ≈ 3.5 rad/s)은 카탈로그의 MG996R 최고 속도(대표값 6 rad/s)보다 낮으므로, </strong>최대 모터 속도가 200°/s 아래인지**를 따로 봅니다. 넘으면 펌웨어가 따라가지 못해 경로가 계획과 달라집니다.</p>
+<p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+from deltarobot import DeltaRobot
+
+FIRMWARE_DEG_S = 200.0       # 펌웨어 슬루율 제한 MAX_SPEED_DEG_S
+
+def first_motion(robot):
+    robot.set_speed(0.05, 0.5)                   # 처음에는 느리게
+    robot.home()
+    z = -0.25
+    for x, y in [(0.0, 0.0), (0.03, 0.0), (0.0, 0.03), (-0.03, 0.0), (0.0, -0.03), (0.0, 0.0)]:
+        robot.move_to(x, y, z)
+    robot.move_joints(20, 20, 20, degrees=True)  # 홈 = 20°
+    robot.tool_on(); robot.wait(0.5); robot.tool_off()
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;empty&quot;)   # 드라이런: record 백엔드
+first_motion(robot)
+rep = robot.analyze()
+w = max(rep[&quot;max_speed_motor&quot;])
+print(&quot;동작 시간 %.1f s&quot; % robot.time)
+print(&quot;최대 모터 속도 %.2f rad/s = %.0f °/s (펌웨어 제한 %.0f °/s)&quot; % (w, math.degrees(w), FIRMWARE_DEG_S))
+print(&quot;peak %.2f rms %.2f ok=%s&quot; % (rep[&quot;peak_ratio&quot;], rep[&quot;rms_ratio&quot;], rep[&quot;ok&quot;]))
+print(&quot;모터각 범위 [deg]:&quot;, [round(math.degrees(min(f[&quot;q&quot;][i] for f in robot.backend.frames)), 1) for i in range(3)],
+      &quot;~&quot;, [round(math.degrees(max(f[&quot;q&quot;][i] for f in robot.backend.frames)), 1) for i in range(3)])</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">동작 시간 5.6 s
+최대 모터 속도 0.72 rad/s = 41 °/s (펌웨어 제한 200 °/s)
+peak 0.19 rms 0.47 ok=True
+모터각 범위 [deg]: [11.2, 12.8, 12.8] ~ [34.5, 33.1, 33.1]</code></pre></div>
+<p>모터각이 11°~35° 안에서만 움직이고, 속도는 펌웨어 제한의 5분의 1 수준이라 첫 실물 시험으로 알맞습니다.</p>
+<h2 id="실습-실물">실습 (실물)<a class="anchor" href="#실습-실물">#</a></h2>
+<div class="callout callout-safety"><div class="callout-title">안전 확인 (실물 실습 전 필수)</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> <strong>교수 입회</strong> 하에 진행하고, 로봇 주변(반경 50 cm)에 손·공구·케이블이 없도록 정리합니다.</label></li><li><label class="check-item"><input type="checkbox"> 서보 전원 + 라인의 <strong>물리 전원 스위치</strong>(하드웨어 비상정지) 위치를 모두가 알고, 한 명은 스위치에 손을 둡니다. 소프트웨어 <code>E</code>와 시뮬레이터 비상정지는 보조 수단입니다.</label></li><li><label class="check-item"><input type="checkbox"> 첫 전원 투입은 <strong>로드를 뺀 상태</strong>에서 합니다. 부팅 순간 서보가 홈 각도(20°)로 튑니다.</label></li><li><label class="check-item"><input type="checkbox"> 비상정지(<code>E</code>)나 전원 차단 후에는 팔이 <strong>중력으로 떨어집니다.</strong> 아래에 손·부품을 두지 말고, <code>R</code> 전에는 팔을 손으로 홈 근처로 받쳐 둡니다(<code>R</code>은 마지막 명령 각도로 다시 힘을 줍니다).</label></li><li><label class="check-item"><input type="checkbox"> 작업 영역에 손을 넣기 전에는 반드시 서보 전원을 끕니다.</label></li><li><label class="check-item"><input type="checkbox"> 펌웨어의 각도 한계(−40°~+85°)·슬루율(200°/s)과 라이브러리의 속도 검사를 <strong>완화하지 않습니다.</strong></label></li><li><label class="check-item"><input type="checkbox"> 서보나 전원부가 뜨거워지면 즉시 멈추고 식힙니다(정지 상태에서도 중력을 버티느라 전류가 흐릅니다).</label></li><li><label class="check-item"><input type="checkbox"> 첫 실행은 <code>set_speed(0.05)</code> 이하, 작업대에서 충분히 위(z = −0.25 m)에서 합니다.</label></li></ul></div></div>
+<h3 id="1단계-pc-준비와-포트-찾기">1단계: PC 준비와 포트 찾기<a class="anchor" href="#1단계-pc-준비와-포트-찾기">#</a></h3>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">pip install -e &quot;python[serial]&quot;          # 저장소 루트에서 (pyserial 설치)
+python -m serial.tools.list_ports        # 포트 목록: Windows COM3 등, Linux /dev/ttyACM0 등</code></pre></div>
+<p>Linux에서는 <code>sudo usermod -aG dialout $USER</code> 후 다시 로그인해야 포트를 열 수 있습니다. <strong>시리얼 모니터는 닫습니다.</strong> 포트는 한 프로그램만 열 수 있습니다.</p>
+<h3 id="2단계-같은-코드를-serial-백엔드로">2단계: 같은 코드를 serial 백엔드로<a class="anchor" href="#2단계-같은-코드를-serial-백엔드로">#</a></h3>
+<p>드라이런한 <code>first_motion()</code>을 그대로 쓰고, 로봇 생성 줄만 바꿉니다.</p>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python"># first_motion_serial.py — python first_motion_serial.py
+from deltarobot import DeltaRobot, WorkspaceError
+
+def first_motion(robot):
+    robot.set_speed(0.05, 0.5)
+    robot.home()
+    z = -0.25
+    for x, y in [(0.0, 0.0), (0.03, 0.0), (0.0, 0.03), (-0.03, 0.0), (0.0, -0.03), (0.0, 0.0)]:
+        robot.move_to(x, y, z)
+        print(&quot;TCP (%.3f, %.3f, %.3f)  t=%.1f s&quot; % (robot.position + (robot.time,)))
+    robot.move_joints(20, 20, 20, degrees=True)
+    robot.tool_on(); robot.wait(0.5); robot.tool_off()
+
+robot = DeltaRobot(&quot;edu_servo&quot;, backend=&quot;serial&quot;, port=&quot;COM3&quot;)   # Linux: port=&quot;/dev/ttyACM0&quot;
+try:
+    first_motion(robot)
+except WorkspaceError as e:
+    print(&quot;거부됨:&quot;, e)
+except KeyboardInterrupt:
+    print(&quot;Ctrl+C — 스트림 중단, 서보는 마지막 각도 유지&quot;)
+finally:
+    robot.close()                                # 툴 끄기(T 0) 후 포트 닫기</code></pre></div>
+<p><code>serial</code> 백엔드의 동작:</p>
+<ul><li>포트를 열면 대부분의 아두이노가 <strong>리셋</strong>되므로 2초 기다린 뒤 시작합니다. 리셋된 펌웨어는 홈(20°)에 있고, 라이브러리도 홈에서 시작한다고 가정하므로 둘이 맞습니다.</li><li>모터각을 도(°)로 바꿔 <code>J d1 d2 d3</code>를 최대 50 Hz(<code>rate=50</code>)로 보내고, 각 동작의 마지막 목표는 항상 보냅니다. 툴은 <code>T 0|1</code>입니다.</li><li>관절 속도가 모터 한계를 넘는 동작은 보내기 전에 <code>WorkspaceError</code>로 <strong>거부</strong>합니다.</li><li>필요하면 <code>robot.backend.estop()</code>(→ <code>E</code>)과 <code>robot.backend.reset()</code>(→ <code>R</code>)을 직접 부를 수 있습니다. 다만 <code>E</code>는 팔이 떨어지므로 Ctrl+C 처리에서 자동으로 보내지 않았습니다. 스트림이 멈추면 서보는 마지막 각도를 유지합니다.</li></ul>
+<h3 id="3단계-부품-옮기기">3단계: 부품 옮기기<a class="anchor" href="#3단계-부품-옮기기">#</a></h3>
+<p>첫 동작이 계획대로 되면 R02의 분류 프로그램을 <strong>속도 0.1 m/s</strong>로 실행합니다. 실제 부품(사탕·지우개 등 10~20 g)을 R02의 <code>robot.parts()</code> 좌표에 놓아야 합니다. 라이브러리는 카메라가 없으므로 <strong>장면 모델의 좌표를 믿고</strong> 움직입니다. 작업대 높이(<code>surface_z</code> = −0.285 m)도 실물과 맞춰야 흡착컵이 부품 윗면에 닿습니다. 높이가 다르면 작업대 밑에 판을 대서 맞추거나 <code>scene</code>을 dict로 만들어 <code>surface_z</code>를 실측값으로 바꿉니다.</p>
+<h3 id="ros-2로-실물-구동-선택">ROS 2로 실물 구동 (선택)<a class="anchor" href="#ros-2로-실물-구동-선택">#</a></h3>
+<p>R06의 모든 명령은 드라이버만 <code>serial</code>로 바꾸면 실물에서 그대로 동작합니다. 드라이버는 시작할 때 <code>R</code>과 <code>T 0</code>을 보내고, <code>J</code>를 최대 50 Hz로 보냅니다. 서보는 위치 피드백이 없어 <code>/joint_states</code>는 <strong>명령한 각도</strong>입니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">ros2 launch delta_robot bringup.launch.py preset:=edu_servo port:=/dev/ttyACM0</code></pre></div>
+<p><code>/delta/estop</code>에 <code>true</code>가 오면 드라이버는 아두이노에 <code>E</code>를 보내고, <code>false</code>면 <code>R</code>을 보냅니다.</p>
+<div class="callout callout-check"><div class="callout-title">체크포인트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> <code>J 0 0 0</code>에서 세 위팔이 모두 수평이고, <code>J 10 10 10</code>에서 모두 아래로 내려간다.</label></li><li><label class="check-item"><input type="checkbox"> 홈 자세 TCP 높이 실측값이 계산값(245.7 mm)과 몇 mm 안에서 맞는다.</label></li><li><label class="check-item"><input type="checkbox"> 드라이런에서 최대 모터 속도가 200°/s 아래임을 확인했다.</label></li><li><label class="check-item"><input type="checkbox"> 같은 <code>first_motion()</code>이 Playground와 실물에서 같은 모양으로 움직였다.</label></li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="serial-serialutil-serialexception-could-not-open-port-com3-permissionerror13-액세스가-거부되었습니다-none-5"><code>serial.serialutil.SerialException: could not open port &#x27;COM3&#x27;: PermissionError(13, &#x27;액세스가 거부되었습니다.&#x27;, None, 5)</code><a class="anchor" href="#serial-serialutil-serialexception-could-not-open-port-com3-permissionerror13-액세스가-거부되었습니다-none-5">#</a></h3>
+<ul><li><strong>원인</strong>(Windows): 아두이노 IDE 시리얼 모니터 등 다른 프로그램이 포트를 열고 있습니다. 포트 이름이 틀리면 <code>FileNotFoundError(2, ...)</code>가 납니다.</li><li><strong>해결</strong>: 시리얼 모니터를 닫고, <code>python -m serial.tools.list_ports</code>로 포트 이름을 확인합니다.</li></ul>
+<h3 id="serial-serialutil-serialexception-errno-13-could-not-open-port-dev-ttyacm0-errno-13-permission-denied-dev-ttyacm0"><code>serial.serialutil.SerialException: [Errno 13] could not open port /dev/ttyACM0: [Errno 13] Permission denied: &#x27;/dev/ttyACM0&#x27;</code><a class="anchor" href="#serial-serialutil-serialexception-errno-13-could-not-open-port-dev-ttyacm0-errno-13-permission-denied-dev-ttyacm0">#</a></h3>
+<ul><li><strong>원인</strong>(Linux): 사용자가 <code>dialout</code> 그룹에 없습니다.</li><li><strong>해결</strong>: <code>sudo usermod -aG dialout $USER</code> 후 <strong>다시 로그인</strong>합니다.</li></ul>
+<h3 id="runtimeerror-serial-백엔드에는-pyserial이-필요합니다-pip-install-pyserial"><code>RuntimeError: serial 백엔드에는 pyserial이 필요합니다: pip install pyserial</code><a class="anchor" href="#runtimeerror-serial-백엔드에는-pyserial이-필요합니다-pip-install-pyserial">#</a></h3>
+<ul><li><strong>해결</strong>: <code>pip install -e &quot;python[serial]&quot;</code>.</li></ul>
+<h3 id="서보가-떨거나-아두이노가-계속-리셋됨-시리얼에-ready-deltaservo가-반복">서보가 떨거나 아두이노가 계속 리셋됨 (시리얼에 <code>READY delta_servo</code>가 반복)<a class="anchor" href="#서보가-떨거나-아두이노가-계속-리셋됨-시리얼에-ready-deltaservo가-반복">#</a></h3>
+<ul><li><strong>원인</strong>: 서보 전원이 약하거나 USB에서 서보 전원을 끌어왔습니다. 전압이 떨어지며 아두이노가 리셋됩니다.</li><li><strong>해결</strong>: 6 V 5 A 이상 별도 전원, GND 공통, 1000 µF 커패시터를 확인합니다.</li></ul>
+<h3 id="팔-하나가-반대로-움직이거나-이펙터가-한쪽으로-쏠림">팔 하나가 반대로 움직이거나 이펙터가 한쪽으로 쏠림<a class="anchor" href="#팔-하나가-반대로-움직이거나-이펙터가-한쪽으로-쏠림">#</a></h3>
+<ul><li><strong>원인</strong>: 그 팔의 <code>DIR</code>가 틀렸거나, 서보 핀 순서(D9·D10·D11 = 팔 1·2·3)가 바뀌었습니다.</li><li><strong>해결</strong>: <code>J 10 0 0</code>, <code>J 0 10 0</code>, <code>J 0 0 10</code>으로 한 팔씩 움직여 번호와 방향을 확인합니다.</li></ul>
+<h3 id="시리얼에-err-estop-send-r">시리얼에 <code>ERR estop (send R)</code><a class="anchor" href="#시리얼에-err-estop-send-r">#</a></h3>
+<ul><li><strong>원인</strong>: 비상정지 상태에서 <code>J</code>·<code>T</code>를 보냈습니다.</li><li><strong>해결</strong>: 팔을 홈 근처로 받친 뒤 <code>R</code>을 보냅니다(파이썬은 <code>robot.backend.reset()</code>).</li></ul>
+<h3 id="파이썬-workspaceerror-관절-속도-rad-s-가-모터-한계">파이썬 <code>WorkspaceError: 관절 속도 ... rad/s 가 모터 한계 ...</code><a class="anchor" href="#파이썬-workspaceerror-관절-속도-rad-s-가-모터-한계">#</a></h3>
+<ul><li><strong>원인</strong>: 실물 백엔드는 속도 초과를 거부합니다.</li><li><strong>해결</strong>: 드라이런에서 <code>analyze()</code>로 확인하고 <code>set_speed()</code>를 낮춥니다. 펌웨어 슬루율(200°/s)도 함께 고려합니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">개인 과제</div><div class="callout-body"><ol><li>캘리브레이션 전후로 <code>J 0 0 0</code>, <code>J 45 45 45</code>의 실측 각도를 표로 남기고, 최종 <code>ZERO_US</code>, <code>DIR</code>, <code>US_PER_DEG</code> 값을 제출합니다.</li><li>홈 자세와 (±0.03, 0, −0.25), (0, ±0.03, −0.25)에서 TCP 위치를 자로 재어 계산값과의 오차를 표로 정리하고, 가장 큰 오차의 원인을 추정합니다.</li><li>R02의 분류 프로그램을 실물에서 0.1 m/s로 실행하고 성공 개수와 사이클 시간을 Playground 결과와 비교합니다.</li></ol></div></div>
+<div class="callout callout-mission"><div class="callout-title">팀 미션</div><div class="callout-body"><p>팀별로 속도를 0.05 → 0.1 → 0.2 m/s로 올리며 흡착 실패가 처음 생기는 속도를 찾고, 그때의 <code>peak_ratio</code>·가속도와 함께 원인(흡착력 부족, 진동, 슬루율 지연)을 보고합니다.</p></div></div>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>Arduino Servo 라이브러리: https://docs.arduino.cc/libraries/servo/</li><li>Arduino <code>Serial</code> 레퍼런스: https://docs.arduino.cc/language-reference/en/functions/communication/serial/</li><li>pySerial 문서(포트 열기, <code>list_ports</code>): https://pyserial.readthedocs.io/en/latest/</li><li>저장소 <code>firmware/README.md</code>, <code>firmware/delta_servo/delta_servo.ino</code></li><li>MG996R 데이터시트 — 구입한 제조사의 문서를 확인합니다(호환품마다 토크·속도가 다름).</li><li>D08 응용실습 ① 탁상형 교육용 델타(설계 검증)</li></ul>
+      <nav class="pager"><a class="pager-prev" href="r06.html"><span>이전 · R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a><a class="pager-next" href="r08.html"><span>다음 · R08</span>캡스톤: 컨베이어 트래킹 분류</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#준비물-eduservo-1대-기준">준비물 (edu_servo 1대 기준)</a><a class="toc-l2" href="#배선">배선</a><a class="toc-l2" href="#펌웨어-올리기와-프로토콜-시험">펌웨어 올리기와 프로토콜 시험</a><a class="toc-l2" href="#캘리브레이션-라이브러리의-실물의">캘리브레이션: 라이브러리의 θ = 실물의 θ</a><a class="toc-l2" href="#드라이런-playground에서-먼저">드라이런: Playground에서 먼저</a><a class="toc-l2" href="#실습-실물">실습 (실물)</a><a class="toc-l3" href="#1단계-pc-준비와-포트-찾기">1단계: PC 준비와 포트 찾기</a><a class="toc-l3" href="#2단계-같은-코드를-serial-백엔드로">2단계: 같은 코드를 serial 백엔드로</a><a class="toc-l3" href="#3단계-부품-옮기기">3단계: 부품 옮기기</a><a class="toc-l3" href="#ros-2로-실물-구동-선택">ROS 2로 실물 구동 (선택)</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#serial-serialutil-serialexception-could-not-open-port-com3-permissionerror13-액세스가-거부되었습니다-none-5">`serial.serialutil.SerialException: could not open port &#x27;COM3&#x27;: PermissionError(13, &#x27;액세스가 거부되었습니다.&#x27;, None, 5)`</a><a class="toc-l3" href="#serial-serialutil-serialexception-errno-13-could-not-open-port-dev-ttyacm0-errno-13-permission-denied-dev-ttyacm0">`serial.serialutil.SerialException: [Errno 13] could not open port /dev/ttyACM0: [Errno 13] Permission denied: &#x27;/dev/ttyACM0&#x27;`</a><a class="toc-l3" href="#runtimeerror-serial-백엔드에는-pyserial이-필요합니다-pip-install-pyserial">`RuntimeError: serial 백엔드에는 pyserial이 필요합니다: pip install pyserial`</a><a class="toc-l3" href="#서보가-떨거나-아두이노가-계속-리셋됨-시리얼에-ready-deltaservo가-반복">서보가 떨거나 아두이노가 계속 리셋됨 (시리얼에 `READY delta_servo`가 반복)</a><a class="toc-l3" href="#팔-하나가-반대로-움직이거나-이펙터가-한쪽으로-쏠림">팔 하나가 반대로 움직이거나 이펙터가 한쪽으로 쏠림</a><a class="toc-l3" href="#시리얼에-err-estop-send-r">시리얼에 `ERR estop (send R)`</a><a class="toc-l3" href="#파이썬-workspaceerror-관절-속도-rad-s-가-모터-한계">파이썬 `WorkspaceError: 관절 속도 ... rad/s 가 모터 한계 ...`</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>
+           

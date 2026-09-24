@@ -42,12 +42,12 @@
   <circle cx="210.9" cy="314.2" r="3.2" style="fill:var(--info)"/>
   <circle cx="210.5" cy="289.2" r="3.2" style="fill:var(--danger)"/>
   <circle cx="206.1" cy="305.8" r="3.2" style="fill:var(--info)"/>
-  <text class="tag" x="640.0" y="60.0" text-anchor="start">초록 실선: 부품 윗면 높이에서</text>
-  <text class="tag" x="640.0" y="76.0" text-anchor="start">도달 가능한 경계</text>
-  <text class="tag" x="640.0" y="100.0" text-anchor="start">회색 점선: 장면의</text>
-  <text class="tag" x="640.0" y="116.0" text-anchor="start">작업 반지름 439 mm</text>
-  <text class="tag" x="640.0" y="140.0" text-anchor="start">점: 실제 집은 위치</text>
-  <text class="tag" x="640.0" y="156.0" text-anchor="start">(30개, 예측 x)</text>
-  <text class="tag" x="640.0" y="190.0" text-anchor="start">눈금 100 mm</text>
-  <path class="ln" d="M640.0 200.0 L671.7 200.0" stroke-width="2"/>
+  <text class="tag" x="560.0" y="60.0" text-anchor="start">초록 실선: 부품 윗면 높이에서</text>
+  <text class="tag" x="560.0" y="76.0" text-anchor="start">도달 가능한 경계</text>
+  <text class="tag" x="560.0" y="100.0" text-anchor="start">회색 점선: 장면의</text>
+  <text class="tag" x="560.0" y="116.0" text-anchor="start">작업 반지름 439 mm</text>
+  <text class="tag" x="560.0" y="140.0" text-anchor="start">점: 실제 집은 위치</text>
+  <text class="tag" x="560.0" y="156.0" text-anchor="start">(30개, 예측한 x)</text>
+  <text class="tag" x="560.0" y="190.0" text-anchor="start">눈금 100 mm</text>
+  <path class="ln" d="M560.0 200.0 L591.7 200.0" stroke-width="2"/>
 </svg>

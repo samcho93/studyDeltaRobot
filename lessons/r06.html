@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R06. ROS 2: 토픽·서비스 제어와 웹 브리지 · studyDeltaRobot</title>
+<meta name="description" content="goal 토픽·tool 서비스·deltarobot ros2 백엔드로 로봇을 움직이고, web_bridge로 웹 시뮬레이터를 ROS 2 화면으로 씁니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-control">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" class="active" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="r06" data-track="control">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-control">Python·ROS 2·실물</span> R-2 ROS 2 연동 &middot; 약 120분 &middot; 고급</div>
+    <h1><span class="lesson-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</h1>
+    <p class="lede">goal 토픽·tool 서비스·deltarobot ros2 백엔드로 로봇을 움직이고, web_bridge로 웹 시뮬레이터를 ROS 2 화면으로 씁니다.</p>
+    <div class="requires">선수 챕터: <a href="r05.html">R05</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li><code>/delta/goal</code> 토픽과 <code>/delta/tool</code> 서비스로 명령줄과 rclpy 노드에서 로봇을 움직입니다.</li><li>같은 <code>DeltaRobot</code> 코드를 <code>backend=&quot;ros2&quot;</code>로 바꿔 ROS 2 드라이버에서 실행하고, 커맨더 경로와의 차이를 설명합니다.</li><li><code>delta_web_bridge</code>로 웹 시뮬레이터를 ROS 2 로봇의 화면으로 씁니다.</li><li><code>/delta/estop</code>의 동작(드라이버 정지·커맨더 큐 비움·파이썬 <code>EmergencyStop</code>·해제 절차)을 확인합니다.</li></ul>
+<h2 id="로봇을-움직이는-세-가지-길">로봇을 움직이는 세 가지 길<a class="anchor" href="#로봇을-움직이는-세-가지-길">#</a></h2>
+<figure class="fig" id="fig-r06-paths"><svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ROS 2에서 로봇을 움직이는 세 가지 길">
+  <defs>
+    <marker id="arr-r06-paths" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r06-paths-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="20" y="40" width="280" height="62" rx="8"/>
+  <text class="lbl mono" x="34" y="64" text-anchor="start">ros2 topic pub /delta/goal</text>
+  <text class="sub mono" x="34" y="84" text-anchor="start">geometry_msgs/Point (TCP, m)</text>
+  <path class="ln" d="M300 71 L440 150" stroke-width="2" marker-end="url(#arr-r06-paths)"/>
+  <text class="tag" x="370" y="104.5" text-anchor="middle">커맨더가 직선 궤적</text>
+  <rect class="box" x="20" y="120" width="280" height="62" rx="8"/>
+  <text class="lbl mono" x="34" y="144" text-anchor="start">ros2 service call /delta/tool</text>
+  <text class="sub mono" x="34" y="164" text-anchor="start">std_srvs/SetBool</text>
+  <path class="ln" d="M300 151 L440 150" stroke-width="2" marker-end="url(#arr-r06-paths)"/>
+  <text class="tag" x="370" y="144.5" text-anchor="middle">커맨더 → 툴</text>
+  <rect class="box-hi" x="20" y="200" width="280" height="62" rx="8"/>
+  <text class="lbl mono" x="34" y="224" text-anchor="start">DeltaRobot(backend="ros2")</text>
+  <text class="sub mono" x="34" y="244" text-anchor="start">파이썬이 직접 궤적 계획</text>
+  <path class="ln-hi" d="M300 231 L440 150" stroke-width="2" marker-end="url(#arr-r06-paths-hi)"/>
+  <text class="tag" x="370" y="184.5" text-anchor="middle">joint_command</text>
+  <rect class="box-hi" x="442" y="110" width="130" height="80" rx="16"/>
+  <text class="lbl mono" x="507" y="146" text-anchor="middle">delta_driver</text>
+  <text class="sub" x="507" y="166" text-anchor="middle">한계·속도 검사</text>
+  <path class="ln" d="M572 150 L620 150" stroke-width="2" marker-end="url(#arr-r06-paths)"/>
+  <rect class="box" x="622" y="110" width="88" height="80" rx="8"/>
+  <text class="lbl" x="666" y="146" text-anchor="middle">mock</text>
+  <text class="sub" x="666" y="166" text-anchor="middle">/ serial</text>
+  <text class="wr" x="360" y="286" text-anchor="middle" font-size="12">어느 길이든 /delta/estop(Bool true)이 들어오면 드라이버가 멈춥니다</text>
+</svg><figcaption>명령줄의 goal 토픽과 tool 서비스, 또는 파이썬 <code>ros2</code> 백엔드. 어느 길이든 마지막에는 <code>delta_driver</code>가 한계를 검사합니다.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>방법</th><th>누가 궤적을 계획하나</th><th>좋은 점</th><th>한계</th></tr></thead><tbody><tr><td><code>/delta/goal</code> + <code>/delta/tool</code></td><td><code>delta_commander</code> (직선)</td><td>어떤 언어·도구로도 보낼 수 있음</td><td>직선 이동만, 아치·관절 이동 없음</td></tr><tr><td><code>DeltaRobot(backend=&quot;ros2&quot;)</code></td><td>파이썬 라이브러리 (아치·직선·관절)</td><td>R01~R03 코드를 그대로 사용</td><td>파이썬 필요, 커맨더와 동시에 쓰면 안 됨</td></tr><tr><td>직접 <code>/delta/joint_command</code> 발행</td><td>여러분의 노드</td><td>완전한 자유</td><td>궤적·IK를 직접 만들어야 함</td></tr></tbody></table></div>
+<p>어느 길이든 <code>delta_driver</code>가 θ 한계, 조립 가능 여부, 모터 속도 제한을 <strong>다시</strong> 강제합니다. 클라이언트가 실수해도 드라이버에서 막히도록 한 것이 CLAUDE.md의 안전 원칙입니다.</p>
+<h2 id="실습-1-명령줄로-제어">실습 1: 명령줄로 제어<a class="anchor" href="#실습-1-명령줄로-제어">#</a></h2>
+<p>터미널 1:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">source ~/studyDeltaRobot/ros2_ws/install/setup.bash
+ros2 launch delta_robot display.launch.py preset:=edu_servo</code></pre></div>
+<p>터미널 2 — 목표 이동, 툴, 상태:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">source ~/studyDeltaRobot/ros2_ws/install/setup.bash
+ros2 topic echo /delta/busy &amp;          # 이동 중 true
+ros2 topic pub --once /delta/goal geometry_msgs/msg/Point &quot;{x: -0.0617, y: -0.0336, z: -0.25}&quot;
+ros2 topic pub --once /delta/goal geometry_msgs/msg/Point &quot;{x: -0.0617, y: -0.0336, z: -0.276}&quot;
+ros2 service call /delta/tool std_srvs/srv/SetBool &quot;{data: true}&quot;
+ros2 topic pub --once /delta/goal geometry_msgs/msg/Point &quot;{x: -0.0617, y: -0.0336, z: -0.25}&quot;
+ros2 topic pub --once /delta/goal geometry_msgs/msg/Point &quot;{x: 0.0561, y: -0.0404, z: -0.25}&quot;
+ros2 service call /delta/tool std_srvs/srv/SetBool &quot;{data: false}&quot;
+ros2 topic echo /delta/tool_state --once</code></pre></div>
+<p>좌표는 R02의 부품 p1과 상자 A 위치입니다(TCP 기준, m). 커맨더의 동작 규칙:</p>
+<ul><li>goal은 <strong>직선</strong>으로 갑니다. 아치 동작은 "위로 → 수평 → 아래로" goal 세 개로 나눠 보냅니다.</li><li>이동 중에 들어온 goal은 <strong>큐에 쌓여</strong> 앞 동작이 끝난 위치에서 이어서 계획됩니다.</li><li><code>/delta/tool</code> 서비스는 이동 중이면 큐에 넣어 <strong>이동이 끝난 뒤</strong> 실행하고 <code>tool on queued after current motion</code> 메시지로 응답합니다. 멈춰 있으면 바로 실행합니다.</li><li>목표나 경로 중간이 한계를 넘거나 관절 속도가 모터 한계를 넘으면 goal 전체를 <strong>거부</strong>하고 커맨더 터미널에 <code>goal (...) rejected: ...</code> 에러 로그를 남깁니다.</li></ul>
+<p>속도와 프로파일은 커맨더 파라미터로 바꿉니다(0이면 설계 기본값).</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">ros2 param set /delta_commander speed 0.1
+ros2 param set /delta_commander profile quintic</code></pre></div>
+<h2 id="실습-2-rclpy-노드로-순서-제어">실습 2: rclpy 노드로 순서 제어<a class="anchor" href="#실습-2-rclpy-노드로-순서-제어">#</a></h2>
+<p>명령줄에서 goal과 서비스를 연달아 보내면, 토픽과 서비스는 서로 다른 통로라 <strong>도착 순서가 보장되지 않습니다.</strong> 노드에서 <code>/delta/busy</code>가 <code>false</code>가 될 때까지 기다리며 보내면 확실합니다.</p>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python"># delta_sequence.py — source install/setup.bash 후 python3 delta_sequence.py
+import time
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Point
+from std_msgs.msg import Bool
+from std_srvs.srv import SetBool
+
+
+class Sequence(Node):
+    def __init__(self):
+        super().__init__(&quot;delta_sequence&quot;)
+        self.busy = False
+        self.pub = self.create_publisher(Point, &quot;/delta/goal&quot;, 10)
+        self.create_subscription(Bool, &quot;/delta/busy&quot;, self.on_busy, 10)
+        self.tool = self.create_client(SetBool, &quot;/delta/tool&quot;)
+        while not self.tool.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info(&quot;waiting for /delta/tool ...&quot;)
+
+    def on_busy(self, msg):
+        self.busy = msg.data
+
+    def spin_for(self, seconds):
+        end = time.monotonic() + seconds
+        while time.monotonic() &lt; end:
+            rclpy.spin_once(self, timeout_sec=0.02)
+
+    def goto(self, x, y, z):
+        self.pub.publish(Point(x=x, y=y, z=z))
+        self.spin_for(0.3)                       # 커맨더가 받아 busy=true가 될 시간
+        while self.busy:
+            rclpy.spin_once(self, timeout_sec=0.05)
+
+    def set_tool(self, on):
+        fut = self.tool.call_async(SetBool.Request(data=on))
+        rclpy.spin_until_future_complete(self, fut)
+        self.get_logger().info(fut.result().message)
+
+
+def main():
+    rclpy.init()
+    n = Sequence()
+    part, box, up, z_pick, z_place = (-0.0617, -0.0336), (0.0561, -0.0404), -0.25, -0.276, -0.264
+    n.goto(part[0], part[1], up)
+    n.goto(part[0], part[1], z_pick)
+    n.set_tool(True)
+    n.spin_for(0.3)                              # 흡착 안정
+    n.goto(part[0], part[1], up)
+    n.goto(box[0], box[1], up)
+    n.goto(box[0], box[1], z_place)
+    n.set_tool(False)
+    n.goto(0.0, 0.0, up)
+    n.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</code></pre></div>
+<p><code>/delta/busy</code>는 값이 바뀔 때와 10 Hz 주기로 발행되므로, goal 직후 잠깐 기다린 뒤 <code>false</code>가 될 때까지 도는 방식이 간단하고 튼튼합니다.</p>
+<h2 id="실습-3-같은-파이썬-코드를-ros-2에서-backend-ros2">실습 3: 같은 파이썬 코드를 ROS 2에서 — backend="ros2"<a class="anchor" href="#실습-3-같은-파이썬-코드를-ros-2에서-backend-ros2">#</a></h2>
+<p><code>ros2</code> 백엔드는 라이브러리가 아치·직선·관절 궤적을 계획해 <code>/delta/joint_command</code>로 100 Hz 스트리밍하고, <code>/delta/tool_command</code>로 툴을 켜고 끕니다. <strong>커맨더를 거치지 않습니다.</strong> R02의 분류 프로그램에서 한 줄만 바꿉니다.</p>
+<div class="code-block code-robot"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-robot">실물 전용</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python"># sort_ros2.py — source install/setup.bash 후 python3 sort_ros2.py
+from deltarobot import DeltaRobot, EmergencyStop, WorkspaceError
+
+robot = DeltaRobot(&quot;edu_servo&quot;, backend=&quot;ros2&quot;, scene=&quot;pick_place&quot;)   # launch와 같은 preset!
+try:
+    robot.home()
+    surface = robot.scene.data[&quot;surface_z&quot;]
+    bin_of = {b[&quot;color&quot;]: b for b in robot.bins()}
+    for part in robot.parts():
+        b = bin_of[part[&quot;color&quot;]]
+        try:
+            robot.arch_to(part[&quot;x&quot;], part[&quot;y&quot;], part[&quot;top&quot;])
+            robot.tool_on()
+            robot.wait(0.3)
+            robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], surface + b[&quot;h&quot;] + part[&quot;h&quot;] + 0.005)
+            robot.tool_off()
+            robot.wait(0.2)
+            print(&quot;%s -&gt; %s  (%.1f s)&quot; % (part[&quot;id&quot;], b[&quot;id&quot;], robot.time))
+        except WorkspaceError as e:
+            print(part[&quot;id&quot;], &quot;건너뜀:&quot;, e)
+    robot.home()
+    print(&quot;점수(파이썬 쪽 장면):&quot;, robot.scene.score())
+except EmergencyStop as e:
+    print(&quot;비상정지:&quot;, e)
+finally:
+    robot.close()</code></pre></div>
+<p>패키지에 들어 있는 예제도 같은 방식입니다: <code>ros2 run delta_robot delta_pick_place_demo --preset edu_servo --cycles 3</code>.</p>
+<div class="callout callout-warn"><div class="callout-title">ros2 백엔드 사용 규칙</div><div class="callout-body"><ul><li><strong>launch와 같은 설계</strong>(<code>preset</code>/<code>design_file</code>)를 씁니다. 다르면 같은 모터각이 다른 위치를 뜻합니다.</li><li>라이브러리는 로봇이 <strong>홈 자세에서 시작한다고 가정</strong>합니다(모터 피드백을 읽지 않음). 앞에서 goal로 로봇을 옮겨 두었다면 먼저 <code>ros2 topic pub --once /delta/goal geometry_msgs/msg/Point &quot;{x: 0.0, y: 0.0, z: -0.2457}&quot;</code>로 홈(<code>edu_servo</code>의 홈 TCP)에 돌려놓고 실행합니다. 그렇지 않으면 첫 명령에서 드라이버가 속도 제한으로 천천히 따라가긴 하지만 계획과 다른 경로로 움직입니다.</li><li>스크립트가 도는 동안 <code>/delta/goal</code>을 보내지 않습니다. 두 곳에서 동시에 <code>/delta/joint_command</code>를 발행하게 됩니다.</li><li><code>record</code>·<code>websim</code>과 달리 관절 속도가 모터 한계를 넘는 동작은 **<code>WorkspaceError</code>로 거부**됩니다. R02의 속도 분석을 먼저 통과한 설정을 쓰세요.</li><li><code>robot.parts()</code>와 <code>score()</code>는 파이썬 안의 장면 모델입니다. 실물 부품을 보는 것이 아닙니다.</li></ul></div></div>
+<h2 id="실습-4-웹-브리지-웹-시뮬레이터를-ros-2-화면으로">실습 4: 웹 브리지 — 웹 시뮬레이터를 ROS 2 화면으로<a class="anchor" href="#실습-4-웹-브리지-웹-시뮬레이터를-ros-2-화면으로">#</a></h2>
+<p><code>delta_web_bridge</code>는 R03의 <code>websim</code> 백엔드와 <strong>같은 포트(127.0.0.1:8765), 같은 메시지 형식</strong>의 WebSocket 서버입니다. 그래서 시뮬레이터의 <strong>[PC Python 연결]</strong> 버튼으로 ROS 로봇에 붙습니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">ros2 launch delta_robot display.launch.py preset:=edu_servo web_bridge:=true scene:=pick_place</code></pre></div>
+<ol><li>브라우저에서 시뮬레이터를 열고 <strong>연결</strong> 탭 → <strong>[PC Python 연결]</strong> 을 누릅니다.</li><li>브리지가 launch의 설계와 장면(<code>scene</code> 인자)을 보내므로 시뮬레이터가 <code>edu_servo</code>와 분류 장면으로 바뀌고, 브리지 터미널에 <code>simulator connected</code> 로그가 남습니다.</li><li>실습 1~3의 명령을 다시 실행하면 RViz와 웹 시뮬레이터가 <strong>같은 움직임</strong>을 보여 줍니다. 브리지는 <code>/joint_states</code>의 모터각과 <code>/delta/tool_state</code>를 최대 50 Hz로 보냅니다.</li></ol>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html">시뮬레이터 열기</a></p>
+<p>브리지가 하는 일은 번역뿐입니다.</p>
+<div class="table-wrap"><table><thead><tr><th>방향</th><th>웹 시뮬레이터 메시지</th><th>ROS 2</th></tr></thead><tbody><tr><td>브라우저 → 브리지</td><td><code>{&quot;type&quot;:&quot;hello&quot;, ...}</code></td><td>설계·장면을 <code>design</code> 메시지로 응답</td></tr><tr><td>브리지 → 브라우저</td><td><code>{&quot;type&quot;:&quot;state&quot;,&quot;t&quot;,&quot;q&quot;,&quot;tool&quot;}</code></td><td><code>/joint_states</code>(모터 3개) + <code>/delta/tool_state</code></td></tr><tr><td>브라우저 → 브리지</td><td><code>{&quot;type&quot;:&quot;estop&quot;}</code></td><td><code>/delta/estop</code> ← <code>Bool(true)</code></td></tr><tr><td>브라우저 → 브리지</td><td><code>{&quot;type&quot;:&quot;goal&quot;,&quot;xyz&quot;:[x,y,z]}</code></td><td><code>/delta/goal</code> ← <code>Point</code> (TCP, m)</td></tr></tbody></table></div>
+<div class="callout callout-info"><div class="callout-title">websim 스크립트와 동시에 쓸 수 없습니다</div><div class="callout-body"><p>둘 다 8765 포트에 서버를 엽니다. 브리지가 떠 있는 상태에서 R03 스크립트를 실행하면 <code>OSError: [Errno 98] Address already in use ...</code>가 납니다. 한 번에 하나만 씁니다.</p></div></div>
+<h2 id="비상정지">비상정지<a class="anchor" href="#비상정지">#</a></h2>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">ros2 topic pub --once /delta/estop std_msgs/msg/Bool &quot;{data: true}&quot;    # 정지
+ros2 topic pub --once /delta/estop std_msgs/msg/Bool &quot;{data: false}&quot;   # 해제</code></pre></div>
+<p><code>true</code>를 받으면:</p>
+<ul><li><strong>드라이버</strong>: 현재 자세에서 멈추고(목표 = 현재 위치), 툴을 끄고, 이후 명령을 무시하며 <code>e-stop active: command ignored (publish False on /delta/estop)</code> 경고를 남깁니다. <code>hardware:=serial</code>이면 아두이노에 <code>E</code>를 보냅니다(R07).</li><li><strong>커맨더</strong>: 남은 이동 큐를 비웁니다(<code>e-stop: motion queue cleared</code>).</li><li>**파이썬 <code>ros2</code> 백엔드**: 다음 샘플을 보내기 전에 <code>EmergencyStop</code>이 발생해 프로그램이 멈춥니다.</li><li><strong>웹 시뮬레이터</strong>의 비상정지 버튼도 브리지를 통해 같은 <code>true</code>를 발행합니다.</li></ul>
+<p>해제는 <code>false</code>를 <strong>사람이 직접</strong> 발행합니다. 드라이버는 해제 시 현재 자세를 유지한 채 명령을 다시 받기 시작하고, 파이썬 프로그램은 다시 실행해야 합니다. 시뮬레이터에서 비상정지를 눌렀다면 해제는 터미널에서 합니다.</p>
+<div class="callout callout-check"><div class="callout-title">체크포인트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> 명령줄 goal·tool로 부품 p1을 상자 A 위로 옮겼다.</label></li><li><label class="check-item"><input type="checkbox"> rclpy 노드가 동작을 순서대로 끝냈다.</label></li><li><label class="check-item"><input type="checkbox"> <code>sort_ros2.py</code>가 RViz와 웹 시뮬레이터에서 같은 동작을 보였다.</label></li><li><label class="check-item"><input type="checkbox"> 비상정지 후 goal이 무시되고, <code>false</code> 발행 후 다시 움직였다.</label></li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="커맨더-로그-no-jointstates-yet-is-deltadriver-running">커맨더 로그 <code>no /joint_states yet — is delta_driver running?</code><a class="anchor" href="#커맨더-로그-no-jointstates-yet-is-deltadriver-running">#</a></h3>
+<ul><li><strong>원인</strong>: 드라이버가 없거나 아직 시작 중입니다. 커맨더는 현재 모터각을 <code>/joint_states</code>에서 받아야 계획할 수 있습니다.</li><li><strong>해결</strong>: launch 전체를 다시 띄우고 <code>ros2 topic hz /joint_states</code>를 확인합니다.</li></ul>
+<h3 id="커맨더-로그-goal-rejected-exceeds-motor-limit-lower-speed">커맨더 로그 <code>goal (...) rejected: ... exceeds motor limit ... — lower &#x27;speed&#x27;</code><a class="anchor" href="#커맨더-로그-goal-rejected-exceeds-motor-limit-lower-speed">#</a></h3>
+<ul><li><strong>원인</strong>: 직선 경로 중 관절 속도가 모터 한계를 넘습니다(작업영역 가장자리, 큰 이동).</li><li><strong>해결</strong>: <code>ros2 param set /delta_commander speed 0.1</code>처럼 낮춥니다.</li></ul>
+<h3 id="드라이버-로그-e-stop-active-command-ignored-publish-false-on-delta-estop">드라이버 로그 <code>e-stop active: command ignored (publish False on /delta/estop)</code><a class="anchor" href="#드라이버-로그-e-stop-active-command-ignored-publish-false-on-delta-estop">#</a></h3>
+<ul><li><strong>원인</strong>: 비상정지 상태입니다(시뮬레이터 버튼을 눌렀을 수도 있습니다).</li><li><strong>해결</strong>: 원인을 확인한 뒤 <code>ros2 topic pub --once /delta/estop std_msgs/msg/Bool &quot;{data: false}&quot;</code>.</li></ul>
+<h3 id="파이썬-runtimeerror-ros2-백엔드는-ros-2-환경source-opt-ros-distro-setup-bash에서-실행하세요">파이썬 <code>RuntimeError: ros2 백엔드는 ROS 2 환경(source /opt/ros/&lt;distro&gt;/setup.bash)에서 실행하세요</code><a class="anchor" href="#파이썬-runtimeerror-ros2-백엔드는-ros-2-환경source-opt-ros-distro-setup-bash에서-실행하세요">#</a></h3>
+<ul><li><strong>원인</strong>: ROS를 source하지 않은 터미널이라 <code>rclpy</code>를 import할 수 없습니다.</li><li><strong>해결</strong>: <code>source /opt/ros/$ROS_DISTRO/setup.bash</code>와 <code>source install/setup.bash</code> 후 실행합니다.</li></ul>
+<h3 id="파이썬-workspaceerror-관절-속도-rad-s-가-모터-한계-rad-s감속-후를-넘습니다-setspeed로-속도를-낮추세요">파이썬 <code>WorkspaceError: 관절 속도 ... rad/s 가 모터 한계 ... rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요</code><a class="anchor" href="#파이썬-workspaceerror-관절-속도-rad-s-가-모터-한계-rad-s감속-후를-넘습니다-setspeed로-속도를-낮추세요">#</a></h3>
+<ul><li><strong>원인</strong>: <code>ros2</code> 백엔드는 속도 초과를 거부합니다. Playground에서 경고만 보고 넘어간 설정입니다.</li><li><strong>해결</strong>: <code>robot.set_speed()</code>로 낮추고, Playground의 <code>analyze()</code>로 먼저 검증합니다.</li></ul>
+<h3 id="시뮬레이터가-연결되지-않음">시뮬레이터가 연결되지 않음<a class="anchor" href="#시뮬레이터가-연결되지-않음">#</a></h3>
+<ul><li><strong>원인</strong>: <code>web_bridge:=true</code>를 빠뜨렸거나, 8765 포트를 다른 프로그램(R03 스크립트)이 쓰고 있거나, 브라우저 권한·출처 문제입니다(R03 참고).</li><li><strong>해결</strong>: 브리지 터미널에 <code>web bridge on ws://127.0.0.1:8765</code> 로그가 있는지 봅니다. 다른 출처에서 접속하면 <code>rejected connection from origin ...</code> 경고가 남습니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">개인 과제</div><div class="callout-body"><ol><li>rclpy 노드를 고쳐 R02의 부품 6개를 모두 색에 맞는 상자로 옮기는 명령 시퀀스를 만들고, 사이클 시간을 <code>sort_ros2.py</code>(아치 궤적)와 비교합니다.</li><li><code>/delta/tcp</code>를 구독해 TCP 궤적을 CSV로 저장하는 노드를 작성하고, 커맨더 goal(직선 세 번)과 <code>arch_to</code>(둥근 모서리 아치)의 경로 모양을 그래프로 비교합니다.</li><li><code>sort_ros2.py</code> 실행 중 웹 시뮬레이터의 비상정지 버튼을 눌러 드라이버·커맨더·파이썬 세 곳의 로그를 캡처하고, 해제 절차를 순서대로 적습니다.</li></ol></div></div>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>토픽 이해하기(<code>ros2 topic pub</code>): https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html</li><li>서비스 이해하기(<code>ros2 service call</code>): https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services/Understanding-ROS2-Services.html</li><li>rclpy 퍼블리셔/서브스크라이버 작성: https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html</li><li>rclpy 서비스/클라이언트 작성: https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Service-And-Client.html</li><li>파라미터 이해하기: https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters/Understanding-ROS2-Parameters.html</li><li>websockets 문서: https://websockets.readthedocs.io/en/stable/</li><li>저장소 <code>ros2_ws/src/delta_robot/README.md</code>, <code>docs/PROTOCOL.md</code></li></ul>
+      <nav class="pager"><a class="pager-prev" href="r05.html"><span>이전 · R05</span>ROS 2: URDF·RViz·joint_states</a><a class="pager-next" href="r07.html"><span>다음 · R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#로봇을-움직이는-세-가지-길">로봇을 움직이는 세 가지 길</a><a class="toc-l2" href="#실습-1-명령줄로-제어">실습 1: 명령줄로 제어</a><a class="toc-l2" href="#실습-2-rclpy-노드로-순서-제어">실습 2: rclpy 노드로 순서 제어</a><a class="toc-l2" href="#실습-3-같은-파이썬-코드를-ros-2에서-backend-ros2">실습 3: 같은 파이썬 코드를 ROS 2에서 — backend=&quot;ros2&quot;</a><a class="toc-l2" href="#실습-4-웹-브리지-웹-시뮬레이터를-ros-2-화면으로">실습 4: 웹 브리지 — 웹 시뮬레이터를 ROS 2 화면으로</a><a class="toc-l2" href="#비상정지">비상정지</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#커맨더-로그-no-jointstates-yet-is-deltadriver-running">커맨더 로그 `no /joint_states yet — is delta_driver running?`</a><a class="toc-l3" href="#커맨더-로그-goal-rejected-exceeds-motor-limit-lower-speed">커맨더 로그 `goal (...) rejected: ... exceeds motor limit ... — lower &#x27;speed&#x27;`</a><a class="toc-l3" href="#드라이버-로그-e-stop-active-command-ignored-publish-false-on-delta-estop">드라이버 로그 `e-stop active: command ignored (publish False on /delta/estop)`</a><a class="toc-l3" href="#파이썬-runtimeerror-ros2-백엔드는-ros-2-환경source-opt-ros-distro-setup-bash에서-실행하세요">파이썬 `RuntimeError: ros2 백엔드는 ROS 2 환경(source /opt/ros/&lt;distro&gt;/setup.bash)에서 실행하세요`</a><a class="toc-l3" href="#파이썬-workspaceerror-관절-속도-rad-s-가-모터-한계-rad-s감속-후를-넘습니다-setspeed로-속도를-낮추세요">파이썬 `WorkspaceError: 관절 속도 ... rad/s 가 모터 한계 ... rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요`</a><a class="toc-l3" href="#시뮬레이터가-연결되지-않음">시뮬레이터가 연결되지 않음</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>
+                              

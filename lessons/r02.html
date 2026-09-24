@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R02. Python pick & place 프로그래밍 · studyDeltaRobot</title>
+<meta name="description" content="부품 목록 읽기, 아치 궤적, 툴 제어, 예외 처리로 색깔 분류 프로그램을 작성하고 모터 부하를 분석합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-control">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" class="active" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="r02" data-track="control">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-control">Python·ROS 2·실물</span> R-1 Python 제어 &middot; 약 90분 &middot; 중급</div>
+    <h1><span class="lesson-no">R02</span>Python pick &amp; place 프로그래밍</h1>
+    <p class="lede">부품 목록 읽기, 아치 궤적, 툴 제어, 예외 처리로 색깔 분류 프로그램을 작성하고 모터 부하를 분석합니다.</p>
+    <div class="requires">선수 챕터: <a href="r01.html">R01</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../tools/playground.html">Python Playground</a><a class="ghost-btn" href="../sim/index.html">시뮬레이터</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li><code>robot.parts()</code>, <code>robot.bins()</code>로 장면 정보를 읽고, 부품 색에 맞는 상자를 고르는 자료구조를 만듭니다.</li><li><code>arch_to</code> → <code>tool_on</code> → <code>arch_to</code> → <code>tool_off</code>로 이루어진 pick &amp; place 사이클을 작성합니다.</li><li><code>try/except WorkspaceError</code>로 닿지 않는 부품을 건너뛰는 <strong>안전한 루프</strong>를 만듭니다.</li><li><code>robot.scene.score()</code>로 결과를 채점하고, <code>robot.analyze()</code>의 <code>peak_ratio</code>, <code>rms_ratio</code>, <code>speed_ratio</code>, <code>curve_ratio</code>를 해석해 속도를 조정합니다.</li></ul>
+<h2 id="장면-읽기">장면 읽기<a class="anchor" href="#장면-읽기">#</a></h2>
+<p><code>scene=&quot;pick_place&quot;</code>는 설계의 작업 실린더 크기에 맞춰 부품 6개(빨강·파랑·초록 × 플라스틱·철)와 같은 색 상자 3개를 배치합니다. 시뮬레이터 작업 탭의 <strong>분류</strong> 장면과 같은 숫자입니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;pick_place&quot;)
+print(&quot;작업대 높이 surface_z = %.3f m&quot; % robot.scene.data[&quot;surface_z&quot;])
+print(&quot;부품:&quot;)
+for p in robot.parts():
+    print(&quot;  %s %-5s %-7s x=%+.4f y=%+.4f top=%.3f size=%.3f&quot; % (
+        p[&quot;id&quot;], p[&quot;color&quot;], p[&quot;material&quot;], p[&quot;x&quot;], p[&quot;y&quot;], p[&quot;top&quot;], p[&quot;size&quot;]))
+print(&quot;상자:&quot;)
+for b in robot.bins():
+    print(&quot;  %s %-5s x=%+.4f y=%+.4f w=%.4f d=%.4f h=%.4f&quot; % (
+        b[&quot;id&quot;], b[&quot;color&quot;], b[&quot;x&quot;], b[&quot;y&quot;], b[&quot;w&quot;], b[&quot;d&quot;], b[&quot;h&quot;]))
+print(&quot;빨간 상자:&quot;, robot.scene.bin(&quot;A&quot;)[&quot;color&quot;])</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">작업대 높이 surface_z = -0.285 m
+부품:
+  p1 red   plastic x=-0.0617 y=-0.0336 top=-0.276 size=0.015
+  p2 blue  plastic x=-0.0617 y=+0.0000 top=-0.276 size=0.015
+  p3 green plastic x=-0.0617 y=+0.0336 top=-0.276 size=0.015
+  p4 red   steel   x=-0.0370 y=-0.0336 top=-0.276 size=0.015
+  p5 blue  steel   x=-0.0370 y=+0.0000 top=-0.276 size=0.015
+  p6 green steel   x=-0.0370 y=+0.0336 top=-0.276 size=0.015
+상자:
+  A red   x=+0.0561 y=-0.0404 w=0.0336 d=0.0336 h=0.0072
+  B blue  x=+0.0561 y=+0.0000 w=0.0336 d=0.0336 h=0.0072
+  C green x=+0.0561 y=+0.0404 w=0.0336 d=0.0336 h=0.0072
+빨간 상자: red</code></pre></div>
+<p>부품 dict의 키는 <code>id, x, y, z, top, size, h, color, material, on</code>입니다. <code>z</code>는 부품 <strong>바닥</strong>, <code>top</code>은 <strong>윗면</strong>(= z + h)입니다. 흡착컵은 윗면에 닿아야 하므로 집을 때는 <code>top</code>을 씁니다.</p>
+<h3 id="흡착-놓기-판정-규칙">흡착·놓기 판정 규칙<a class="anchor" href="#흡착-놓기-판정-규칙">#</a></h3>
+<p>시뮬레이터와 라이브러리는 같은 규칙으로 판정합니다(<code>scene.py</code>와 <code>scene.js</code>가 같은 코드).</p>
+<ul><li><strong>잡기</strong> (<code>tool_on</code>): TCP와 부품 중심의 수평 거리가 <code>max(12 mm, 0.45 × size)</code> 이하이고, 흡착·전자석은 TCP 높이가 윗면 ±12 mm 안이어야 합니다. 그리퍼는 부품 바닥에서 윗면+12 mm 사이면 됩니다. 성공하면 부품 id, 실패하면 <code>None</code>을 돌려줍니다.</li><li><strong>전자석</strong>(<code>electromagnet</code>)은 <code>material</code>이 <code>&quot;steel&quot;</code>인 부품만 잡습니다.</li><li><strong>놓기</strong> (<code>tool_off</code>): TCP의 x·y가 상자 사각형(<code>w × d</code>) 안이면 그 상자에 들어갑니다. 높이는 보지 않지만, 실물을 생각해 상자 턱 위에서 놓습니다.</li></ul>
+<figure class="fig" id="fig-r02-cycle"><svg viewBox="0 0 720 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="색깔 분류 한 사이클의 동작">
+  <defs>
+    <marker id="arr-r02-cycle" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r02-cycle-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M30 230 L690 230" stroke-width="1.6"/>
+  <text class="tag" x="200" y="248" text-anchor="start">작업대 surface_z</text>
+  <rect class="box-hi" x="110" y="214" width="30" height="16" rx="2"/>
+  <text class="tag" x="125" y="248" text-anchor="middle">부품 top</text>
+  <rect class="box" x="520" y="216" width="110" height="14" rx="2"/>
+  <text class="tag" x="575" y="248" text-anchor="middle">상자 (x, y, w, d, h)</text>
+  <text class="tag mono" x="135" y="130" text-anchor="start">① arch_to(part)</text>
+  <path class="ln-hi" d="M125 205 L125 110 Q125 90 145 90 L555 90 Q575 90 575 110 L575 200" stroke-width="2.4" marker-end="url(#arr-r02-cycle-hi)"/>
+  <circle class="hi" cx="125" cy="207" r="5"/>
+  <text class="tag mono" x="160" y="200" text-anchor="start">② tool_on() → 부품 id</text>
+  <text class="sub" x="160" y="216" text-anchor="start">   wait(0.1) 흡착 안정</text>
+  <text class="tag mono" x="350" y="80" text-anchor="middle">③ arch_to(bin, place_z)   height = 아치 높이</text>
+  <circle class="hi" cx="575" cy="202" r="5"/>
+  <text class="tag mono" x="565" y="180" text-anchor="end">④ tool_off() → 상자 판정</text>
+  <path class="ln" d="M660 92 L660 200" stroke-width="1.6" marker-end="url(#arr-r02-cycle)" marker-start="url(#arr-r02-cycle)"/>
+  <text class="sub mono" x="652" y="140" text-anchor="end">height</text>
+  <text class="sub" x="652" y="156" text-anchor="end">(높은 쪽 끝 기준)</text>
+  <text class="sub" x="360" y="270" text-anchor="middle">place_z = surface_z + bin h + part h + 여유 5 mm   ·   놓는 판정은 x·y가 상자 안인지만 봅니다</text>
+</svg><figcaption>한 사이클: 부품 윗면으로 아치 이동 → 흡착 → 상자 위로 아치 이동 → 놓기</figcaption></figure>
+<h2 id="예외-처리-닿지-않는-부품-건너뛰기">예외 처리: 닿지 않는 부품 건너뛰기<a class="anchor" href="#예외-처리-닿지-않는-부품-건너뛰기">#</a></h2>
+<p>실제 셀에서는 부품이 작업영역 가장자리에 놓이기도 합니다. 한 부품 때문에 전체 프로그램이 죽지 않도록 **한 사이클을 <code>try</code>로 감쌉니다.** <code>arch_to</code>는 경로 전체를 검사한 뒤에 움직이므로, 예외가 나면 로봇은 제자리에 있습니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot, WorkspaceError, default_scene, DeltaDesign
+
+scene = default_scene(DeltaDesign.preset(&quot;edu_servo&quot;), &quot;pick_place&quot;)
+scene[&quot;parts&quot;].append({&quot;id&quot;: &quot;far&quot;, &quot;x&quot;: 0.16, &quot;y&quot;: 0.0, &quot;size&quot;: 0.015, &quot;h&quot;: 0.009,
+                       &quot;color&quot;: &quot;red&quot;, &quot;material&quot;: &quot;plastic&quot;})
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=scene)
+robot.home()
+for part in robot.parts():
+    if part[&quot;color&quot;] != &quot;red&quot;:
+        continue
+    try:
+        robot.arch_to(part[&quot;x&quot;], part[&quot;y&quot;], part[&quot;top&quot;])
+        print(part[&quot;id&quot;], &quot;도착, 흡착:&quot;, robot.tool_on())
+        robot.tool_off()
+    except WorkspaceError as e:
+        print(part[&quot;id&quot;], &quot;건너뜀 —&quot;, e)
+print(&quot;현재 TCP:&quot;, [round(v, 3) for v in robot.position])</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">p1 도착, 흡착: p1
+p4 도착, 흡착: p4
+far 건너뜀 — 작업영역 밖: (0.160, 0.000, -0.276) m — 모터 각도 한계, 볼조인트 각도 한계
+현재 TCP: [-0.037, -0.034, -0.276]</code></pre></div>
+<p>장면은 JSON과 같은 dict라서 <code>default_scene()</code>으로 만든 뒤 부품을 더하거나 옮겨 시험 장면을 만들 수 있습니다.</p>
+<div class="callout callout-warn"><div class="callout-title">except 범위는 좁게</div><div class="callout-body"><p><code>except Exception:</code>으로 모두 잡으면 <code>EmergencyStop</code>(R03 이후 비상정지)까지 삼켜서 <strong>비상정지 후에도 루프가 계속 돕니다.</strong> 작업영역 문제만 <code>WorkspaceError</code>로 잡고, 비상정지는 프로그램을 끝내게 두세요.</p></div></div>
+<h2 id="실습-색깔-분류-프로그램">실습: 색깔 분류 프로그램<a class="anchor" href="#실습-색깔-분류-프로그램">#</a></h2>
+<p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot, WorkspaceError
+
+robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;pick_place&quot;)
+surface = robot.scene.data[&quot;surface_z&quot;]
+bin_of = {b[&quot;color&quot;]: b for b in robot.bins()}
+
+robot.home()
+for part in robot.parts():
+    b = bin_of.get(part[&quot;color&quot;])
+    if b is None:
+        print(part[&quot;id&quot;], &quot;- 맞는 상자 없음, 건너뜀&quot;)
+        continue
+    try:
+        robot.arch_to(part[&quot;x&quot;], part[&quot;y&quot;], part[&quot;top&quot;], height=0.03)
+        got = robot.tool_on()
+        robot.wait(0.1)
+        place_z = surface + b[&quot;h&quot;] + part[&quot;h&quot;] + 0.005
+        robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], place_z, height=0.03)
+        robot.tool_off()
+        robot.wait(0.05)
+        print(&quot;%s(%s) -&gt; 상자 %s  [%.2f s]&quot; % (got, part[&quot;color&quot;], b[&quot;id&quot;], robot.time))
+    except WorkspaceError as e:
+        print(part[&quot;id&quot;], &quot;건너뜀:&quot;, e)
+robot.home()
+print(&quot;점수:&quot;, robot.scene.score())
+rep = robot.analyze()
+print(&quot;총 %.2f s, peak %.2f, rms %.2f, speed %.2f, ok=%s&quot; % (robot.time, rep[&quot;peak_ratio&quot;], rep[&quot;rms_ratio&quot;], rep[&quot;speed_ratio&quot;], rep[&quot;ok&quot;]))
+print(rep)</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">p1(red) -&gt; 상자 A  [2.30 s]
+p2(blue) -&gt; 상자 B  [4.79 s]
+p3(green) -&gt; 상자 C  [7.27 s]
+p4(red) -&gt; 상자 A  [9.60 s]
+p5(blue) -&gt; 상자 B  [11.83 s]
+p6(green) -&gt; 상자 C  [14.05 s]
+점수: {&#x27;per_bin&#x27;: {&#x27;A&#x27;: 2, &#x27;B&#x27;: 2, &#x27;C&#x27;: 2}, &#x27;correct&#x27;: 6, &#x27;total&#x27;: 6}
+총 14.46 s, peak 0.25, rms 0.47, speed 0.50, ok=True
+{&#x27;peak_torque_motor&#x27;: [0.22598901222856516, 0.2283185397389558, 0.22831853973895203], &#x27;rms_torque_motor&#x27;: [0.1347748969305515, 0.1353940531305589, 0.13683329713925793], &#x27;max_speed_motor&#x27;: [1.9711499999998718, 1.898450000000042, 2.9997000000000633], &#x27;peak_ratio&#x27;: 0.25368726637661754, &#x27;rms_ratio&#x27;: 0.4691427330488843, &#x27;speed_ratio&#x27;: 0.49995000000001055, &#x27;curve_ratio&#x27;: 0.3190067333695267, &#x27;inertia_ratio&#x27;: 0.0, &#x27;ok&#x27;: True, &#x27;problems&#x27;: []}</code></pre></div>
+<p>코드 설명:</p>
+<ul><li><code>bin_of = {색: 상자}</code> 사전을 만들어 두면 부품마다 상자를 한 번에 찾습니다. 색이 같은 상자가 없으면 <code>get()</code>이 <code>None</code>을 돌려주므로 건너뜁니다.</li><li><code>place_z</code>는 <strong>작업대 + 상자 높이 + 부품 높이 + 여유 5 mm</strong>입니다. 흡착한 부품의 바닥이 상자 턱에 걸리지 않게 합니다.</li><li><code>arch_to</code>의 <code>height</code>는 <strong>두 끝 중 높은 쪽</strong>보다 얼마나 더 올라갈지입니다. 시작점과 끝점 높이가 달라도 올라가는 양이 일정합니다.</li><li><code>wait(0.1)</code>은 흡착이 안정될 시간입니다. 시뮬레이션에서는 없어도 잡히지만, 실물 진공 흡착은 압력이 형성될 시간이 필요합니다.</li><li><code>robot.scene.score()</code>는 <code>{&quot;per_bin&quot;: 상자별 개수, &quot;correct&quot;: 색이 맞은 개수, &quot;total&quot;: 상자에 들어간 개수}</code>입니다.</li></ul>
+<h2 id="모터-부하-분석-analyze">모터 부하 분석: analyze()<a class="anchor" href="#모터-부하-분석-analyze">#</a></h2>
+<p><code>robot.analyze()</code>는 <code>record</code> 백엔드가 기록한 <strong>모든 프레임</strong>에서 모터 속도·가속도·토크를 계산해 모터 사양과 비교합니다(T08의 간이 동역학 모델). 비율이 1을 넘으면 문제입니다.</p>
+<div class="table-wrap"><table><thead><tr><th>키</th><th>의미</th><th>계산</th></tr></thead><tbody><tr><td><code>peak_ratio</code></td><td>순간 최대 토크 여유</td><td>최대 모터 토크 × 안전율(1.2) ÷ 피크 토크</td></tr><tr><td><code>rms_ratio</code></td><td>연속(발열) 부하</td><td>RMS 토크 × 1.2 ÷ 정격 토크</td></tr><tr><td><code>speed_ratio</code></td><td>속도 여유</td><td>최대 모터 속도 ÷ 최고 속도</td></tr><tr><td><code>curve_ratio</code></td><td>속도-토크 곡선</td><td>그 순간 속도에서 낼 수 있는 토크 대비 필요 토크 × 1.2의 최댓값</td></tr><tr><td><code>inertia_ratio</code></td><td>부하/로터 관성비</td><td>RC 서보처럼 감속기 내장 모터는 0</td></tr><tr><td><code>ok</code>, <code>problems</code></td><td>판정과 이유(한국어 문장)</td><td>하나라도 1 초과면 <code>ok=False</code></td></tr></tbody></table></div>
+<p>위 결과 해석: <code>peak_ratio</code> 0.25는 피크 토크를 4분의 1만 쓴다는 뜻이고, <code>rms_ratio</code> 0.47은 <strong>중력을 버티는 데 대부분</strong>이 들어간 값입니다. 로봇이 가만히 있어도 위팔과 이펙터 무게를 계속 받쳐야 하기 때문입니다. <code>speed_ratio</code> 0.50은 마지막 <code>home()</code>(관절 공간 3 rad/s 이동)에서 나왔습니다.</p>
+<h2 id="속도-조정">속도 조정<a class="anchor" href="#속도-조정">#</a></h2>
+<p><code>robot.set_speed(speed, accel)</code>로 직교 속도[m/s]와 가속도[m/s²]를 바꿔 같은 분류 작업을 반복해 봅니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+
+def run_cycle(speed, accel):
+    robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;pick_place&quot;)
+    robot.set_speed(speed, accel)
+    surface = robot.scene.data[&quot;surface_z&quot;]
+    bin_of = {b[&quot;color&quot;]: b for b in robot.bins()}
+    robot.home()
+    for part in robot.parts():
+        b = bin_of[part[&quot;color&quot;]]
+        robot.arch_to(part[&quot;x&quot;], part[&quot;y&quot;], part[&quot;top&quot;])
+        robot.tool_on()
+        robot.wait(0.1)
+        robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], surface + b[&quot;h&quot;] + part[&quot;h&quot;] + 0.005)
+        robot.tool_off()
+        robot.wait(0.05)
+    return robot.time, robot.scene.score()[&quot;correct&quot;], robot.analyze()
+
+print(&quot;speed  accel  6개시간  정답  peak  rms   speed  curve  ok&quot;)
+for v, a in [(0.10, 1.0), (0.186, 1.86), (0.30, 3.0), (0.30, 6.0), (0.40, 4.0), (0.45, 6.0), (0.60, 8.0)]:
+    t, ok, rep = run_cycle(v, a)
+    print(&quot;%.3f  %5.2f  %6.2f s   %d   %.2f  %.2f  %.2f  %5.2f  %s&quot; % (
+        v, a, t, ok, rep[&quot;peak_ratio&quot;], rep[&quot;rms_ratio&quot;], rep[&quot;speed_ratio&quot;], rep[&quot;curve_ratio&quot;], rep[&quot;ok&quot;]))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">speed  accel  6개시간  정답  peak  rms   speed  curve  ok
+0.100   1.00   23.30 s   6   0.24  0.47  0.19   0.26  True
+0.186   1.86   14.05 s   6   0.25  0.47  0.35   0.32  True
+0.300   3.00    9.97 s   6   0.28  0.48  0.56   0.50  True
+0.300   6.00    8.77 s   6   0.33  0.49  0.56   0.49  True
+0.400   4.00    8.30 s   6   0.34  0.51  0.72   0.90  True
+0.450   6.00    7.15 s   6   0.39  0.55  0.82   1.50  False
+경고: 관절 속도 6.28 rad/s 가 모터 한계 6.00 rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요
+0.600   8.00    6.03 s   6   0.58  0.66  1.04    inf  False</code></pre></div>
+<p>읽는 법:</p>
+<ul><li>**peak·rms는 거의 안 변하는데 <code>curve_ratio</code>가 먼저 1을 넘습니다.** RC 서보는 빠르게 돌수록 낼 수 있는 토크가 줄어듭니다(속도-토크 곡선). 0.45 m/s에서는 토크 자체보다 "그 속도에서 그 토크"가 문제입니다.</li><li>0.6 m/s에서는 관절 속도가 서보 최고 속도(카탈로그 대표값 6 rad/s)를 넘어 <strong>경고</strong>가 나옵니다. <code>record</code> 백엔드라 경고만 하지만 <code>serial</code>·<code>ros2</code> 백엔드에서는 <code>WorkspaceError</code>로 <strong>실행이 거부</strong>됩니다. <code>curve_ratio</code>가 <code>inf</code>인 것은 최고 속도에서 낼 수 있는 토크가 0이기 때문입니다.</li><li>가속도만 높이면(0.3 m/s에서 3 → 6 m/s²) 시간이 12 % 줄고 <code>peak_ratio</code>는 조금 오릅니다. 짧은 이동이 많은 pick &amp; place는 최고 속도보다 <strong>가속도</strong>가 사이클 시간을 좌우합니다.</li><li>이 설계에서 무리 없는 범위는 약 <strong>0.3 m/s, 3~6 m/s²</strong>입니다. R08 캡스톤에서 이 값을 씁니다.</li></ul>
+<div class="callout callout-info"><div class="callout-title">모터 사양은 대표값</div><div class="callout-body"><p>카탈로그의 MG996R 토크·속도는 교육용 대표값입니다. 같은 모델명이라도 제조사·전압에 따라 다르므로 실물에 적용할 때는 데이터시트를 확인하고, 계산 결과에 여유를 두세요.</p></div></div>
+<div class="callout callout-check"><div class="callout-title">체크포인트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> 분류 프로그램이 <code>correct 6 / total 6</code>을 얻었다.</label></li><li><label class="check-item"><input type="checkbox"> 닿지 않는 부품이 있어도 프로그램이 끝까지 실행되었다.</label></li><li><label class="check-item"><input type="checkbox"> <code>ok=False</code>가 되는 속도를 찾고, 어떤 비율이 먼저 1을 넘었는지 설명할 수 있다.</label></li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="toolon이-none을-돌려주고-점수가-0"><code>tool_on()</code>이 <code>None</code>을 돌려주고 점수가 0<a class="anchor" href="#toolon이-none을-돌려주고-점수가-0">#</a></h3>
+<ul><li><strong>원인</strong>: TCP가 부품 윗면 ±12 mm 밖입니다. <code>part[&quot;z&quot;]</code>(바닥)나 <code>surface_z</code>로 내려가면 컵이 부품을 파고드는 위치라 판정 범위를 벗어납니다. 이펙터 중심 좌표(<code>kinematics.ik</code>)를 섞어 써도 툴 길이만큼 어긋납니다.</li><li><strong>해결</strong>: 집을 때는 <code>part[&quot;top&quot;]</code>을 쓰고, <code>print(robot.position)</code>으로 도착 높이를 확인합니다.</li></ul>
+<h3 id="keyerror-purple-색-이름으로-상자-찾기"><code>KeyError: &#x27;purple&#x27;</code> (색 이름으로 상자 찾기)<a class="anchor" href="#keyerror-purple-색-이름으로-상자-찾기">#</a></h3>
+<ul><li><strong>원인</strong>: <code>bin_of[part[&quot;color&quot;]]</code>처럼 대괄호로 찾았는데 그 색 상자가 없습니다.</li><li><strong>해결</strong>: <code>bin_of.get(color)</code>로 찾고 <code>None</code>이면 건너뜁니다. 상자 id로 찾을 때 없으면 <code>KeyError: &quot;no bin &#x27;D&#x27;&quot;</code>가 납니다.</li></ul>
+<h3 id="workspaceerror-경로-중간-작업영역-밖"><code>WorkspaceError: 경로 중간 작업영역 밖: ...</code><a class="anchor" href="#workspaceerror-경로-중간-작업영역-밖">#</a></h3>
+<ul><li><strong>원인</strong>: 목표점은 괜찮지만 아치 경로의 <strong>꼭대기</strong>가 작업영역 위쪽 한계를 넘었습니다. <code>height</code>가 너무 크거나 작업영역 가장자리에서 높이 올라갈 때 납니다.</li><li><strong>해결</strong>: <code>height</code>를 줄이거나(예: 0.03 → 0.02), 가장자리 부품은 안쪽으로 먼저 이동합니다.</li></ul>
+<h3 id="runtimeerror-analyze는-record-백엔드에서-기록된-동작에만-쓸-수-있습니다"><code>RuntimeError: analyze()는 record 백엔드에서 기록된 동작에만 쓸 수 있습니다</code><a class="anchor" href="#runtimeerror-analyze는-record-백엔드에서-기록된-동작에만-쓸-수-있습니다">#</a></h3>
+<ul><li><strong>원인</strong>: <code>websim</code>·<code>serial</code>·<code>ros2</code> 백엔드에서 <code>analyze()</code>를 불렀습니다.</li><li><strong>해결</strong>: 분석은 Playground나 PC의 <code>record</code> 백엔드에서 먼저 하고, 검증된 속도로 실시간 백엔드를 씁니다.</li></ul>
+<h3 id="경고-관절-속도-rad-s-가-모터-한계-rad-s감속-후를-넘습니다"><code>경고: 관절 속도 ... rad/s 가 모터 한계 ... rad/s(감속 후)를 넘습니다</code><a class="anchor" href="#경고-관절-속도-rad-s-가-모터-한계-rad-s감속-후를-넘습니다">#</a></h3>
+<ul><li><strong>원인</strong>: 직교 속도가 작업영역 가장자리나 특이점 근처에서 큰 관절 속도로 바뀌었습니다.</li><li><strong>해결</strong>: <code>set_speed()</code>로 낮춥니다. 이 경고가 있는 프로그램은 실물 백엔드에서 거부됩니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">개인 과제</div><div class="callout-body"><ol><li>철 부품만 전자석으로 옮기는 프로그램을 작성합니다. <code>DeltaRobot(DeltaDesign.preset(&quot;edu_servo&quot;).copy(tool=&quot;electromagnet&quot;), scene=&quot;pick_place&quot;)</code>로 로봇을 만들고, 플라스틱 부품에서 <code>tool_on()</code>이 <code>None</code>을 돌려주는 것을 확인합니다.</li><li>부품 순서를 바꿔(예: 상자에 가까운 부품부터, 또는 이동 거리 합이 최소가 되는 순서) 6개 분류 시간을 줄여 봅니다. 순서만 바꿔서 줄어든 시간을 보고합니다.</li><li><code>set_profile()</code>로 네 프로파일을 0.3 m/s, 6 m/s²에서 비교하고 <code>peak_ratio</code>와 사이클 시간을 표로 정리합니다(D06 궤적 계획 참고).</li></ol></div></div>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>이 저장소 API 문서: <code>docs/API.md</code> (<code>DeltaRobot</code>, <code>scene.score()</code>, <code>analyze()</code>)</li><li>Python 튜토리얼 — 예외 처리: https://docs.python.org/3/tutorial/errors.html</li><li>Python 튜토리얼 — 딕셔너리: https://docs.python.org/3/tutorial/datastructures.html#dictionaries</li><li>Pyodide 문서: https://pyodide.org/en/stable/</li><li>시뮬레이터 분석 탭(그래프·검증 결과) — D01 웹 시뮬레이터 사용법, T08 동역학과 모터 토크</li></ul>
+      <nav class="pager"><a class="pager-prev" href="r01.html"><span>이전 · R01</span>deltarobot 라이브러리와 Playground</a><a class="pager-next" href="r03.html"><span>다음 · R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#장면-읽기">장면 읽기</a><a class="toc-l3" href="#흡착-놓기-판정-규칙">흡착·놓기 판정 규칙</a><a class="toc-l2" href="#예외-처리-닿지-않는-부품-건너뛰기">예외 처리: 닿지 않는 부품 건너뛰기</a><a class="toc-l2" href="#실습-색깔-분류-프로그램">실습: 색깔 분류 프로그램</a><a class="toc-l2" href="#모터-부하-분석-analyze">모터 부하 분석: analyze()</a><a class="toc-l2" href="#속도-조정">속도 조정</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#toolon이-none을-돌려주고-점수가-0">`tool_on()`이 `None`을 돌려주고 점수가 0</a><a class="toc-l3" href="#keyerror-purple-색-이름으로-상자-찾기">`KeyError: &#x27;purple&#x27;` (색 이름으로 상자 찾기)</a><a class="toc-l3" href="#workspaceerror-경로-중간-작업영역-밖">`WorkspaceError: 경로 중간 작업영역 밖: ...`</a><a class="toc-l3" href="#runtimeerror-analyze는-record-백엔드에서-기록된-동작에만-쓸-수-있습니다">`RuntimeError: analyze()는 record 백엔드에서 기록된 동작에만 쓸 수 있습니다`</a><a class="toc-l3" href="#경고-관절-속도-rad-s-가-모터-한계-rad-s감속-후를-넘습니다">`경고: 관절 속도 ... rad/s 가 모터 한계 ... rad/s(감속 후)를 넘습니다`</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

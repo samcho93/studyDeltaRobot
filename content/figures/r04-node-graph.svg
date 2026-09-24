@@ -3,16 +3,16 @@
     <marker id="arr-r04-node-graph" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
     <marker id="arr-r04-node-graph-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
   </defs>
-  <rect class="box" x="20" y="40" width="170" height="56" rx="18"/>
-  <text class="lbl mono" x="105" y="66" text-anchor="middle">delta_commander</text>
-  <text class="sub" x="105" y="84" text-anchor="middle">goal → 궤적</text>
-  <rect class="box" x="20" y="170" width="170" height="56" rx="18"/>
-  <text class="lbl mono" x="105" y="196" text-anchor="middle">deltarobot 클라이언트</text>
-  <text class="sub" x="105" y="214" text-anchor="middle">backend="ros2"</text>
+  <rect class="box" x="20" y="40" width="150" height="56" rx="18"/>
+  <text class="lbl mono" x="95" y="66" text-anchor="middle">delta_commander</text>
+  <text class="sub" x="95" y="84" text-anchor="middle">goal → 궤적</text>
+  <rect class="box" x="20" y="170" width="150" height="56" rx="18"/>
+  <text class="lbl mono" x="95" y="196" text-anchor="middle">DeltaRobot</text>
+  <text class="sub" x="95" y="214" text-anchor="middle">backend="ros2"</text>
   <rect class="box-hi" x="275" y="150" width="170" height="76" rx="18"/>
   <text class="lbl mono" x="360" y="186" text-anchor="middle">delta_driver</text>
   <text class="sub" x="360" y="204" text-anchor="middle">mock | serial</text>
-  <rect class="box" x="530" y="40" width="170" height="56" rx="18"/>
+  <rect class="box" x="520" y="40" width="190" height="56" rx="18"/>
   <text class="lbl mono" x="615" y="66" text-anchor="middle">robot_state_publisher</text>
   <text class="sub" x="615" y="84" text-anchor="middle">URDF → /tf</text>
   <rect class="box" x="530" y="150" width="170" height="56" rx="18"/>
@@ -24,12 +24,12 @@
   <rect class="box" x="530" y="320" width="170" height="60" rx="8"/>
   <text class="lbl" x="615" y="346" text-anchor="middle">웹 시뮬레이터</text>
   <text class="sub" x="615" y="364" text-anchor="middle">연결 탭 [PC Python 연결]</text>
-  <path class="ln-hi" d="M190 68 C240 68 240 170 273 170" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
-  <text class="tag mono" x="232" y="96" text-anchor="middle">/delta/joint_command</text>
-  <path class="ln-hi" d="M190 198 L273 198" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
+  <path class="ln-hi" d="M170 68 C230 68 230 165 273 165" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
+  <text class="tag mono" x="236" y="128" text-anchor="start">/delta/joint_command</text>
+  <path class="ln-hi" d="M170 198 L273 198" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
   <text class="tag mono" x="232" y="190" text-anchor="middle">joint_command</text>
   <text class="tag mono" x="232" y="214" text-anchor="middle">tool_command</text>
-  <path class="ln" d="M445 175 C490 175 490 68 528 68" stroke-width="2" marker-end="url(#arr-r04-node-graph)"/>
+  <path class="ln" d="M445 175 C490 175 490 68 518 68" stroke-width="2" marker-end="url(#arr-r04-node-graph)"/>
   <text class="tag mono" x="490" y="108" text-anchor="start">/joint_states</text>
   <path class="ln" d="M615 96 L615 148" stroke-width="1.6" marker-end="url(#arr-r04-node-graph)"/>
   <text class="tag mono" x="622" y="128" text-anchor="start">/tf</text>

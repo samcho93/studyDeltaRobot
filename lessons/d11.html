@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D11. 설계 캡스톤: 요구사항 → 검증 보고서 · studyDeltaRobot</title>
+<meta name="description" content="팀별 요구사항을 받아 설계안을 만들고, 시뮬레이터·Python 분석 결과로 설계 검증 보고서를 작성합니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-design">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" class="active" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="d11" data-track="design">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-design">설계·시뮬레이션</span> D-3 설계 응용실습 &middot; 약 180분 &middot; 고급</div>
+    <h1><span class="lesson-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</h1>
+    <p class="lede">팀별 요구사항을 받아 설계안을 만들고, 시뮬레이터·Python 분석 결과로 설계 검증 보고서를 작성합니다.</p>
+    <div class="requires">선수 챕터: <a href="d08.html">D08</a> <a href="d09.html">D09</a> <a href="d10.html">D10</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a><a class="ghost-btn" href="../tools/playground.html">Python Playground</a><a class="ghost-btn" href="../tools/urdf-viewer.html">URDF 뷰어</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>처음 보는 요구사항 카드를 받아 <strong>요구사항 표 → 치수 → 구동 → 툴·궤적 → 검증 → 보고서</strong>의 순서로 델타로봇을 설계할 수 있습니다.</li><li>모든 설계 판단을 시뮬레이터·<code>deltarobot</code> 실행 결과(숫자)로 뒷받침하고, 불합격 → 수정 → 합격의 반복 기록을 남길 수 있습니다.</li><li>정해진 양식의 <strong>설계 검증 보고서</strong>를 작성하고 동료의 보고서를 루브릭으로 평가할 수 있습니다.</li></ul>
+<h2 id="캡스톤-흐름">캡스톤 흐름<a class="anchor" href="#캡스톤-흐름">#</a></h2>
+<figure class="fig" id="fig-d11-design-loop"><svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="설계 캡스톤 흐름: 요구사항에서 검증 보고서까지">
+  <defs>
+    <marker id="arr-d11-design-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d11-design-loop-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="7" y="70" width="116" height="96" rx="10"/>
+  <text class="lbl" x="65.0" y="98.0" text-anchor="middle">① 요구사항</text>
+  <text class="sub" x="65.0" y="122.0" text-anchor="middle">페이로드·D×H</text>
+  <text class="sub" x="65.0" y="142.0" text-anchor="middle">사이클·정밀도</text>
+  <path class="ln" d="M123.0 118.0 L132.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="133" y="70" width="116" height="96" rx="10"/>
+  <text class="lbl" x="191.0" y="98.0" text-anchor="middle">② 치수</text>
+  <text class="sub" x="191.0" y="122.0" text-anchor="middle">R r L l (D03)</text>
+  <text class="sub" x="191.0" y="142.0" text-anchor="middle">작업 실린더</text>
+  <path class="ln" d="M249.0 118.0 L258.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="259" y="70" width="116" height="96" rx="10"/>
+  <text class="lbl" x="317.0" y="98.0" text-anchor="middle">③ 구동</text>
+  <text class="sub" x="317.0" y="122.0" text-anchor="middle">모터·감속기</text>
+  <text class="sub" x="317.0" y="142.0" text-anchor="middle">D04 · 관성비</text>
+  <path class="ln" d="M375.0 118.0 L384.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="385" y="70" width="116" height="96" rx="10"/>
+  <text class="lbl" x="443.0" y="98.0" text-anchor="middle">④ 툴·궤적</text>
+  <text class="sub" x="443.0" y="122.0" text-anchor="middle">유지력 (D05)</text>
+  <text class="sub" x="443.0" y="142.0" text-anchor="middle">프로파일 (D06)</text>
+  <path class="ln" d="M501.0 118.0 L510.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box-hi" x="511" y="70" width="116" height="96" rx="10"/>
+  <text class="lbl" x="569.0" y="98.0" text-anchor="middle">⑤ 검증</text>
+  <text class="sub" x="569.0" y="122.0" text-anchor="middle">analyze()</text>
+  <text class="sub" x="569.0" y="142.0" text-anchor="middle">응용 프로그램</text>
+  <path class="ln" d="M627.0 118.0 L636.0 118.0" stroke-width="1.6" marker-end="url(#arr-d11-design-loop)"/>
+  <rect class="box" x="637" y="70" width="116" height="96" rx="10"/>
+  <text class="lbl" x="695.0" y="98.0" text-anchor="middle">⑥ 보고서</text>
+  <text class="sub" x="695.0" y="122.0" text-anchor="middle">표·그래프</text>
+  <text class="sub" x="695.0" y="142.0" text-anchor="middle">JSON·URDF</text>
+  <path class="ln-hi" d="M569.0 166 L569.0 216 L191.0 216 L191.0 170" stroke-width="1.8" marker-end="url(#arr-d11-design-loop-hi)"/>
+  <text class="tag" x="380.0" y="234.0" text-anchor="middle">✖ 항목이 있으면 원인 단계로 돌아가 반복 (반복 기록도 보고서에 남김)</text>
+  <text class="sub" x="380.0" y="40.0" text-anchor="middle">모든 수치는 시뮬레이터·deltarobot 실행 결과로 뒷받침</text>
+  <text class="tag" x="380.0" y="272.0" text-anchor="middle">제출물: 설계 JSON + 검증 코드 + 보고서(요구 대비 결과표) + 발표</text>
+</svg><figcaption>캡스톤의 여섯 단계. ⑤ 검증에서 ✖가 나오면 원인이 된 단계로 돌아가고, 그 반복도 보고서에 남깁니다.</figcaption></figure>
+<p>D08~D10에서 한 과정을 이번에는 <strong>팀이 스스로</strong> 합니다. 강사는 요구사항 카드만 나눠 주고, 설계안·검증·보고서는 팀이 만듭니다.</p>
+<h2 id="요구사항-카드">요구사항 카드<a class="anchor" href="#요구사항-카드">#</a></h2>
+<p>팀마다 한 장을 뽑습니다(강사가 숫자를 바꿔 새 카드를 만들어도 됩니다). 괄호 안은 검증 방법입니다.</p>
+<div class="table-wrap"><table><thead><tr><th>카드</th><th>작업</th><th>페이로드</th><th>작업 실린더</th><th>속도</th><th>정밀도</th><th>제약</th></tr></thead><tbody><tr><td>A 약국</td><td>약병을 트레이 3곳으로 분류</td><td>30 g</td><td>D ≥ 250, H ≥ 60 mm</td><td>40 사이클/분 (축소 Adept 150 mm)</td><td>분해능 ≤ 2 mm</td><td>모터는 스마트 서보 이하 가격대</td></tr><tr><td>B 물류</td><td>소포를 컨베이어에서 상자 2곳으로</td><td>1.0 kg</td><td>D ≥ 600, H ≥ 150 mm</td><td>40 사이클/분 (Adept 305 mm)</td><td>분해능 ≤ 1 mm</td><td>흡착, 유지력 SF 2</td></tr><tr><td>C 전자</td><td>칩 부품을 트레이에서 기판으로</td><td>5 g</td><td>D ≥ 200, H ≥ 30 mm</td><td>60 사이클/분 (축소 Adept 100 mm)</td><td>분해능 ≤ 0.1 mm</td><td>관성비 ≤ 5</td></tr><tr><td>D 제과</td><td>케이크 위 크림 짜기 (그리기 장면)</td><td>0.3 kg (크림 튜브)</td><td>지름 200 mm 원을 한 높이에서</td><td>50 mm/s, 등속 ≥ 90 %</td><td>백래시 오차 ≤ 0.3 mm</td><td>벨트 또는 유성 감속</td></tr></tbody></table></div>
+<h2 id="진행-순서-180분">진행 순서 (180분)<a class="anchor" href="#진행-순서-180분">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>시간</th><th>단계</th><th>산출물</th></tr></thead><tbody><tr><td>0~20분</td><td>① 요구사항 표</td><td>카드를 수치 표로. 모호한 항목은 팀이 가정하고 <strong>가정 목록</strong>에 적기</td></tr><tr><td>20~50분</td><td>② 치수 (D03)</td><td>l/L, R − r, L 스윕 결과와 선택 근거, 작업 실린더 D×H</td></tr><tr><td>50~80분</td><td>③ 구동 (D04)</td><td>후보 구동계 3개 이상 비교표, 감속비·관성비</td></tr><tr><td>80~100분</td><td>④ 툴·궤적 (D05, D06)</td><td>유지력 계산, 프로파일·아치 설정</td></tr><tr><td>100~140분</td><td>⑤ 검증</td><td>아래 템플릿 + <strong>응용 프로그램</strong>(카드의 작업을 실제로 수행) 실행 결과</td></tr><tr><td>140~165분</td><td>⑥ 보고서</td><td>양식에 맞춰 작성, 설계 JSON·URDF·코드 첨부</td></tr><tr><td>165~180분</td><td>발표·동료 평가</td><td>3분 발표 + 루브릭 채점</td></tr></tbody></table></div>
+<h2 id="검증-스크립트-템플릿">검증 스크립트 템플릿<a class="anchor" href="#검증-스크립트-템플릿">#</a></h2>
+<p>위쪽 두 블록(요구사항, 설계안)만 바꿔 쓰는 판정 스크립트입니다. 결과를 <strong>마크다운 표</strong>로 출력하므로 보고서에 그대로 붙일 수 있습니다. 아래 출력은 예시 요구(5 g, D 200 × H 40 mm, 축소 Adept 150 mm 40 사이클/분, 분해능 2 mm)에 <code>edu_dynamixel</code> + <code>suction_20</code>을 넣은 결과입니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
+from deltarobot import DeltaDesign, DeltaRobot
+from deltarobot import kinematics as kin
+from deltarobot import dynamics as dyn
+
+# ---- 1. 요구사항 (팀 카드에서 옮겨 적기) -----------------------------------
+REQ = {&quot;payload&quot;: 0.005, &quot;D&quot;: 0.20, &quot;H&quot;: 0.04, &quot;across&quot;: 0.15, &quot;cpm&quot;: 40,
+       &quot;res&quot;: 0.002, &quot;sf&quot;: 1.5}
+# ---- 2. 설계안 ---------------------------------------------------------------
+design = DeltaDesign.preset(&quot;edu_dynamixel&quot;).copy(
+    tool=&quot;suction_20&quot;, payload=REQ[&quot;payload&quot;])
+SPEED, ACCEL = 0.5, 5.0
+# ------------------------------------------------------------------------------
+
+def tcp_resolution(d, p):
+    dth = math.radians(d.motor_spec[&quot;resolution_deg&quot;]) / d.ratio
+    J = kin.jacobian(d, kin.ik(d, p), p)
+    return max(math.sqrt(sum(sum(J[r][c] * s[c] * dth for c in range(3)) ** 2 for r in range(3)))
+               for s in itertools.product((-1, 1), repeat=3))
+
+def holding_force(d):
+    t = d.tool_spec
+    return 2 * t[&quot;friction&quot;] * t[&quot;force&quot;] if t[&quot;kind&quot;] == &quot;gripper&quot; else t[&quot;force&quot;]
+
+rows = []
+def item(name, value, op, limit, unit=&quot;&quot;):
+    ok = value &gt;= limit if op == &quot;&gt;=&quot; else value &lt;= limit
+    rows.append((name, value, op, limit, unit, ok))
+
+problems = design.validate()
+item(&quot;설계 오류 수&quot;, len(problems), &quot;&lt;=&quot;, 0)
+c = kin.work_cylinder(design, REQ[&quot;H&quot;])
+item(&quot;작업 실린더 D&quot;, c[&quot;diameter&quot;] * 1000, &quot;&gt;=&quot;, REQ[&quot;D&quot;] * 1000, &quot;mm&quot;)
+zc, rc = (c[&quot;z_top&quot;] + c[&quot;z_bottom&quot;]) / 2, c[&quot;diameter&quot;] / 2
+pts = [(0, 0, zc)] + [(0.9 * rc * math.cos(a), 0.9 * rc * math.sin(a), zc) for a in (0, 2.1, 4.2)]
+item(&quot;TCP 분해능(최악)&quot;, max(tcp_resolution(design, p) for p in pts) * 1000, &quot;&lt;=&quot;, REQ[&quot;res&quot;] * 1000, &quot;mm&quot;)
+
+robot = DeltaRobot(design, scene=&quot;empty&quot;)
+robot.set_speed(SPEED, ACCEL)
+z = robot.scene.surface_z + 0.02
+robot.move_to(-REQ[&quot;across&quot;] / 2, 0, z)
+t0 = robot.time
+robot.arch_to(REQ[&quot;across&quot;] / 2, 0, z, height=0.025)
+robot.tool_on()                                   # 들고 가는 구간을 표시 (유지력 계산용)
+robot.arch_to(-REQ[&quot;across&quot;] / 2, 0, z, height=0.025)
+robot.tool_off()
+item(&quot;사이클&quot;, 60 / (robot.time - t0), &quot;&gt;=&quot;, REQ[&quot;cpm&quot;], &quot;회/분&quot;)
+res = robot.analyze()
+for key, name in ((&quot;peak_ratio&quot;, &quot;피크 토크 비&quot;), (&quot;rms_ratio&quot;, &quot;RMS 토크 비&quot;),
+                  (&quot;speed_ratio&quot;, &quot;속도 비&quot;), (&quot;curve_ratio&quot;, &quot;속도-토크 곡선 비&quot;)):
+    item(name, res[key], &quot;&lt;=&quot;, 1.0)
+data = dyn.analyze(design, robot.backend.frames)
+a = max(math.sqrt(f[&quot;a&quot;][0] ** 2 + f[&quot;a&quot;][1] ** 2 + (f[&quot;a&quot;][2] + 9.81) ** 2) for f in data if f[&quot;tool&quot;])
+item(&quot;유지력 여유 (카탈로그/필요)&quot;, holding_force(design) / (REQ[&quot;payload&quot;] * a * REQ[&quot;sf&quot;]), &quot;&gt;=&quot;, 1.0)
+
+print(&quot;| 항목 | 결과 | 요구 | 판정 |&quot;)
+print(&quot;|---|---|---|---|&quot;)
+for name, v, op, lim, unit, ok in rows:
+    print(&quot;| %s | %.2f %s | %s %g | %s |&quot; % (name, v, unit, op, lim, &quot;✔&quot; if ok else &quot;✖&quot;))
+print(&quot;관성비 %.1f (참고), 문제: %s&quot; % (res[&quot;inertia_ratio&quot;], problems + res[&quot;problems&quot;] or &quot;없음&quot;))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">| 항목 | 결과 | 요구 | 판정 |
+|---|---|---|---|
+| 설계 오류 수 | 0.00  | &lt;= 0 | ✔ |
+| 작업 실린더 D | 338.77 mm | &gt;= 200 | ✔ |
+| TCP 분해능(최악) | 0.46 mm | &lt;= 2 | ✔ |
+| 사이클 | 51.85 회/분 | &gt;= 40 | ✔ |
+| 피크 토크 비 | 0.12  | &lt;= 1 | ✔ |
+| RMS 토크 비 | 0.14  | &lt;= 1 | ✔ |
+| 속도 비 | 0.70  | &lt;= 1 | ✔ |
+| 속도-토크 곡선 비 | 0.34  | &lt;= 1 | ✔ |
+| 유지력 여유 (카탈로그/필요) | 170.21  | &gt;= 1 | ✔ |
+관성비 0.0 (참고), 문제: 없음</code></pre></div>
+<p>이 예시는 모두 통과했지만 <strong>속도 비 0.70</strong>이 다른 비(0.12~0.34)보다 훨씬 큽니다. XM430의 최고 속도(4.8 rad/s, 대표값)가 이 설계의 병목이라는 뜻이고, 사이클을 더 올리려면 속도가 먼저 막힙니다. 보고서에는 이런 <strong>가장 큰 비와 그 원인</strong>을 반드시 적습니다.</p>
+<div class="callout callout-tip"><div class="callout-title">템플릿은 출발점일 뿐</div><div class="callout-body"><p>템플릿의 사이클은 축소 Adept 한 번입니다. 카드의 실제 작업(분류·컨베이어·그리기)을 수행하는 <strong>응용 프로그램</strong>을 따로 만들어 그 결과(점수, 개/분, <code>analyze()</code>)를 함께 제출해야 합니다. D08(분류), D09(컨베이어 추적), D10(그리기)의 프로그램을 고쳐 쓰세요.</p></div></div>
+<h2 id="설계-검증-보고서-양식">설계 검증 보고서 양식<a class="anchor" href="#설계-검증-보고서-양식">#</a></h2>
+<div class="code-block"><div class="code-head"><span class="code-lang">markdown</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-markdown"># &lt;팀명&gt; 델타로봇 설계 검증 보고서 — 카드 &lt;A/B/C/D&gt;
+
+## 1. 요약 (5줄 이내)
+- 최종 설계 한 줄 (치수, 모터·감속기, 툴)
+- 핵심 결과 (작업 실린더, 사이클, 가장 큰 사용률과 그 항목)
+- 합격/불합격 판정
+
+## 2. 요구사항
+- 요구사항 표 (항목 · 수치 · 근거)
+- 가정 목록 (카드에 없어서 팀이 정한 것)
+- 요구 변경 기록 (있다면, 이유와 함께)
+
+## 3. 설계
+### 3.1 치수 (R, r, L, l, w) — 스윕 표와 선택 근거
+### 3.2 구동 (모터, 감속기, 감속비) — 후보 비교표, 관성비
+### 3.3 툴 — 유지력 계산 (F_req = m·max|a−g|·SF)
+### 3.4 궤적 — 프로파일, 속도·가속도, 아치 높이·반지름
+
+## 4. 검증
+### 4.1 판정표 (템플릿 출력 붙여넣기)
+### 4.2 응용 프로그램 결과 (점수, 개/분, analyze(), 그래프 캡처)
+### 4.3 반복 기록 (안 · 바꾼 것 · 결과 · 판정 · 원인과 조치)
+
+## 5. 부품표 (BOM)
+- 카탈로그 id · 수량 · 질량 · 비고 (&quot;대표값, 데이터시트 확인&quot;)
+
+## 6. 한계와 향후 과제
+- 모델이 다루지 않는 것 (탄성·진동, 마찰, 탈조, 유지력의 실제 값 …)
+- 실물로 옮길 때 확인할 항목
+
+## 첨부
+- 설계 JSON (시뮬레이터 연결 탭) · URDF · Python 코드 · 공유 링크</code></pre></div>
+<h2 id="채점-루브릭">채점 루브릭<a class="anchor" href="#채점-루브릭">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>항목</th><th>배점</th><th>우수 (만점)</th><th>보통 (절반)</th><th>미흡 (0점)</th></tr></thead><tbody><tr><td>요구사항 정의</td><td>15</td><td>모든 항목이 수치+근거, 가정 목록 명확</td><td>수치는 있으나 근거·가정이 일부 빠짐</td><td>말로만 된 요구</td></tr><tr><td>치수 선정</td><td>15</td><td>스윕으로 대안 비교, 작업 실린더·조건수로 선택 근거</td><td>한두 설계만 비교</td><td>프리셋 그대로, 근거 없음</td></tr><tr><td>구동계 선정</td><td>15</td><td>3개 이상 후보, 피크·RMS·속도·곡선·관성비 모두 비교</td><td>한두 기준만 사용</td><td>판정 결과 없이 선택</td></tr><tr><td>툴·궤적</td><td>10</td><td>실제 가속도로 유지력 계산, 프로파일·아치 근거</td><td>유지력을 설정 가속도로만 계산</td><td>계산 없음</td></tr><tr><td>검증과 반복</td><td>20</td><td>불합격 → 원인 → 조치 → 합격의 반복 기록 2회 이상, 모든 수치 재현 가능</td><td>최종안 판정만 있음</td><td>수치가 실행 결과와 다름</td></tr><tr><td>응용 프로그램</td><td>15</td><td>카드의 작업을 끝까지 수행, 예외 처리(놓침·도달 불가)</td><td>동작하지만 일부 수동 좌표·예외 없음</td><td>동작하지 않음</td></tr><tr><td>보고서·발표</td><td>10</td><td>양식 준수, 그래프·표 명확, 3분 안에 핵심 전달</td><td>양식 일부 누락</td><td>양식 미준수</td></tr></tbody></table></div>
+<p>총 100점. <strong>실행 결과로 재현되지 않는 수치</strong>가 발견되면 해당 항목은 0점입니다(동료 평가자가 첨부 코드를 실행해 확인).</p>
+<div class="callout callout-check"><div class="callout-title">제출 전 체크리스트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> 보고서의 모든 수치가 첨부 코드 또는 시뮬레이터 화면으로 재현된다.</label></li><li><label class="check-item"><input type="checkbox"> 판정표에 ✖가 없거나, ✖가 남은 이유와 대안을 적었다.</label></li><li><label class="check-item"><input type="checkbox"> 반복 기록에 불합격 설계가 최소 1개 있다(처음부터 합격이면 요구를 너무 쉽게 잡지 않았는지 검토).</label></li><li><label class="check-item"><input type="checkbox"> 모터·감속기·툴 사양은 "대표값, 데이터시트 확인"으로 표시했다.</label></li><li><label class="check-item"><input type="checkbox"> 설계 JSON·URDF·코드·공유 링크를 첨부했고, 다른 팀이 열어 보았다.</label></li><li><label class="check-item"><input type="checkbox"> 발표 자료에 요구 대비 결과표 한 장이 있다.</label></li></ul></div></div>
+<div class="callout callout-mission"><div class="callout-title">팀 미션 — 캡스톤</div><div class="callout-body"><p>뽑은 카드로 위 절차를 완주하고 보고서를 제출하세요. 발표 후 다른 팀 보고서 하나를 루브릭으로 채점하고, 그 팀의 첨부 코드를 직접 실행해 <strong>판정표 수치가 재현되는지</strong> 확인한 결과를 함께 제출합니다. 가장 높은 동료 평가를 받은 팀의 설계는 R 트랙의 ROS 2·실물 실습에 쓸 후보가 됩니다.</p></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>증상·메시지</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td><code>ValueError: 설계 오류: ...</code> (예: <code>planetary 의 감속비는 [3, 5, 6, 9, 10, 15, 20, 30, 50] 중에서 고르세요</code>)</td><td>카탈로그 밖의 값</td><td>메시지의 목록에서 선택, <code>design.validate()</code>를 먼저 출력</td></tr><tr><td><code>WorkspaceError: 작업영역 밖: ... — 팔 길이로 닿지 않음</code></td><td>축소 Adept 거리(<code>across</code>)가 작업 실린더보다 큼</td><td><code>across ≤ 0.8 × D</code></td></tr><tr><td><code>WorkspaceError: 경로 중간 작업영역 밖: ... — 모터 각도 한계</code></td><td>아치가 작업영역 위로 나감</td><td>아치 높이↓, 작업 z↓</td></tr><tr><td><code>경고: 관절 속도 ... set_speed()로 속도를 낮추세요</code></td><td>모터 최고 속도 초과 (Playground는 계속 실행)</td><td>판정표의 속도 비 확인, 속도↓ 또는 감속비 조정</td></tr><tr><td><code>analyze()</code> 문제 목록의 <code>피크 토크 초과 (안전율 1.2 포함)</code> / <code>RMS(연속) 토크가 정격을 넘습니다 — 과열 위험</code></td><td>구동계 부족</td><td>D04 절차로 감속비·모터 재선정</td></tr><tr><td><code>RuntimeError: 가상 시간 600 s 제한을 넘었습니다 (무한 루프인가요?)</code></td><td>응용 프로그램의 대기 루프가 끝나지 않음</td><td>종료 조건(시간·부품 수) 추가</td></tr><tr><td>동료가 실행하니 숫자가 다름</td><td>시뮬레이터에 저장된 설계와 코드의 설계가 다름</td><td>코드에 <code>DeltaDesign(...)</code>/<code>copy(...)</code>로 설계를 명시</td></tr></tbody></table></div>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>카드 한 장을 골라 보고서 양식 1~2절(요약·요구사항)을 캡스톤 전에 미리 작성해 오세요.</li><li>검증 템플릿에 "가장자리 조건수 ≤ 2.5"(D03)와 "관성비 ≤ 10"(D04) 항목을 추가하세요.</li><li>캡스톤 후, 여러분 팀 설계에서 모델이 다루지 않는 위험(탄성 진동, 탈조, 흡착 누설 등) 세 가지와 실물 시험 방법을 적으세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>J.-P. Merlet, <em>Parallel Robots</em>, 2nd ed., Springer, 2006.</li><li>M. Codourey, "Dynamic modeling of parallel robots for computed-torque control implementation", <em>IJRR</em>, 17(12), 1998.</li><li>K. M. Lynch, F. C. Park, <em>Modern Robotics</em>, Cambridge University Press, 2017. http://modernrobotics.org</li><li>이 강의 D02~D10, <code>docs/API.md</code>.</li></ul>
+      <nav class="pager"><a class="pager-prev" href="d10.html"><span>이전 · D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a><a class="pager-next" href="r01.html"><span>다음 · R01</span>deltarobot 라이브러리와 Playground</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#캡스톤-흐름">캡스톤 흐름</a><a class="toc-l2" href="#요구사항-카드">요구사항 카드</a><a class="toc-l2" href="#진행-순서-180분">진행 순서 (180분)</a><a class="toc-l2" href="#검증-스크립트-템플릿">검증 스크립트 템플릿</a><a class="toc-l2" href="#설계-검증-보고서-양식">설계 검증 보고서 양식</a><a class="toc-l2" href="#채점-루브릭">채점 루브릭</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

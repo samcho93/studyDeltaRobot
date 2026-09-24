@@ -13,7 +13,7 @@
   <path class="ln" d="M240 90 A60 60 0 0 1 229.149 124.415" stroke-width="1.6" marker-end="url(#arr-r07-calib)"/>
   <text class="lbl hi" x="250" y="124" text-anchor="start">+</text>
   <rect class="box" x="20" y="190" width="680" height="76" rx="8"/>
-  <text class="lbl mono" x="36" y="214" text-anchor="start">펌웨어 변환:  서보 명령[°] = 90 + 방향ᵢ × θᵢ + 오프셋ᵢ</text>
-  <text class="sub" x="36" y="236" text-anchor="start">방향ᵢ = +1 또는 −1 (서보 장착 방향) · 오프셋ᵢ = 수평에서 읽은 보정값 · θ는 −40°…+85°로 제한</text>
-  <text class="tag" x="36" y="256" text-anchor="start">세 팔이 모두 수평이면 이펙터는 베이스 아래 정중앙 — 자로 대칭을 확인</text>
+  <text class="lbl mono" x="36" y="214" text-anchor="start">펌웨어 변환:  pulse_us = ZERO_US[i] + DIR[i] × US_PER_DEG[i] × θ[°]</text>
+  <text class="sub" x="36" y="236" text-anchor="start">ZERO_US: 수평 지그에서 찾은 펄스 · DIR: 펄스↑일 때 팔이 아래로 가면 +1 · US_PER_DEG: 약 10~11 µs/°(측정)</text>
+  <text class="tag" x="36" y="256" text-anchor="start">θ는 −40°…+85°로 제한, 슬루율 200°/s — J 0 0 0에서 세 팔이 모두 수평이면 영점 완료</text>
 </svg>

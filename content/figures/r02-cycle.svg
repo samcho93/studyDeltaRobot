@@ -4,12 +4,12 @@
     <marker id="arr-r02-cycle-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
   </defs>
   <path class="ln" d="M30 230 L690 230" stroke-width="1.6"/>
-  <text class="tag" x="40" y="248" text-anchor="start">작업대 surface_z</text>
+  <text class="tag" x="200" y="248" text-anchor="start">작업대 surface_z</text>
   <rect class="box-hi" x="110" y="214" width="30" height="16" rx="2"/>
   <text class="tag" x="125" y="248" text-anchor="middle">부품 top</text>
   <rect class="box" x="520" y="216" width="110" height="14" rx="2"/>
   <text class="tag" x="575" y="248" text-anchor="middle">상자 (x, y, w, d, h)</text>
-  <text class="tag mono" x="135" y="70" text-anchor="start">① arch_to(part)</text>
+  <text class="tag mono" x="135" y="130" text-anchor="start">① arch_to(part)</text>
   <path class="ln-hi" d="M125 205 L125 110 Q125 90 145 90 L555 90 Q575 90 575 110 L575 200" stroke-width="2.4" marker-end="url(#arr-r02-cycle-hi)"/>
   <circle class="hi" cx="125" cy="207" r="5"/>
   <text class="tag mono" x="160" y="200" text-anchor="start">② tool_on() → 부품 id</text>

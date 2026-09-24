@@ -84,6 +84,9 @@ class DeltaRobot:
         hard = [p for p in problems if "무시" not in p and "짧으면" not in p]
         if hard:
             raise ValueError("설계 오류: " + "; ".join(hard))
+        from .backends.base import safe_print
+        for warn in problems:
+            safe_print("설계 경고: " + warn)
         hello_scene = hello.get("scene")
         if scene is None and hello_scene:
             same = from_hello or (hello.get("design") or {}) == self.design.to_dict()

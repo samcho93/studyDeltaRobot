@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R04. ROS 2 환경과 delta_robot 패키지 · studyDeltaRobot</title>
+<meta name="description" content="ROS 2 워크스페이스를 만들고 delta_robot 패키지를 빌드해 노드·토픽 구조를 살펴봅니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-control">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" class="active" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="r04" data-track="control">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-control">Python·ROS 2·실물</span> R-2 ROS 2 연동 &middot; 약 90분 &middot; 중급</div>
+    <h1><span class="lesson-no">R04</span>ROS 2 환경과 delta_robot 패키지</h1>
+    <p class="lede">ROS 2 워크스페이스를 만들고 delta_robot 패키지를 빌드해 노드·토픽 구조를 살펴봅니다.</p>
+    <div class="requires">선수 챕터: <a href="r03.html">R03</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>ROS 2 Humble(Ubuntu 22.04) 또는 Jazzy(Ubuntu 24.04)를 설치하고 환경을 <code>source</code>하는 이유를 설명합니다.</li><li><code>deltarobot</code> 라이브러리와 <code>delta_robot</code> 패키지를 설치·빌드합니다(<code>pip install -e</code>, <code>colcon build</code>).</li><li><code>display.launch.py</code>로 가상 모터(mock) 로봇을 띄우고, 노드·토픽·파라미터 구조를 <code>ros2</code> 명령으로 확인합니다.</li><li><code>/joint_states</code>에 모터 3개뿐 아니라 <strong>수동 관절과 가상 이펙터 관절</strong>까지 들어 있는 이유를 R05와 연결해 이해합니다.</li></ul>
+<h2 id="ros-2를-쓰는-이유">ROS 2를 쓰는 이유<a class="anchor" href="#ros-2를-쓰는-이유">#</a></h2>
+<p>R01~R03의 <code>DeltaRobot</code>은 한 프로그램 안에서 계획부터 전송까지 다 합니다. 실제 셀에는 카메라, 컨베이어 엔코더, PLC, 화면 등 여러 프로그램이 함께 돌아가고, 이들이 <strong>표준 메시지로 느슨하게 연결</strong>되어야 합니다. ROS 2는 그 연결을 맡습니다.</p>
+<div class="table-wrap"><table><thead><tr><th>개념</th><th>뜻</th><th>이 패키지에서</th></tr></thead><tbody><tr><td>노드(node)</td><td>하나의 역할을 하는 프로세스</td><td><code>delta_driver</code>, <code>delta_commander</code>, <code>delta_web_bridge</code></td></tr><tr><td>토픽(topic)</td><td>발행/구독 메시지 통로</td><td><code>/joint_states</code>, <code>/delta/goal</code>, <code>/delta/estop</code></td></tr><tr><td>서비스(service)</td><td>요청-응답 호출</td><td><code>/delta/tool</code> (<code>std_srvs/SetBool</code>)</td></tr><tr><td>파라미터(parameter)</td><td>노드 설정값</td><td><code>preset</code>, <code>hardware</code>, <code>speed</code></td></tr><tr><td>launch 파일</td><td>여러 노드를 인자와 함께 한 번에 실행</td><td><code>display.launch.py</code>, <code>bringup.launch.py</code></td></tr></tbody></table></div>
+<h2 id="설치">설치<a class="anchor" href="#설치">#</a></h2>
+<h3 id="1단계-ros-2">1단계: ROS 2<a class="anchor" href="#1단계-ros-2">#</a></h3>
+<p>공식 문서대로 설치합니다. 이 강의는 두 배포판을 모두 지원합니다.</p>
+<div class="table-wrap"><table><thead><tr><th>배포판</th><th>Ubuntu</th><th>설치 문서</th></tr></thead><tbody><tr><td>Humble Hawksbill (LTS)</td><td>22.04</td><td>https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html</td></tr><tr><td>Jazzy Jalisco (LTS)</td><td>24.04</td><td>https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html</td></tr></tbody></table></div>
+<p><code>ros-&lt;배포판&gt;-desktop</code>(RViz 포함)을 설치하고, 빌드 도구도 함께 설치합니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">sudo apt install python3-colcon-common-extensions python3-pip
+sudo apt install ros-$ROS_DISTRO-robot-state-publisher ros-$ROS_DISTRO-rviz2 python3-serial</code></pre></div>
+<p><code>$ROS_DISTRO</code>는 <code>source /opt/ros/humble/setup.bash</code>(또는 jazzy)를 한 터미널에서만 채워집니다. <strong>새 터미널마다 source</strong>해야 <code>ros2</code> 명령이 보입니다. 매번 하기 싫으면 <code>~/.bashrc</code> 끝에 한 줄 추가합니다.</p>
+<div class="callout callout-info"><div class="callout-title">Windows 사용자</div><div class="callout-body"><p>Windows 11에서는 <strong>WSL2 + Ubuntu 22.04/24.04</strong>에 설치하는 것이 가장 간단합니다. WSLg 덕분에 RViz 창도 뜨고, WSL2는 기본적으로 <code>localhost</code> 포트를 Windows와 공유하므로 R06의 웹 브리지(127.0.0.1:8765)에 Windows 브라우저로 접속할 수 있습니다. 실물 아두이노(USB)는 WSL2에서 <code>usbipd</code>로 연결해야 하므로, R07은 Windows 파이썬의 <code>serial</code> 백엔드로 하는 편이 쉽습니다.</p></div></div>
+<h3 id="2단계-deltarobot-라이브러리">2단계: deltarobot 라이브러리<a class="anchor" href="#2단계-deltarobot-라이브러리">#</a></h3>
+<p>ROS 노드들은 기구학·URDF·궤적 계산을 복사하지 않고 **저장소의 <code>deltarobot</code>을 import**합니다. 그래서 라이브러리를 ROS가 쓰는 시스템 파이썬에 설치해야 합니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">source /opt/ros/$ROS_DISTRO/setup.bash
+git clone https://github.com/samcho93/studyDeltaRobot.git ~/studyDeltaRobot
+cd ~/studyDeltaRobot
+
+pip install -e &quot;python[websim,serial]&quot;                          # Ubuntu 22.04 (Humble)
+pip install -e &quot;python[websim,serial]&quot; --break-system-packages  # Ubuntu 24.04 (Jazzy)
+
+python3 -c &quot;import deltarobot, websockets; print(deltarobot.__version__, websockets.__version__)&quot;</code></pre></div>
+<p><code>websockets</code>는 <strong>12 이상</strong>이어야 합니다. apt의 <code>python3-websockets</code>는 22.04에서 9.x, 24.04에서 10.x라 웹 브리지가 동작하지 않으므로 pip 버전을 씁니다.</p>
+<div class="callout callout-warn"><div class="callout-title">Ubuntu 24.04의 시스템 파이썬</div><div class="callout-body"><p>24.04는 시스템 파이썬에 pip 설치를 막습니다(<code>externally-managed-environment</code>). <code>--break-system-packages</code> 대신 ROS 패키지가 보이는 가상환경을 쓸 수도 있습니다: <code>python3 -m venv --system-site-packages ~/delta_venv &amp;&amp; source ~/delta_venv/bin/activate</code> 후 설치. 이 경우 빌드·실행하는 <strong>모든 터미널에서 venv를 activate</strong>해야 합니다.</p></div></div>
+<h3 id="3단계-워크스페이스-빌드">3단계: 워크스페이스 빌드<a class="anchor" href="#3단계-워크스페이스-빌드">#</a></h3>
+<p>ROS 2 워크스페이스는 <code>src/</code> 아래에 패키지를 두는 폴더입니다. 저장소에 이미 <code>ros2_ws/src/delta_robot</code>이 있으므로 그대로 빌드합니다.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">cd ~/studyDeltaRobot/ros2_ws
+colcon build --symlink-install
+source install/setup.bash
+ros2 pkg executables delta_robot</code></pre></div>
+<ul><li><code>--symlink-install</code>은 파이썬 파일을 복사하지 않고 링크하므로, 노드 코드를 고친 뒤 다시 빌드하지 않아도 됩니다(launch·설정 파일을 새로 추가했을 때는 다시 빌드).</li><li>빌드 결과는 <code>build/</code>, <code>install/</code>, <code>log/</code>에 생깁니다. 이상하면 세 폴더를 지우고 다시 빌드합니다.</li><li>마지막 명령은 실행 파일 목록(<code>delta_commander</code>, <code>delta_driver</code>, <code>delta_pick_place_demo</code>, <code>delta_web_bridge</code>)을 보여 줍니다.</li></ul>
+<p>직접 새 워크스페이스를 만들고 싶다면 <code>mkdir -p ~/delta_ws/src</code>, <code>ln -s ~/studyDeltaRobot/ros2_ws/src/delta_robot ~/delta_ws/src/</code>로 링크한 뒤 <code>~/delta_ws</code>에서 빌드해도 됩니다.</p>
+<h2 id="deltarobot-패키지-구조">delta_robot 패키지 구조<a class="anchor" href="#deltarobot-패키지-구조">#</a></h2>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">ros2_ws/src/delta_robot/
+├── package.xml, setup.py, setup.cfg     # ament_python 패키지 정의
+├── delta_robot/
+│   ├── driver_node.py      # delta_driver: 모터(mock | serial), 한계·속도·비상정지 강제
+│   ├── commander_node.py   # delta_commander: /delta/goal → 직선 궤적 → joint_command
+│   ├── web_bridge_node.py  # delta_web_bridge: ws://127.0.0.1:8765 (websim과 같은 프로토콜)
+│   ├── core.py             # ROS와 무관한 로직 (pytest로 시험)
+│   ├── launch_util.py      # 두 launch 파일의 공통 부분 (URDF 생성 포함)
+│   └── examples/pick_place_demo.py
+├── launch/display.launch.py   # mock + RViz (+ web_bridge)
+├── launch/bringup.launch.py   # serial(실물), RViz 끔
+├── rviz/delta.rviz
+└── config/design_example.json</code></pre></div>
+<h2 id="노드와-토픽-그래프">노드와 토픽 그래프<a class="anchor" href="#노드와-토픽-그래프">#</a></h2>
+<figure class="fig" id="fig-r04-node-graph"><svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="delta_robot 패키지의 노드와 토픽">
+  <defs>
+    <marker id="arr-r04-node-graph" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-r04-node-graph-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box" x="20" y="40" width="170" height="56" rx="18"/>
+  <text class="lbl mono" x="105" y="66" text-anchor="middle">delta_commander</text>
+  <text class="sub" x="105" y="84" text-anchor="middle">goal → 궤적</text>
+  <rect class="box" x="20" y="170" width="170" height="56" rx="18"/>
+  <text class="lbl mono" x="105" y="196" text-anchor="middle">DeltaRobot</text>
+  <text class="sub" x="105" y="214" text-anchor="middle">backend="ros2"</text>
+  <rect class="box-hi" x="275" y="150" width="170" height="76" rx="18"/>
+  <text class="lbl mono" x="360" y="186" text-anchor="middle">delta_driver</text>
+  <text class="sub" x="360" y="204" text-anchor="middle">mock | serial</text>
+  <rect class="box" x="530" y="40" width="170" height="56" rx="18"/>
+  <text class="lbl mono" x="615" y="66" text-anchor="middle">robot_state_publisher</text>
+  <text class="sub" x="615" y="84" text-anchor="middle">URDF → /tf</text>
+  <rect class="box" x="530" y="150" width="170" height="56" rx="18"/>
+  <text class="lbl mono" x="615" y="176" text-anchor="middle">rviz2</text>
+  <text class="sub" x="615" y="194" text-anchor="middle">RobotModel · TF</text>
+  <rect class="box" x="275" y="320" width="170" height="60" rx="18"/>
+  <text class="lbl mono" x="360" y="348" text-anchor="middle">delta_web_bridge</text>
+  <text class="sub" x="360" y="366" text-anchor="middle">ws://127.0.0.1:8765</text>
+  <rect class="box" x="530" y="320" width="170" height="60" rx="8"/>
+  <text class="lbl" x="615" y="346" text-anchor="middle">웹 시뮬레이터</text>
+  <text class="sub" x="615" y="364" text-anchor="middle">연결 탭 [PC Python 연결]</text>
+  <path class="ln-hi" d="M190 68 C240 68 240 170 273 170" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
+  <text class="tag mono" x="232" y="96" text-anchor="middle">/delta/joint_command</text>
+  <path class="ln-hi" d="M190 198 L273 198" stroke-width="2" marker-end="url(#arr-r04-node-graph-hi)"/>
+  <text class="tag mono" x="232" y="190" text-anchor="middle">joint_command</text>
+  <text class="tag mono" x="232" y="214" text-anchor="middle">tool_command</text>
+  <path class="ln" d="M445 175 C490 175 490 68 528 68" stroke-width="2" marker-end="url(#arr-r04-node-graph)"/>
+  <text class="tag mono" x="490" y="108" text-anchor="start">/joint_states</text>
+  <path class="ln" d="M615 96 L615 148" stroke-width="1.6" marker-end="url(#arr-r04-node-graph)"/>
+  <text class="tag mono" x="622" y="128" text-anchor="start">/tf</text>
+  <path class="ln" d="M445 205 L500 205 L500 290 L360 290 L360 318" stroke-width="1.6" marker-end="url(#arr-r04-node-graph)"/>
+  <text class="tag mono" x="505" y="262" text-anchor="start">/joint_states</text>
+  <text class="tag mono" x="505" y="278" text-anchor="start">/delta/tool_state</text>
+  <path class="ln" d="M445 350 L528 350" stroke-width="2" marker-end="url(#arr-r04-node-graph)" marker-start="url(#arr-r04-node-graph)"/>
+  <text class="tag" x="486" y="342" text-anchor="middle">WebSocket</text>
+  <path class="ln" d="M275 350 L105 350 L105 98" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr-r04-node-graph)"/>
+  <text class="tag mono" x="110" y="300" text-anchor="start">/delta/goal</text>
+  <path class="ln" d="M300 320 L300 228" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr-r04-node-graph)"/>
+  <text class="tag mono dg" x="306" y="270" text-anchor="start">/delta/estop</text>
+  <text class="tag" x="22" y="20" text-anchor="start">입력: /delta/goal (Point, m) · 서비스 /delta/tool (SetBool)   출력: /delta/busy · /delta/tcp</text>
+  <text class="sub" x="360" y="408" text-anchor="middle">실선: 명령·상태 흐름   점선: 웹 시뮬에서 들어오는 goal·비상정지</text>
+</svg><figcaption>delta_robot 패키지의 노드와 토픽. 모든 명령은 <code>delta_driver</code>를 거치며, 한계·속도 검사는 드라이버가 강제합니다.</figcaption></figure>
+<ul><li>**<code>delta_driver</code>** — 로봇 하드웨어를 대표하는 유일한 노드입니다. <code>/delta/joint_command</code>(모터 3개 각도, rad)를 받아 모터를 움직이고, 100 Hz로 <code>/joint_states</code>, <code>/delta/tool_state</code>, <code>/delta/tcp</code>를 발행합니다. <code>hardware:=mock</code>이면 가상 모터가 "모터 최고 속도 ÷ 감속비"로 목표를 따라가고, <code>serial</code>이면 아두이노로 <code>J</code> 명령을 보냅니다. θ 한계 밖은 잘리고, 조립될 수 없는 각도 조합은 거부됩니다.</li><li>**<code>delta_commander</code>** — <code>/delta/goal</code>(TCP 목표, <code>geometry_msgs/Point</code>, m)을 받아 직선 궤적을 계획하고 100 Hz로 <code>/delta/joint_command</code>를 흘려보냅니다. 툴은 서비스 <code>/delta/tool</code>로 켜고 끄며, 이동 중이면 이동이 끝난 뒤에 실행합니다. 이동 중에는 <code>/delta/busy</code>가 <code>true</code>입니다.</li><li>**<code>robot_state_publisher</code>** — URDF와 <code>/joint_states</code>로 각 링크의 좌표 변환 <code>/tf</code>를 계산합니다(R05).</li><li>**<code>delta_web_bridge</code>** — <code>web_bridge:=true</code>일 때만 뜹니다. 웹 시뮬레이터가 ROS 로봇을 보여 주게 합니다(R06).</li></ul>
+<h2 id="실행과-확인">실행과 확인<a class="anchor" href="#실행과-확인">#</a></h2>
+<p>터미널 1 — 가상 모터 로봇 실행(이번 장은 RViz 없이):</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">source ~/studyDeltaRobot/ros2_ws/install/setup.bash
+ros2 launch delta_robot display.launch.py preset:=edu_servo use_rviz:=false</code></pre></div>
+<p>드라이버가 시작하면서 설계 요약을 로그로 남깁니다(예시, 시각·PID 부분은 다름).</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">[delta_driver-2] [INFO] [...] [delta_driver]: delta_driver: motor=rc_servo_mg996r tool=suction_20 hardware=mock vmax=6.00 rad/s theta=[-0.70, 1.50] rad</code></pre></div>
+<p>터미널 2 — 구조 살펴보기(새 터미널이므로 먼저 source):</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">source ~/studyDeltaRobot/ros2_ws/install/setup.bash
+ros2 node list
+ros2 topic list
+ros2 topic info /delta/joint_command --verbose
+ros2 topic hz /joint_states
+ros2 param get /delta_driver preset
+ros2 topic echo /joint_states --once</code></pre></div>
+<p><code>ros2 node list</code>에는 <code>/delta_driver</code>, <code>/delta_commander</code>, <code>/robot_state_publisher</code>가 보여야 합니다. <code>ros2 topic list</code>에는 <code>/delta/busy</code>, <code>/delta/estop</code>, <code>/delta/goal</code>, <code>/delta/joint_command</code>, <code>/delta/tcp</code>, <code>/delta/tool_command</code>, <code>/delta/tool_state</code>, <code>/joint_states</code>, <code>/robot_description</code>, <code>/tf</code>, <code>/tf_static</code>과 ROS 기본 토픽(<code>/parameter_events</code>, <code>/rosout</code>)이 보입니다. <code>ros2 topic hz /joint_states</code>는 드라이버의 <code>rate</code> 파라미터(기본 100 Hz) 근처가 나옵니다.</p>
+<p><code>ros2 topic echo /joint_states --once</code> 결과 예시(홈 자세, <code>edu_servo</code>; 값은 <code>deltarobot.urdf.joint_state()</code>로 계산한 것과 같고, 시각은 생략):</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">header:
+  stamp:
+    sec: ...
+    nanosec: ...
+  frame_id: &#x27;&#x27;
+name:
+- motor1_joint
+- motor2_joint
+- motor3_joint
+- elbow1a_pitch
+- elbow1a_yaw
+- elbow2a_pitch
+- elbow2a_yaw
+- elbow3a_pitch
+- elbow3a_yaw
+- effector_x
+- effector_y
+- effector_z
+position:
+- 0.35
+- 0.35
+- 0.35
+- 1.934000474151466
+- 3.1540426835941956e-17
+- 1.934000474151466
+- -5.551115123125783e-17
+- 1.934000474151466
+- 1.6653345369377348e-16
+- 2.7755575615628914e-17
+- 6.938893903907228e-18
+- -0.20066905209598637
+velocity: []
+effort: []
+---</code></pre></div>
+<p>모터는 3개인데 이름이 12개입니다. 3개는 <strong>능동 관절</strong>(모터), 6개는 팔꿈치의 <strong>수동 관절</strong>(위팔에 대한 로드의 pitch·yaw), 3개는 이펙터 중심 위치를 나타내는 <strong>가상 직선 관절</strong>입니다. 드라이버가 모터각으로 순기구학을 풀어 전부 채웁니다. <code>effector_z</code> −0.2007 m는 R01에서 본 홈 자세의 이펙터 중심 높이와 같습니다. 왜 이렇게 해야 하는지는 R05에서 다룹니다.</p>
+<div class="callout callout-tip"><div class="callout-title">그래프 그림으로 보기</div><div class="callout-body"><p><code>rqt_graph</code>(패키지 <code>ros-$ROS_DISTRO-rqt-graph</code>)를 실행하면 위 그림과 같은 노드-토픽 그래프를 실제 실행 상태로 볼 수 있습니다. 노드가 안 보이면 새로고침 버튼을 누르세요.</p></div></div>
+<h3 id="한-번-움직여-보기">한 번 움직여 보기<a class="anchor" href="#한-번-움직여-보기">#</a></h3>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-bash">ros2 topic pub --once /delta/goal geometry_msgs/msg/Point &quot;{x: 0.03, y: 0.0, z: -0.25}&quot;
+ros2 topic echo /delta/tcp --once</code></pre></div>
+<p><code>/delta/tcp</code>가 (0.03, 0, −0.25) 근처로 바뀌면 성공입니다. 목표는 <strong>TCP(툴 끝)</strong> 기준, 단위는 m입니다. 자세한 제어는 R06에서 합니다.</p>
+<div class="callout callout-check"><div class="callout-title">체크포인트</div><div class="callout-body"><ul><li><label class="check-item"><input type="checkbox"> <code>ros2 pkg executables delta_robot</code>에 실행 파일 4개가 보인다.</label></li><li><label class="check-item"><input type="checkbox"> <code>ros2 node list</code>에 노드 3개가 보이고 <code>/joint_states</code>가 약 100 Hz로 발행된다.</label></li><li><label class="check-item"><input type="checkbox"> <code>/joint_states</code>의 이름 12개가 무엇인지 설명할 수 있다.</label></li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<h3 id="ros2-command-not-found-package-deltarobot-not-found"><code>ros2: command not found</code> / <code>Package &#x27;delta_robot&#x27; not found</code><a class="anchor" href="#ros2-command-not-found-package-deltarobot-not-found">#</a></h3>
+<ul><li><strong>원인</strong>: 이 터미널에서 <code>source /opt/ros/$ROS_DISTRO/setup.bash</code>나 <code>source install/setup.bash</code>를 하지 않았습니다. 빌드한 터미널이 아닌 새 터미널에서 흔합니다.</li><li><strong>해결</strong>: 두 파일을 순서대로 source합니다. <code>echo $ROS_DISTRO</code>로 확인합니다.</li></ul>
+<h3 id="modulenotfounderror-no-module-named-deltarobot"><code>ModuleNotFoundError: No module named &#x27;deltarobot&#x27;</code><a class="anchor" href="#modulenotfounderror-no-module-named-deltarobot">#</a></h3>
+<ul><li><strong>원인</strong>: 라이브러리를 설치하지 않았거나, 다른 파이썬(venv)에 설치했습니다. 노드는 <code>/usr/bin/python3</code>로 실행됩니다.</li><li><strong>해결</strong>: <code>python3 -c &quot;import deltarobot&quot;</code>가 되는 환경을 만듭니다(2단계). venv를 썼다면 launch하는 터미널에서도 activate합니다.</li></ul>
+<h3 id="error-externally-managed-environment"><code>error: externally-managed-environment</code><a class="anchor" href="#error-externally-managed-environment">#</a></h3>
+<ul><li><strong>원인</strong>: Ubuntu 24.04가 시스템 파이썬에 대한 pip 설치를 막았습니다.</li><li><strong>해결</strong>: <code>--break-system-packages</code>를 붙이거나 <code>--system-site-packages</code> venv를 씁니다.</li></ul>
+<h3 id="modulenotfounderror-no-module-named-websockets-sync-또는-deltawebbridge-needs-websockets-12"><code>ModuleNotFoundError: No module named &#x27;websockets.sync&#x27;</code> 또는 <code>delta_web_bridge needs websockets&gt;=12</code><a class="anchor" href="#modulenotfounderror-no-module-named-websockets-sync-또는-deltawebbridge-needs-websockets-12">#</a></h3>
+<ul><li><strong>원인</strong>: apt의 오래된 <code>python3-websockets</code>가 쓰이고 있습니다.</li><li><strong>해결</strong>: <code>pip install &quot;websockets&gt;=12&quot;</code>(24.04는 <code>--break-system-packages</code>). 버전을 다시 확인합니다.</li></ul>
+<h3 id="colcon-build가-setup-py-관련-경고를-냄"><code>colcon build</code>가 <code>setup.py</code> 관련 경고를 냄<a class="anchor" href="#colcon-build가-setup-py-관련-경고를-냄">#</a></h3>
+<ul><li><strong>원인</strong>: 배포판의 setuptools 버전에 따라 <code>setup.py install is deprecated</code> 같은 경고가 나올 수 있습니다. 경고일 뿐 빌드는 성공합니다(마지막 줄 <code>Summary: 1 package finished</code>를 확인).</li><li><strong>해결</strong>: 실제 에러(<code>Failed</code>)가 있을 때만 <code>log/latest_build/delta_robot/stdout_stderr.log</code>를 읽습니다.</li></ul>
+<h3 id="delta-goal을-보냈는데-움직이지-않음"><code>/delta/goal</code>을 보냈는데 움직이지 않음<a class="anchor" href="#delta-goal을-보냈는데-움직이지-않음">#</a></h3>
+<ul><li><strong>원인</strong>: 작업영역 밖 목표입니다. 커맨더 터미널에 <code>goal (...) rejected: ...</code> 에러 로그가 남습니다. 흔한 실수는 mm 단위, z 부호(작업은 z &lt; 0), 다른 프리셋의 좌표입니다.</li><li><strong>해결</strong>: <code>edu_servo</code> 홈 자세의 TCP z는 약 −0.246 m입니다. 그 근처에서 조금씩 움직여 봅니다.</li></ul>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">개인 과제</div><div class="callout-body"><ol><li><code>ros2 topic list -t</code>로 토픽과 메시지 타입을 표로 정리하고, 각 토픽의 발행 노드·구독 노드를 <code>ros2 topic info -v</code>로 확인해 그림 R04와 비교합니다.</li><li><code>preset:=edu_dynamixel</code>로 다시 실행해 <code>ros2 topic echo /delta/tcp --once</code>로 홈 자세 TCP 높이를 읽고, R01 방식(Playground)으로 계산한 값과 비교합니다.</li><li><code>ros2 param list /delta_commander</code>로 파라미터를 확인하고 <code>ros2 param set /delta_commander speed 0.1</code> 전후로 같은 goal의 이동 시간을 <code>ros2 topic echo /delta/busy</code>로 비교합니다.</li></ol></div></div>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>ROS 2 Humble 문서: https://docs.ros.org/en/humble/</li><li>ROS 2 Jazzy 문서: https://docs.ros.org/en/jazzy/</li><li>워크스페이스 만들기 튜토리얼: https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html</li><li>colcon 사용법: https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Colcon-Tutorial.html</li><li>노드·토픽 이해하기: https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html</li><li><code>sensor_msgs/msg/JointState</code> 정의: https://github.com/ros2/common_interfaces/blob/humble/sensor_msgs/msg/JointState.msg</li><li>저장소 <code>ros2_ws/src/delta_robot/README.md</code></li></ul>
+      <nav class="pager"><a class="pager-prev" href="r03.html"><span>이전 · R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a><a class="pager-next" href="r05.html"><span>다음 · R05</span>ROS 2: URDF·RViz·joint_states</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#ros-2를-쓰는-이유">ROS 2를 쓰는 이유</a><a class="toc-l2" href="#설치">설치</a><a class="toc-l3" href="#1단계-ros-2">1단계: ROS 2</a><a class="toc-l3" href="#2단계-deltarobot-라이브러리">2단계: deltarobot 라이브러리</a><a class="toc-l3" href="#3단계-워크스페이스-빌드">3단계: 워크스페이스 빌드</a><a class="toc-l2" href="#deltarobot-패키지-구조">delta_robot 패키지 구조</a><a class="toc-l2" href="#노드와-토픽-그래프">노드와 토픽 그래프</a><a class="toc-l2" href="#실행과-확인">실행과 확인</a><a class="toc-l3" href="#한-번-움직여-보기">한 번 움직여 보기</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l3" href="#ros2-command-not-found-package-deltarobot-not-found">`ros2: command not found` / `Package &#x27;delta_robot&#x27; not found`</a><a class="toc-l3" href="#modulenotfounderror-no-module-named-deltarobot">`ModuleNotFoundError: No module named &#x27;deltarobot&#x27;`</a><a class="toc-l3" href="#error-externally-managed-environment">`error: externally-managed-environment`</a><a class="toc-l3" href="#modulenotfounderror-no-module-named-websockets-sync-또는-deltawebbridge-needs-websockets-12">`ModuleNotFoundError: No module named &#x27;websockets.sync&#x27;` 또는 `delta_web_bridge needs websockets&gt;=12`</a><a class="toc-l3" href="#colcon-build가-setup-py-관련-경고를-냄">`colcon build`가 `setup.py` 관련 경고를 냄</a><a class="toc-l3" href="#delta-goal을-보냈는데-움직이지-않음">`/delta/goal`을 보냈는데 움직이지 않음</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>

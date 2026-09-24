@@ -30,7 +30,7 @@
   <path class="ln" d="M350 190 L370 190" stroke-width="1.6"/>
   <text class="tag mono" x="376" y="194" text-anchor="start">elbow{i}b_pitch / yaw</text>
   <text class="sub" x="560" y="194" text-anchor="start">mimic → a</text>
-  <text class="sub mono" x="376" y="222" text-anchor="start">upper_arm{i} → elbow{i}{a,b}_link → forearm{i}{a,b}  (끝이 열려 있음)</text>
+  <text class="sub mono" x="376" y="222" text-anchor="start">→ upper_arm → elbow_link → forearm (끝 열림)</text>
   <path class="ln" d="M340 70 L340 262" stroke-width="1.6"/>
   <path class="ln" d="M340 262 L370 262" stroke-width="1.6"/>
   <text class="tag mono hi" x="376" y="266" text-anchor="start">effector_x → effector_y → effector_z</text>

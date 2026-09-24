@@ -1,4 +1,4 @@
-<svg viewBox="0 0 760 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="deltarobot.urdf 가 만드는 트리 구조">
+<svg viewBox="0 0 760 515" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="deltarobot.urdf 가 만드는 트리 구조">
   <defs>
     <marker id="arr-d07-urdf-tree" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
     <marker id="arr-d07-urdf-tree-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
@@ -23,7 +23,7 @@
   <rect class="box" x="90" y="370" width="160" height="36" rx="10"/>
   <text class="lbl" x="170.0" y="393.0" text-anchor="middle">forearm1a</text>
   <path class="ln" d="M340 60 L340 75 L170 75 L170 94" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
-  <text class="tag" x="215.0" y="462.0" text-anchor="middle">팔 1 (a 로드).  b 로드: elbow1b_pitch/yaw 가 a 를 mimic (평행사변형)</text>
+  <text class="tag" x="380.0" y="505.0" text-anchor="middle">왼쪽: 팔 1 의 a 로드.  b 로드는 elbow1b_pitch/yaw 가 a 를 mimic (평행사변형)</text>
   <rect class="box" x="262" y="250" width="150" height="70" rx="10"/>
   <text class="lbl" x="337.0" y="275.0" text-anchor="middle">× 3 팔</text>
   <text class="tag" x="337.0" y="295.0" text-anchor="middle">motor2 · motor3 도</text>
@@ -52,5 +52,5 @@
   <text class="lbl" x="570.0" y="424.0" text-anchor="middle">tcp_joint → tcp</text>
   <text class="tag" x="570.0" y="439.0" text-anchor="middle">fixed</text>
   <path class="ln" d="M420 60 L420 75 L570 75 L570 84" stroke-width="1.2" marker-end="url(#arr-d07-urdf-tree)"/>
-  <text class="tag" x="680.0" y="36.0" text-anchor="end">링크 21 · 관절 20 (revolute 15, prismatic 3, fixed 2) · mimic 6</text>
+  <text class="sub" x="380.0" y="482.0" text-anchor="middle">edu_dynamixel: 링크 21 · 관절 20 (revolute 15, prismatic 3, fixed 2) · mimic 6</text>
 </svg>

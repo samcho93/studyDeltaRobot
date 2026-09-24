@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D01. 웹 시뮬레이터 사용법 · studyDeltaRobot</title>
+<meta name="description" content="설계·조그·작업·분석·연결 탭의 기능과 그래프 읽는 법, 설계 공유(URL/JSON)를 익힙니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body class="lesson-page track-page-design">
+<button class="nav-toggle" id="navToggle" aria-label="목차 열기">&#9776;</button>
+<aside class="sidebar" id="sidebar">
+<nav class="sidebar-nav">
+<div class="brand-row"><a class="brand" href="../index.html"><span class="brand-mark">&#916;</span><span class="brand-text">studyDeltaRobot<small>델타로봇 강의</small></span></a><button class="theme-icon" type="button" data-theme-toggle data-theme-icon aria-label="테마 전환"></button></div>
+<div class="side-tools"><a class="side-tool" href="../sim/index.html">3D 시뮬레이터</a><a class="side-tool" href="../tools/playground.html">Python Playground</a><a class="side-tool" href="../tools/urdf-viewer.html">URDF 뷰어</a><a class="side-tool" href="../tools/kinematics-lab.html">기구학 실험실</a></div>
+<div class="nav-track" data-track="theory">
+<div class="nav-track-title track-theory">기초 이론·기구학</div>
+<div class="nav-part"><span class="nav-part-no">T-1</span>델타로봇 이해</div>
+<ul>
+<li><a href="../lessons/t01.html" data-slug="t01"><span class="nav-no">T01</span>델타로봇 개요와 응용</a></li>
+<li><a href="../lessons/t02.html" data-slug="t02"><span class="nav-no">T02</span>구조와 자유도</a></li>
+<li><a href="../lessons/t03.html" data-slug="t03"><span class="nav-no">T03</span>좌표계와 설계 파라미터</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-2</span>기구학</div>
+<ul>
+<li><a href="../lessons/t04.html" data-slug="t04"><span class="nav-no">T04</span>역기구학 (IK)</a></li>
+<li><a href="../lessons/t05.html" data-slug="t05"><span class="nav-no">T05</span>순기구학 (FK)</a></li>
+<li><a href="../lessons/t06.html" data-slug="t06"><span class="nav-no">T06</span>야코비안·속도·특이점</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">T-3</span>작업영역과 동역학</div>
+<ul>
+<li><a href="../lessons/t07.html" data-slug="t07"><span class="nav-no">T07</span>작업영역</a></li>
+<li><a href="../lessons/t08.html" data-slug="t08"><span class="nav-no">T08</span>동역학과 모터 토크</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="design">
+<div class="nav-track-title track-design">설계·시뮬레이션</div>
+<div class="nav-part"><span class="nav-part-no">D-1</span>시뮬레이터와 요구사항</div>
+<ul>
+<li><a href="../lessons/d01.html" class="active" data-slug="d01"><span class="nav-no">D01</span>웹 시뮬레이터 사용법</a></li>
+<li><a href="../lessons/d02.html" data-slug="d02"><span class="nav-no">D02</span>설계 요구사항 정의</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-2</span>설계 요소 선정</div>
+<ul>
+<li><a href="../lessons/d03.html" data-slug="d03"><span class="nav-no">D03</span>암 길이·반지름 선정</a></li>
+<li><a href="../lessons/d04.html" data-slug="d04"><span class="nav-no">D04</span>모터·감속기 선정</a></li>
+<li><a href="../lessons/d05.html" data-slug="d05"><span class="nav-no">D05</span>엔드이펙터 선택</a></li>
+<li><a href="../lessons/d06.html" data-slug="d06"><span class="nav-no">D06</span>궤적 계획</a></li>
+<li><a href="../lessons/d07.html" data-slug="d07"><span class="nav-no">D07</span>URDF 모델링</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">D-3</span>설계 응용실습</div>
+<ul>
+<li><a href="../lessons/d08.html" data-slug="d08"><span class="nav-no">D08</span>응용실습 ① 탁상형 교육용 델타</a></li>
+<li><a href="../lessons/d09.html" data-slug="d09"><span class="nav-no">D09</span>응용실습 ② 컨베이어 고속 피킹 셀</a></li>
+<li><a href="../lessons/d10.html" data-slug="d10"><span class="nav-no">D10</span>응용실습 ③ 펜 드로잉·디스펜싱 델타</a></li>
+<li><a href="../lessons/d11.html" data-slug="d11"><span class="nav-no">D11</span>설계 캡스톤: 요구사항 → 검증 보고서</a></li>
+</ul>
+</div>
+<div class="nav-track" data-track="control">
+<div class="nav-track-title track-control">Python·ROS 2·실물</div>
+<div class="nav-part"><span class="nav-part-no">R-1</span>Python 제어</div>
+<ul>
+<li><a href="../lessons/r01.html" data-slug="r01"><span class="nav-no">R01</span>deltarobot 라이브러리와 Playground</a></li>
+<li><a href="../lessons/r02.html" data-slug="r02"><span class="nav-no">R02</span>Python pick &amp; place 프로그래밍</a></li>
+<li><a href="../lessons/r03.html" data-slug="r03"><span class="nav-no">R03</span>PC Python ↔ 웹 시뮬 실시간 연결</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-2</span>ROS 2 연동</div>
+<ul>
+<li><a href="../lessons/r04.html" data-slug="r04"><span class="nav-no">R04</span>ROS 2 환경과 delta_robot 패키지</a></li>
+<li><a href="../lessons/r05.html" data-slug="r05"><span class="nav-no">R05</span>ROS 2: URDF·RViz·joint_states</a></li>
+<li><a href="../lessons/r06.html" data-slug="r06"><span class="nav-no">R06</span>ROS 2: 토픽·서비스 제어와 웹 브리지</a></li>
+</ul>
+<div class="nav-part"><span class="nav-part-no">R-3</span>실물과 캡스톤</div>
+<ul>
+<li><a href="../lessons/r07.html" data-slug="r07"><span class="nav-no">R07</span>실물: 아두이노 펌웨어·캘리브레이션</a></li>
+<li><a href="../lessons/r08.html" data-slug="r08"><span class="nav-no">R08</span>캡스톤: 컨베이어 트래킹 분류</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<div class="sidebar-scrim" id="scrim"></div>
+<main class="main">
+
+<article class="lesson" data-slug="d01" data-track="design">
+  <div class="lesson-head">
+    <div class="crumbs"><span class="track-pill track-design">설계·시뮬레이션</span> D-1 시뮬레이터와 요구사항 &middot; 약 45분 &middot; 초급</div>
+    <h1><span class="lesson-no">D01</span>웹 시뮬레이터 사용법</h1>
+    <p class="lede">설계·조그·작업·분석·연결 탭의 기능과 그래프 읽는 법, 설계 공유(URL/JSON)를 익힙니다.</p>
+    <div class="requires">선수 챕터: <a href="t03.html">T03</a></div>
+    <div class="lesson-actions">
+      <label class="done-toggle"><input type="checkbox" id="doneCheck"><span>학습 완료로 표시</span></label>
+      <a class="ghost-btn" href="../sim/index.html">시뮬레이터</a>
+    </div>
+  </div>
+  <div class="lesson-grid">
+    <div class="lesson-body">
+<h2 id="학습-목표">학습 목표<a class="anchor" href="#학습-목표">#</a></h2>
+<ul><li>시뮬레이터의 다섯 탭(<strong>설계 · 조그 · 작업 · 분석 · 연결</strong>)이 각각 무엇을 하는지 알고, 설계 → 검증 → 수정의 흐름으로 쓸 수 있습니다.</li><li>분석 탭의 모터 속도 ω·토크 τ 그래프를 한계선과 비교해 읽고, "어디서 왜" 한계를 넘는지 설명할 수 있습니다.</li><li>설계를 URL·JSON으로 공유하고, 같은 설계를 URDF 뷰어·Python Playground에서 이어 쓸 수 있습니다.</li></ul>
+<h2 id="화면-구성">화면 구성<a class="anchor" href="#화면-구성">#</a></h2>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html">시뮬레이터 열기</a></p>
+<p>시뮬레이터는 설치 없이 브라우저에서 동작합니다. 가운데 3D 화면에 로봇이 보이고, 옆 패널의 다섯 탭으로 모든 기능을 씁니다. 상단에는 <strong>비상정지</strong> 버튼(PC Python·ROS 2와 연결되어 있으면 정지 명령을 보냄), <strong>테마</strong> 전환, 다른 도구(URDF 뷰어, Playground, 기구학 실험실)로 가는 링크가 있습니다.</p>
+<figure class="fig" id="fig-d01-sim-tabs"><svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="시뮬레이터 다섯 탭과 설계 반복 흐름">
+  <defs>
+    <marker id="arr-d01-sim-tabs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d01-sim-tabs-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <rect class="box-hi" x="12" y="60" width="136" height="120" rx="10"/>
+  <text class="lbl" x="80.0" y="88.0" text-anchor="middle">설계</text>
+  <text class="sub" x="80.0" y="115.0" text-anchor="middle">프리셋·R r L l w</text>
+  <text class="sub" x="80.0" y="135.0" text-anchor="middle">모터·감속기·툴</text>
+  <text class="sub" x="80.0" y="155.0" text-anchor="middle">[설계 검증]</text>
+  <path class="ln" d="M148.0 120.0 L161.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box" x="162" y="60" width="136" height="120" rx="10"/>
+  <text class="lbl" x="230.0" y="88.0" text-anchor="middle">조그</text>
+  <text class="sub" x="230.0" y="115.0" text-anchor="middle">TCP x/y/z</text>
+  <text class="sub" x="230.0" y="135.0" text-anchor="middle">θ1~θ3 슬라이더</text>
+  <text class="sub" x="230.0" y="155.0" text-anchor="middle">조건수·한계 표시</text>
+  <path class="ln" d="M298.0 120.0 L311.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box" x="312" y="60" width="136" height="120" rx="10"/>
+  <text class="lbl" x="380.0" y="88.0" text-anchor="middle">작업</text>
+  <text class="sub" x="380.0" y="115.0" text-anchor="middle">장면·데모</text>
+  <text class="sub" x="380.0" y="135.0" text-anchor="middle">프로파일·속도</text>
+  <text class="sub" x="380.0" y="155.0" text-anchor="middle">재생·배속</text>
+  <path class="ln" d="M448.0 120.0 L461.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box-hi" x="462" y="60" width="136" height="120" rx="10"/>
+  <text class="lbl" x="530.0" y="88.0" text-anchor="middle">분석</text>
+  <text class="sub" x="530.0" y="115.0" text-anchor="middle">θ·ω·τ 그래프</text>
+  <text class="sub" x="530.0" y="135.0" text-anchor="middle">피크·RMS·속도</text>
+  <text class="sub" x="530.0" y="155.0" text-anchor="middle">사이클·작업영역</text>
+  <path class="ln" d="M598.0 120.0 L611.0 120.0" stroke-width="1.6" marker-end="url(#arr-d01-sim-tabs)"/>
+  <rect class="box" x="612" y="60" width="136" height="120" rx="10"/>
+  <text class="lbl" x="680.0" y="88.0" text-anchor="middle">연결</text>
+  <text class="sub" x="680.0" y="115.0" text-anchor="middle">PC Python</text>
+  <text class="sub" x="680.0" y="135.0" text-anchor="middle">JSON·URDF</text>
+  <text class="sub" x="680.0" y="155.0" text-anchor="middle">공유 링크</text>
+  <text class="tag" x="380.0" y="36.0" text-anchor="middle">상단: 비상정지 · 테마 · 도구 링크      URL: ?preset= · ?scene= · #design=</text>
+  <path class="ln-hi" d="M530.0 180 L530.0 230 L80.0 230 L80.0 184" stroke-width="1.8" marker-end="url(#arr-d01-sim-tabs-hi)"/>
+  <text class="tag" x="305.0" y="248.0" text-anchor="middle">✖ 가 있으면 설계 탭으로 돌아가 수정 → 다시 검증</text>
+  <text class="sub" x="380.0" y="282.0" text-anchor="middle">설계값은 브라우저에 저장되어 URDF 뷰어 · Playground가 같은 설계를 씁니다</text>
+</svg><figcaption>다섯 탭의 역할과 설계 반복 흐름. 설계 탭에서 값을 바꾸고 [설계 검증]과 분석 탭으로 확인한 뒤, ✖가 있으면 설계 탭으로 돌아갑니다.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>탭</th><th>하는 일</th><th>이 트랙에서 주로 쓰는 곳</th></tr></thead><tbody><tr><td><strong>설계</strong></td><td>프리셋 선택, 치수 슬라이더(R, r, L, l, w), 모터각 한계, 재질, 모터, 감속기·감속비, 툴, 페이로드, 이펙터 질량. 파생값 표(질량·관성·정적 토크)와 <strong>[설계 검증]</strong> 버튼</td><td>D02~D05, D08~D11</td></tr><tr><td><strong>조그</strong></td><td>TCP x/y/z 슬라이더(역기구학), 모터 θ1~θ3 슬라이더(순기구학). 모터각·조건수·볼조인트각·팔꿈치각·정적 토크 표시, 한계를 넘으면 빨간색</td><td>D03, T06</td></tr><tr><td><strong>작업</strong></td><td>장면(빈 작업대 / 분류 / 컨베이어 / 그리기), 데모 프로그램(Adept 사이클 / 분류 데모 / 컨베이어 데모 / 원·별 그리기), 궤적 설정(프로파일·속도·가속도·아치 높이), 재생·일시정지·처음으로, 재생 배속</td><td>D06, D08~D10</td></tr><tr><td><strong>분석</strong></td><td>모터각 θ·모터 속도 ω·모터축 토크 τ 그래프(한계선 표시), 검증 결과(피크/RMS/속도/관성비), 사이클 시간·분당 사이클, 작업영역 점구름·작업 실린더 표시</td><td>D03, D04, D06</td></tr><tr><td><strong>연결</strong></td><td>[PC Python 연결](websim 백엔드·ROS 2 web_bridge 공용), 타임라인 JSON 불러오기, 설계 JSON 내보내기/불러오기, URDF 내려받기, 공유 링크 복사</td><td>D07, R03, R06</td></tr></tbody></table></div>
+<h3 id="설계-탭-설계-검증">설계 탭 — [설계 검증]<a class="anchor" href="#설계-탭-설계-검증">#</a></h3>
+<p>설계 탭의 <strong>[설계 검증]</strong> 은 지금 설계로 두 가지를 계산해 보여 줍니다.</p>
+<ol><li><strong>작업 실린더 D×H</strong> — 어느 방향으로든 도달할 수 있는 원기둥 (T07, <code>kinematics.work_cylinder</code>)</li><li><strong>표준 사이클의 모터 검증 결과</strong> — 정해진 동작을 돌려 보고 피크 토크·RMS 토크·속도 등이 모터 한계 안에 있는지 ✔/✖</li></ol>
+<p>파생값 표에는 위팔 질량, 이동판 질량(이펙터 + 툴 + 페이로드 + 아래팔 절반), 팔 관성, 정적 토크가 나옵니다. 값을 하나 바꿀 때마다 이 표가 어떻게 변하는지 보는 습관이 설계 감각을 가장 빨리 키웁니다.</p>
+<h3 id="조그-탭-한계를-손으로-느끼기">조그 탭 — 한계를 손으로 느끼기<a class="anchor" href="#조그-탭-한계를-손으로-느끼기">#</a></h3>
+<p>TCP 슬라이더를 움직이면 역기구학으로 모터각이 계산되고, 모터 슬라이더를 움직이면 순기구학으로 TCP가 계산됩니다. 모터각 한계, 볼조인트 각도 한계, 팔꿈치 각도 한계(20°~165°) 중 하나라도 넘으면 해당 값이 <strong>빨간색</strong>이 됩니다. 작업영역 가장자리로 갈수록 <strong>조건수</strong>가 커지는 것도 여기서 확인합니다(T06).</p>
+<h3 id="작업-탭과-분석-탭-움직이고-재고-판정하기">작업 탭과 분석 탭 — 움직이고, 재고, 판정하기<a class="anchor" href="#작업-탭과-분석-탭-움직이고-재고-판정하기">#</a></h3>
+<p>작업 탭에서 장면과 데모 프로그램을 고르고 재생하면, 분석 탭에 그 동작의 그래프와 검증 결과가 나옵니다. Playground에서 실행한 Python 프로그램의 동작도 같은 방식으로 재생·분석됩니다.</p>
+<h2 id="그래프-읽는-법">그래프 읽는 법<a class="anchor" href="#그래프-읽는-법">#</a></h2>
+<p>분석 탭의 그래프는 <strong>세 모터의 곡선 + 한계선</strong>으로 되어 있습니다. 아래 그림은 <code>edu_servo</code>(MG996R급 RC 서보)로 180 mm짜리 축소 Adept 사이클을 일부러 빠르게(0.6 m/s, 6 m/s²) 돌린 결과를 같은 방식으로 그린 것입니다.</p>
+<figure class="fig" id="fig-d01-graph-reading"><svg viewBox="0 0 760 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="분석 탭 그래프 읽기: 모터 속도와 토크, 한계선">
+  <defs>
+    <marker id="arr-d01-graph-reading" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--text-faint)"/></marker>
+    <marker id="arr-d01-graph-reading-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--accent)"/></marker>
+  </defs>
+  <path class="ln" d="M70.0 170.0 L710.0 170.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="174.0" text-anchor="end">0</text>
+  <path class="ln" d="M70.0 137.5 L710.0 137.5" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="141.5" text-anchor="end">2</text>
+  <path class="ln" d="M70.0 105.0 L710.0 105.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="109.0" text-anchor="end">4</text>
+  <path class="ln" d="M70.0 72.5 L710.0 72.5" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="76.5" text-anchor="end">6</text>
+  <path class="ln" d="M70.0 40.0 L710.0 40.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="44.0" text-anchor="end">8</text>
+  <path class="ln" d="M70.0 40.0 L70.0 170.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="70.0" y="186.0" text-anchor="middle">0</text>
+  <path class="ln" d="M355.5 40.0 L355.5 170.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="355.5" y="186.0" text-anchor="middle">0.5</text>
+  <path class="ln" d="M641.0 40.0 L641.0 170.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="641.0" y="186.0" text-anchor="middle">1</text>
+  <path class="ln" d="M70.0 170.0 L710.0 170.0" stroke-width="1.2"/>
+  <path class="ln" d="M70.0 40.0 L70.0 170.0" stroke-width="1.2"/>
+  <text class="sub" x="70.0" y="30.0" text-anchor="start">모터 속도 |ω| [rad/s]</text>
+  <path d="M70.0 169.9 L75.7 169.5 L81.4 168.6 L87.1 167.0 L92.8 164.6 L98.5 161.3 L104.3 157.3 L110.0 152.7 L115.7 147.8 L121.4 143.0 L127.1 135.1 L132.8 119.4 L138.5 100.8 L144.2 89.4 L149.9 89.1 L155.6 90.9 L161.4 89.4 L167.1 88.7 L172.8 88.9 L178.5 89.4 L184.2 90.2 L189.9 91.1 L195.6 92.1 L201.3 93.2 L207.0 94.4 L212.7 95.8 L218.5 97.3 L224.2 99.0 L229.9 100.9 L235.6 102.9 L241.3 105.1 L247.0 107.4 L252.7 109.9 L258.4 112.5 L264.1 115.3 L269.8 118.2 L275.5 121.2 L281.3 124.5 L287.0 128.0 L292.7 131.9 L298.4 141.4 L304.1 169.0 L309.8 136.5 L315.5 116.0 L321.2 110.5 L326.9 115.9 L332.6 125.7 L338.4 135.3 L344.1 144.2 L349.8 151.9 L355.5 158.2 L361.2 163.1 L366.9 166.5 L372.6 168.6 L378.3 169.6 L384.0 169.9 L387.1 170.0 L392.9 169.8 L398.6 169.2 L404.3 167.8 L410.0 165.1 L415.7 161.1 L421.4 155.5 L427.1 148.5 L432.8 140.3 L438.5 131.0 L444.2 121.1 L450.0 112.5 L455.7 111.3 L461.4 123.4 L467.1 151.0 L472.8 154.4 L478.5 134.9 L484.2 130.1 L489.9 126.3 L495.6 123.0 L501.3 119.8 L507.0 116.9 L512.8 114.0 L518.5 111.3 L524.2 108.7 L529.9 106.3 L535.6 104.0 L541.3 101.9 L547.0 100.0 L552.7 98.2 L558.4 96.6 L564.1 95.1 L569.9 93.8 L575.6 92.7 L581.3 91.6 L587.0 90.7 L592.7 89.9 L598.4 89.1 L604.1 88.7 L609.8 88.9 L615.5 90.1 L621.2 90.3 L627.0 88.5 L632.7 93.2 L638.4 108.8 L644.1 127.5 L649.8 139.6 L655.5 145.2 L661.2 150.1 L666.9 154.9 L672.6 159.2 L678.3 162.9 L684.0 165.8 L689.8 167.9 L695.5 169.1 L701.2 169.8 L706.9 170.0 L710.0 170.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M70.0 169.9 L75.7 169.3 L81.4 168.0 L87.1 165.6 L92.8 161.9 L98.5 157.0 L104.3 150.7 L110.0 143.4 L115.7 135.2 L121.4 126.6 L127.1 117.8 L132.8 111.7 L138.5 114.1 L144.2 130.1 L149.9 155.0 L155.6 169.9 L161.4 166.7 L167.1 163.7 L172.8 160.8 L178.5 157.8 L184.2 154.9 L189.9 152.0 L195.6 149.2 L201.3 146.4 L207.0 143.6 L212.7 140.8 L218.5 138.1 L224.2 135.5 L229.9 132.8 L235.6 130.3 L241.3 127.7 L247.0 125.2 L252.7 122.8 L258.4 120.3 L264.1 117.9 L269.8 115.6 L275.5 113.3 L281.3 111.1 L287.0 109.4 L292.7 108.5 L298.4 106.0 L304.1 98.9 L309.8 96.9 L315.5 107.3 L321.2 123.1 L326.9 134.8 L332.6 141.2 L338.4 147.1 L344.1 152.7 L349.8 157.7 L355.5 161.9 L361.2 165.2 L366.9 167.6 L372.6 169.0 L378.3 169.7 L384.0 170.0 L387.1 170.0 L392.9 169.9 L398.6 169.5 L404.3 168.5 L410.0 166.6 L415.7 163.9 L421.4 160.1 L427.1 155.5 L432.8 150.2 L438.5 144.4 L444.2 138.6 L450.0 130.2 L455.7 116.0 L461.4 101.4 L467.1 96.1 L472.8 102.2 L478.5 108.0 L484.2 108.8 L489.9 110.1 L495.6 112.1 L501.3 114.3 L507.0 116.6 L512.8 119.0 L518.5 121.4 L524.2 123.9 L529.9 126.3 L535.6 128.9 L541.3 131.4 L547.0 134.0 L552.7 136.7 L558.4 139.4 L564.1 142.1 L569.9 144.8 L575.6 147.6 L581.3 150.5 L587.0 153.3 L592.7 156.2 L598.4 159.2 L604.1 162.1 L609.8 165.1 L615.5 168.0 L621.2 164.9 L627.0 144.2 L632.7 121.0 L638.4 111.5 L644.1 113.8 L649.8 121.8 L655.5 130.6 L661.2 139.0 L666.9 146.8 L672.6 153.7 L678.3 159.4 L684.0 163.8 L689.8 166.8 L695.5 168.7 L701.2 169.6 L706.9 169.9 L710.0 170.0" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M70.0 169.9 L75.7 169.3 L81.4 168.0 L87.1 165.6 L92.8 161.9 L98.5 157.0 L104.3 150.7 L110.0 143.4 L115.7 135.2 L121.4 126.6 L127.1 117.8 L132.8 111.7 L138.5 114.1 L144.2 130.1 L149.9 155.0 L155.6 169.9 L161.4 166.7 L167.1 163.7 L172.8 160.8 L178.5 157.8 L184.2 154.9 L189.9 152.0 L195.6 149.2 L201.3 146.4 L207.0 143.6 L212.7 140.8 L218.5 138.1 L224.2 135.5 L229.9 132.8 L235.6 130.3 L241.3 127.7 L247.0 125.2 L252.7 122.8 L258.4 120.3 L264.1 117.9 L269.8 115.6 L275.5 113.3 L281.3 111.1 L287.0 109.4 L292.7 108.5 L298.4 106.0 L304.1 98.9 L309.8 96.9 L315.5 107.3 L321.2 123.1 L326.9 134.8 L332.6 141.2 L338.4 147.1 L344.1 152.7 L349.8 157.7 L355.5 161.9 L361.2 165.2 L366.9 167.6 L372.6 169.0 L378.3 169.7 L384.0 170.0 L387.1 170.0 L392.9 169.9 L398.6 169.5 L404.3 168.5 L410.0 166.6 L415.7 163.9 L421.4 160.1 L427.1 155.5 L432.8 150.2 L438.5 144.4 L444.2 138.6 L450.0 130.2 L455.7 116.0 L461.4 101.4 L467.1 96.1 L472.8 102.2 L478.5 108.0 L484.2 108.8 L489.9 110.1 L495.6 112.1 L501.3 114.3 L507.0 116.6 L512.8 119.0 L518.5 121.4 L524.2 123.9 L529.9 126.3 L535.6 128.9 L541.3 131.4 L547.0 134.0 L552.7 136.7 L558.4 139.4 L564.1 142.1 L569.9 144.8 L575.6 147.6 L581.3 150.5 L587.0 153.3 L592.7 156.2 L598.4 159.2 L604.1 162.1 L609.8 165.1 L615.5 168.0 L621.2 164.9 L627.0 144.2 L632.7 121.0 L638.4 111.5 L644.1 113.8 L649.8 121.8 L655.5 130.6 L661.2 139.0 L666.9 146.8 L672.6 153.7 L678.3 159.4 L684.0 163.8 L689.8 166.8 L695.5 168.7 L701.2 169.6 L706.9 169.9 L710.0 170.0" style="stroke:var(--warn);fill:none;fill-opacity:1" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M70.0 72.5 L710.0 72.5" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/>
+  <text x="706.0" y="67.5" text-anchor="end" font-size="11" style="fill:var(--danger)">최고 속도 6.0 rad/s</text>
+  <path class="ln" d="M70.0 360.0 L710.0 360.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="364.0" text-anchor="end">0.0</text>
+  <path class="ln" d="M70.0 327.5 L710.0 327.5" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="331.5" text-anchor="end">0.3</text>
+  <path class="ln" d="M70.0 295.0 L710.0 295.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="299.0" text-anchor="end">0.6</text>
+  <path class="ln" d="M70.0 262.5 L710.0 262.5" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="266.5" text-anchor="end">0.9</text>
+  <path class="ln" d="M70.0 230.0 L710.0 230.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="64.0" y="234.0" text-anchor="end">1.2</text>
+  <path class="ln" d="M70.0 230.0 L70.0 360.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="70.0" y="376.0" text-anchor="middle">0</text>
+  <path class="ln" d="M355.5 230.0 L355.5 360.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="355.5" y="376.0" text-anchor="middle">0.5</text>
+  <path class="ln" d="M641.0 230.0 L641.0 360.0" stroke-width="0.6" stroke-dasharray="5 4"/>
+  <text class="tag" x="641.0" y="376.0" text-anchor="middle">1</text>
+  <path class="ln" d="M70.0 360.0 L710.0 360.0" stroke-width="1.2"/>
+  <path class="ln" d="M70.0 230.0 L70.0 360.0" stroke-width="1.2"/>
+  <text class="sub" x="390.0" y="394.0" text-anchor="middle">시간 [s]</text>
+  <text class="sub" x="70.0" y="220.0" text-anchor="start">모터 토크 |τ| [N·m]</text>
+  <path d="M70.0 359.5 L75.7 359.5 L81.4 359.5 L87.1 359.6 L92.8 359.7 L98.5 359.7 L104.3 359.8 L110.0 359.9 L115.7 360.0 L121.4 355.6 L127.1 339.3 L132.8 318.2 L138.5 310.4 L144.2 320.6 L149.9 338.0 L155.6 348.5 L161.4 351.2 L167.1 352.1 L172.8 352.4 L178.5 352.0 L184.2 351.3 L189.9 350.4 L195.6 349.6 L201.3 348.8 L207.0 348.1 L212.7 347.4 L218.5 346.7 L224.2 346.1 L229.9 345.5 L235.6 344.9 L241.3 344.3 L247.0 343.8 L252.7 343.3 L258.4 342.8 L264.1 342.3 L269.8 341.8 L275.5 341.5 L281.3 341.6 L287.0 342.0 L292.7 346.3 L298.4 356.1 L304.1 334.1 L309.8 332.6 L315.5 350.2 L321.2 347.8 L326.9 329.9 L332.6 323.0 L338.4 323.1 L344.1 324.3 L349.8 326.0 L355.5 328.1 L361.2 330.2 L366.9 332.3 L372.6 334.0 L378.3 335.3 L384.0 335.9 L387.1 336.1 L392.9 335.8 L398.6 334.8 L404.3 333.3 L410.0 331.3 L415.7 329.2 L421.4 327.1 L427.1 325.2 L432.8 323.7 L438.5 322.7 L444.2 325.0 L450.0 336.8 L455.7 357.8 L461.4 341.0 L467.1 330.4 L472.8 342.2 L478.5 354.2 L484.2 342.9 L489.9 341.8 L495.6 341.5 L501.3 341.6 L507.0 342.0 L512.8 342.5 L518.5 343.0 L524.2 343.5 L529.9 344.0 L535.6 344.6 L541.3 345.1 L547.0 345.7 L552.7 346.4 L558.4 347.0 L564.1 347.7 L569.9 348.4 L575.6 349.2 L581.3 350.0 L587.0 350.8 L592.7 351.7 L598.4 352.3 L604.1 352.4 L609.8 351.8 L615.5 350.6 L621.2 345.0 L627.0 330.2 L632.7 314.3 L638.4 311.6 L644.1 326.8 L649.8 348.3 L655.5 358.9 L661.2 360.0 L666.9 359.9 L672.6 359.8 L678.3 359.7 L684.0 359.6 L689.8 359.6 L695.5 359.5 L701.2 359.5 L706.9 359.5 L710.0 359.5" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M70.0 243.1 L75.7 243.6 L81.4 244.6 L87.1 246.6 L92.8 249.5 L98.5 253.4 L104.3 258.2 L110.0 263.7 L115.7 269.6 L121.4 275.4 L127.1 284.9 L132.8 303.7 L138.5 326.0 L144.2 339.7 L149.9 340.1 L155.6 338.0 L161.4 339.7 L167.1 340.5 L172.8 340.4 L178.5 339.7 L184.2 338.7 L189.9 337.7 L195.6 336.5 L201.3 335.2 L207.0 333.7 L212.7 332.0 L218.5 330.2 L224.2 328.2 L229.9 326.0 L235.6 323.5 L241.3 320.9 L247.0 318.1 L252.7 315.1 L258.4 312.0 L264.1 308.6 L269.8 305.1 L275.5 301.5 L281.3 297.7 L287.0 293.4 L292.7 288.7 L298.4 277.3 L304.1 244.2 L309.8 283.2 L315.5 307.8 L321.2 314.4 L326.9 307.9 L332.6 296.2 L338.4 284.6 L344.1 274.0 L349.8 264.8 L355.5 257.1 L361.2 251.3 L366.9 247.2 L372.6 244.7 L378.3 243.5 L384.0 243.1 L387.1 243.0 L392.9 243.2 L398.6 243.9 L404.3 245.7 L410.0 248.9 L415.7 253.7 L421.4 260.4 L427.1 268.8 L432.8 278.7 L438.5 289.8 L444.2 301.7 L450.0 312.0 L455.7 313.5 L461.4 298.9 L467.1 265.8 L472.8 261.7 L478.5 285.2 L484.2 290.9 L489.9 295.4 L495.6 299.5 L501.3 303.2 L507.0 306.7 L512.8 310.2 L518.5 313.4 L524.2 316.5 L529.9 319.4 L535.6 322.1 L541.3 324.7 L547.0 327.0 L552.7 329.1 L558.4 331.1 L564.1 332.8 L569.9 334.4 L575.6 335.8 L581.3 337.1 L587.0 338.2 L592.7 339.2 L598.4 340.0 L604.1 340.5 L609.8 340.3 L615.5 338.9 L621.2 338.6 L627.0 340.8 L632.7 335.1 L638.4 316.4 L644.1 294.0 L649.8 279.5 L655.5 272.8 L661.2 266.9 L666.9 261.2 L672.6 255.9 L678.3 251.5 L684.0 248.0 L689.8 245.6 L695.5 244.0 L701.2 243.3 L706.9 243.1 L710.0 243.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="3 3"/>
+  <path d="M70.0 340.5 L75.7 339.8 L81.4 338.5 L87.1 337.0 L92.8 335.3 L98.5 333.6 L104.3 332.1 L110.0 330.9 L115.7 330.2 L121.4 331.3 L127.1 337.8 L132.8 350.6 L138.5 354.3 L144.2 344.5 L149.9 350.7 L155.6 352.9 L161.4 344.7 L167.1 344.1 L172.8 344.0 L178.5 344.0 L184.2 344.2 L189.9 344.5 L195.6 344.7 L201.3 345.0 L207.0 345.2 L212.7 345.5 L218.5 345.8 L224.2 346.1 L229.9 346.4 L235.6 346.8 L241.3 347.1 L247.0 347.5 L252.7 347.9 L258.4 348.4 L264.1 348.8 L269.8 349.2 L275.5 349.6 L281.3 349.6 L287.0 349.3 L292.7 349.6 L298.4 350.7 L304.1 346.9 L309.8 337.0 L315.5 330.4 L321.2 334.2 L326.9 343.1 L332.6 348.0 L338.4 348.7 L344.1 349.1 L349.8 349.7 L355.5 350.4 L361.2 351.1 L366.9 351.7 L372.6 352.3 L378.3 352.7 L384.0 352.9 L387.1 352.9 L392.9 352.8 L398.6 352.5 L404.3 352.0 L410.0 351.4 L415.7 350.7 L421.4 350.1 L427.1 349.4 L432.8 348.9 L438.5 348.6 L444.2 346.5 L450.0 339.2 L455.7 331.4 L461.4 332.2 L467.1 341.7 L472.8 349.9 L478.5 350.4 L484.2 349.1 L489.9 349.5 L495.6 349.6 L501.3 349.4 L507.0 349.0 L512.8 348.6 L518.5 348.2 L524.2 347.7 L529.9 347.4 L535.6 347.0 L541.3 346.6 L547.0 346.3 L552.7 346.0 L558.4 345.7 L564.1 345.4 L569.9 345.1 L575.6 344.9 L581.3 344.6 L587.0 344.4 L592.7 344.1 L598.4 344.0 L604.1 344.0 L609.8 344.2 L615.5 347.2 L621.2 359.8 L627.0 345.8 L632.7 347.3 L638.4 358.8 L644.1 344.3 L649.8 333.9 L655.5 330.3 L661.2 330.5 L666.9 331.4 L672.6 332.8 L678.3 334.4 L684.0 336.1 L689.8 337.7 L695.5 339.1 L701.2 340.2 L706.9 340.7 L710.0 340.8" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M70.0 243.2 L75.7 243.8 L81.4 245.4 L87.1 248.3 L92.8 252.7 L98.5 258.7 L104.3 266.1 L110.0 274.9 L115.7 284.7 L121.4 295.1 L127.1 305.6 L132.8 313.0 L138.5 310.1 L144.2 290.8 L149.9 261.0 L155.6 243.1 L161.4 247.0 L167.1 250.5 L172.8 254.1 L178.5 257.6 L184.2 261.1 L189.9 264.6 L195.6 268.0 L201.3 271.4 L207.0 274.7 L212.7 278.0 L218.5 281.2 L224.2 284.4 L229.9 287.6 L235.6 290.7 L241.3 293.7 L247.0 296.7 L252.7 299.7 L258.4 302.6 L264.1 305.5 L269.8 308.3 L275.5 311.1 L281.3 313.6 L287.0 315.7 L292.7 316.8 L298.4 319.8 L304.1 328.3 L309.8 330.7 L315.5 318.2 L321.2 299.3 L326.9 285.3 L332.6 277.5 L338.4 270.5 L344.1 263.8 L349.8 257.8 L355.5 252.7 L361.2 248.7 L366.9 245.9 L372.6 244.2 L378.3 243.3 L384.0 243.1 L387.1 243.0 L392.9 243.1 L398.6 243.6 L404.3 244.8 L410.0 247.0 L415.7 250.4 L421.4 254.9 L427.1 260.4 L432.8 266.8 L438.5 273.7 L444.2 280.7 L450.0 290.8 L455.7 307.8 L461.4 325.3 L467.1 331.7 L472.8 324.4 L478.5 317.3 L484.2 316.4 L489.9 314.8 L495.6 312.5 L501.3 309.8 L507.0 307.0 L512.8 304.2 L518.5 301.3 L524.2 298.4 L529.9 295.4 L535.6 292.4 L541.3 289.3 L547.0 286.2 L552.7 283.0 L558.4 279.8 L564.1 276.5 L569.9 273.2 L575.6 269.8 L581.3 266.4 L587.0 263.0 L592.7 259.5 L598.4 256.0 L604.1 252.5 L609.8 248.9 L615.5 245.4 L621.2 249.1 L627.0 273.9 L632.7 301.8 L638.4 313.2 L644.1 310.4 L649.8 300.9 L655.5 290.3 L661.2 280.2 L666.9 270.8 L672.6 262.6 L678.3 255.7 L684.0 250.5 L689.8 246.8 L695.5 244.6 L701.2 243.4 L706.9 243.1 L710.0 243.0" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="3 3"/>
+  <path d="M70.0 340.5 L75.7 339.8 L81.4 338.5 L87.1 337.0 L92.8 335.3 L98.5 333.6 L104.3 332.1 L110.0 330.9 L115.7 330.2 L121.4 331.3 L127.1 337.8 L132.8 350.6 L138.5 354.3 L144.2 344.5 L149.9 350.7 L155.6 352.9 L161.4 344.7 L167.1 344.1 L172.8 344.0 L178.5 344.0 L184.2 344.2 L189.9 344.5 L195.6 344.7 L201.3 345.0 L207.0 345.2 L212.7 345.5 L218.5 345.8 L224.2 346.1 L229.9 346.4 L235.6 346.8 L241.3 347.1 L247.0 347.5 L252.7 347.9 L258.4 348.4 L264.1 348.8 L269.8 349.2 L275.5 349.6 L281.3 349.6 L287.0 349.3 L292.7 349.6 L298.4 350.7 L304.1 346.9 L309.8 337.0 L315.5 330.4 L321.2 334.2 L326.9 343.1 L332.6 348.0 L338.4 348.7 L344.1 349.1 L349.8 349.7 L355.5 350.4 L361.2 351.1 L366.9 351.7 L372.6 352.3 L378.3 352.7 L384.0 352.9 L387.1 352.9 L392.9 352.8 L398.6 352.5 L404.3 352.0 L410.0 351.4 L415.7 350.7 L421.4 350.1 L427.1 349.4 L432.8 348.9 L438.5 348.6 L444.2 346.5 L450.0 339.2 L455.7 331.4 L461.4 332.2 L467.1 341.7 L472.8 349.9 L478.5 350.4 L484.2 349.1 L489.9 349.5 L495.6 349.6 L501.3 349.4 L507.0 349.0 L512.8 348.6 L518.5 348.2 L524.2 347.7 L529.9 347.4 L535.6 347.0 L541.3 346.6 L547.0 346.3 L552.7 346.0 L558.4 345.7 L564.1 345.4 L569.9 345.1 L575.6 344.9 L581.3 344.6 L587.0 344.4 L592.7 344.1 L598.4 344.0 L604.1 344.0 L609.8 344.2 L615.5 347.2 L621.2 359.8 L627.0 345.8 L632.7 347.3 L638.4 358.8 L644.1 344.3 L649.8 333.9 L655.5 330.3 L661.2 330.5 L666.9 331.4 L672.6 332.8 L678.3 334.4 L684.0 336.1 L689.8 337.7 L695.5 339.1 L701.2 340.2 L706.9 340.7 L710.0 340.8" style="stroke:var(--warn);fill:none;fill-opacity:1" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M70.0 243.2 L75.7 243.8 L81.4 245.4 L87.1 248.3 L92.8 252.7 L98.5 258.7 L104.3 266.1 L110.0 274.9 L115.7 284.7 L121.4 295.1 L127.1 305.6 L132.8 313.0 L138.5 310.1 L144.2 290.8 L149.9 261.0 L155.6 243.1 L161.4 247.0 L167.1 250.5 L172.8 254.1 L178.5 257.6 L184.2 261.1 L189.9 264.6 L195.6 268.0 L201.3 271.4 L207.0 274.7 L212.7 278.0 L218.5 281.2 L224.2 284.4 L229.9 287.6 L235.6 290.7 L241.3 293.7 L247.0 296.7 L252.7 299.7 L258.4 302.6 L264.1 305.5 L269.8 308.3 L275.5 311.1 L281.3 313.6 L287.0 315.7 L292.7 316.8 L298.4 319.8 L304.1 328.3 L309.8 330.7 L315.5 318.2 L321.2 299.3 L326.9 285.3 L332.6 277.5 L338.4 270.5 L344.1 263.8 L349.8 257.8 L355.5 252.7 L361.2 248.7 L366.9 245.9 L372.6 244.2 L378.3 243.3 L384.0 243.1 L387.1 243.0 L392.9 243.1 L398.6 243.6 L404.3 244.8 L410.0 247.0 L415.7 250.4 L421.4 254.9 L427.1 260.4 L432.8 266.8 L438.5 273.7 L444.2 280.7 L450.0 290.8 L455.7 307.8 L461.4 325.3 L467.1 331.7 L472.8 324.4 L478.5 317.3 L484.2 316.4 L489.9 314.8 L495.6 312.5 L501.3 309.8 L507.0 307.0 L512.8 304.2 L518.5 301.3 L524.2 298.4 L529.9 295.4 L535.6 292.4 L541.3 289.3 L547.0 286.2 L552.7 283.0 L558.4 279.8 L564.1 276.5 L569.9 273.2 L575.6 269.8 L581.3 266.4 L587.0 263.0 L592.7 259.5 L598.4 256.0 L604.1 252.5 L609.8 248.9 L615.5 245.4 L621.2 249.1 L627.0 273.9 L632.7 301.8 L638.4 313.2 L644.1 310.4 L649.8 300.9 L655.5 290.3 L661.2 280.2 L666.9 270.8 L672.6 262.6 L678.3 255.7 L684.0 250.5 L689.8 246.8 L695.5 244.6 L701.2 243.4 L706.9 243.1 L710.0 243.0" style="stroke:var(--warn);fill:none;fill-opacity:1" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="3 3"/>
+  <path d="M70.0 243.0 L710.0 243.0" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/>
+  <text x="706.0" y="238.0" text-anchor="end" font-size="11" style="fill:var(--danger)">피크(정지) 토크 1.08 N·m</text>
+  <path d="M70.0 322.1 L710.0 322.1" style="stroke:var(--warn);fill:none;fill-opacity:1" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/>
+  <text x="706.0" y="317.1" text-anchor="end" font-size="11" style="fill:var(--warn)">정격 토크 0.35 N·m (RMS 비교)</text>
+  <path d="M520.0 420.0 L544.0 420.0" style="stroke:var(--accent);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="550.0" y="424.0" text-anchor="start">모터 1</text>
+  <path d="M520.0 438.0 L544.0 438.0" style="stroke:var(--danger);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="550.0" y="442.0" text-anchor="start">모터 2</text>
+  <path d="M520.0 456.0 L544.0 456.0" style="stroke:var(--warn);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="550.0" y="460.0" text-anchor="start">모터 3</text>
+  <path d="M90.0 420.0 L114.0 420.0" style="stroke:var(--text-dim);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text class="tag" x="120.0" y="424.0" text-anchor="start">실선: 필요 토크 |τ|</text>
+  <path d="M90.0 438.0 L114.0 438.0" style="stroke:var(--text-dim);fill:none;fill-opacity:1" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="3 3"/>
+  <text class="tag" x="120.0" y="442.0" text-anchor="start">점선: 그 순간 속도에서 낼 수 있는 토크</text>
+</svg><figcaption>위: 모터 속도 |ω|와 최고 속도선. 아래: 필요 토크 |τ|(실선), 그 순간의 속도에서 모터가 낼 수 있는 토크(점선), 피크·정격 토크선. 모두 <code>deltarobot.dynamics.analyze()</code> 결과입니다.</figcaption></figure>
+<p>읽는 순서는 다음과 같습니다.</p>
+<ol><li><strong>속도(위)</strong> — 곡선이 빨간 최고 속도선에 닿으면 모터가 그 속도로 돌 수 없습니다. 이 예에서는 최대 5.01 rad/s로 한계 6.0 rad/s 아래입니다.</li><li><strong>피크 토크(아래, 빨간선)</strong> — 필요 토크의 최댓값 0.46 N·m는 피크 1.08 N·m의 절반도 안 됩니다. 여기까지만 보면 "통과"처럼 보입니다.</li><li><strong>속도-토크 곡선(아래, 점선)</strong> — RC 서보는 빨리 돌수록 낼 수 있는 토크가 직선으로 줄어듭니다(<code>peak × (1 − ω/ω_max)</code>, D04). 빠르게 도는 <strong>바로 그 순간</strong>에 필요한 토크가 점선 위로 올라가면 불합격입니다. 이 예의 검증 결과는 <code>curve_ratio = 2.32</code>, 문제 목록은 <code>속도-토크 곡선 초과: 해당 속도에서 낼 수 있는 토크보다 큰 토크가 필요합니다</code> 입니다.</li><li><strong>정격 토크(아래, 주황선)</strong> — 순간값이 아니라 <strong>RMS(제곱 평균)</strong> 와 비교합니다. 짧게 넘는 것은 괜찮지만 평균이 넘으면 모터가 뜨거워집니다.</li></ol>
+<div class="callout callout-warn"><div class="callout-title">피크선만 보면 속습니다</div><div class="callout-body"><p>"최대 토크 &lt; 피크 토크, 최대 속도 &lt; 최고 속도" 두 조건을 따로 만족해도, <strong>높은 속도와 큰 토크가 동시에</strong> 필요하면 모터는 따라가지 못합니다. 검증 결과의 속도-토크 곡선 비(<code>curve_ratio</code>)가 1을 넘는지 꼭 확인하세요.</p></div></div>
+<h2 id="설계-공유와-다른-도구로-넘기기">설계 공유와 다른 도구로 넘기기<a class="anchor" href="#설계-공유와-다른-도구로-넘기기">#</a></h2>
+<ul><li><strong>URL 파라미터</strong> — <code>sim/index.html?preset=edu_servo</code>는 프리셋으로, <code>?scene=conveyor</code>는 장면을 골라 엽니다. 둘을 함께 써도 됩니다(아래 버튼).</li><li><strong>공유 링크 복사</strong> (연결 탭) — 현재 설계 전체가 URL의 <code>#design=...</code> 부분에 담깁니다. 메신저로 보내면 받는 사람이 같은 설계를 엽니다.</li><li><strong>설계 JSON 내보내기/불러오기</strong> (연결 탭) — 보고서에 첨부하거나 PC Python에서 <code>DeltaRobot(&quot;my_design.json&quot;)</code>, <code>DeltaDesign.load(&quot;my_design.json&quot;)</code>으로 읽습니다.</li><li><strong>URDF 내려받기</strong> (연결 탭) — D07에서 자세히 다룹니다.</li><li><strong>자동 공유</strong> — 시뮬레이터에서 마지막으로 쓴 설계는 브라우저에 저장되어 <strong>URDF 뷰어와 Playground가 같은 설계</strong>로 열립니다. 단 Playground 코드에 <code>DeltaRobot(&quot;edu_servo&quot;)</code>처럼 설계를 적으면 코드의 설계가 우선합니다.</li></ul>
+<p class="cta-row"><a class="ghost-btn cta" href="../sim/index.html?preset=industrial_picker&amp;scene=conveyor">예: 산업용 프리셋 + 컨베이어 장면으로 열기</a></p>
+<h2 id="실습-시뮬레이터">실습 (시뮬레이터)<a class="anchor" href="#실습-시뮬레이터">#</a></h2>
+<div class="callout callout-task"><div class="callout-title">실습 A — 다섯 탭 한 바퀴</div><div class="callout-body"><ol><li>프리셋 <code>edu_dynamixel</code>을 고르고 <strong>[설계 검증]</strong> 을 누릅니다. 작업 실린더 D×H와 ✔/✖를 기록합니다.</li><li><strong>조그</strong> 탭에서 TCP x를 끝까지 밀어 처음으로 빨간색이 되는 값(모터각·볼조인트·팔꿈치 중 무엇인지)을 기록합니다.</li><li><strong>작업</strong> 탭에서 장면 "분류", 데모 "분류 데모"를 재생합니다. 재생 배속을 바꿔 보세요.</li><li><strong>분석</strong> 탭에서 τ 그래프의 가장 큰 봉우리가 동작의 어느 순간(들어 올림 / 가로 이동 / 내려놓음)인지 찾습니다.</li><li><strong>연결</strong> 탭에서 공유 링크를 복사해 새 탭에 붙여 넣고, 같은 설계가 열리는지 확인합니다.</li></ol></div></div>
+<div class="callout callout-task"><div class="callout-title">실습 B — 일부러 한계 넘기기</div><div class="callout-body"><ol><li>프리셋 <code>edu_servo</code>, 장면 "빈 작업대", 데모 "Adept 사이클"을 고릅니다.</li><li>궤적 설정의 속도와 가속도를 조금씩 올리며 재생하고, 분석 탭 검증 결과에 처음 ✖가 뜨는 설정을 찾습니다.</li><li>그때 그래프에서 속도·토크 곡선이 한계선과 어떤 관계인지 위의 "그래프 읽는 법" 순서대로 설명합니다.</li></ol></div></div>
+<h2 id="실습-python-playground">실습 (Python Playground)<a class="anchor" href="#실습-python-playground">#</a></h2>
+<p>같은 설계·장면을 Python으로도 움직일 수 있습니다. <strong>Playground에서 열기</strong>를 누르면 실행 결과가 오른쪽 내장 시뮬레이터에서 재생됩니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+
+robot = DeltaRobot(&quot;edu_dynamixel&quot;, scene=&quot;pick_place&quot;)
+print(robot)
+robot.home()
+print(&quot;홈 TCP 위치 [m]:&quot;, tuple(round(v, 3) for v in robot.position))
+print(&quot;부품 %d개, 상자 %d개&quot; % (len(robot.parts()), len(robot.bins())))
+
+# 첫 부품을 집어 같은 색 상자에 놓기
+p = robot.parts()[0]
+b = [b for b in robot.bins() if b[&quot;color&quot;] == p[&quot;color&quot;]][0]
+robot.arch_to(p[&quot;x&quot;], p[&quot;y&quot;], p[&quot;top&quot;])
+robot.tool_on()
+robot.wait(0.2)
+robot.arch_to(b[&quot;x&quot;], b[&quot;y&quot;], robot.scene.surface_z + b[&quot;h&quot;] + 0.02)
+robot.tool_off()
+print(&quot;점수:&quot;, robot.scene.score(), &quot; 경과 시간 %.2f s&quot; % robot.time)
+
+res = robot.analyze()
+print(&quot;피크 %.2f  RMS %.2f  속도 %.2f  -&gt;  %s&quot; % (
+    res[&quot;peak_ratio&quot;], res[&quot;rms_ratio&quot;], res[&quot;speed_ratio&quot;], &quot;통과&quot; if res[&quot;ok&quot;] else res[&quot;problems&quot;]))</code></pre></div>
+<div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">DeltaRobot(motor=dxl_xm430_w350, tool=gripper_servo, backend=RecordBackend)
+홈 TCP 위치 [m]: (0.0, 0.0, -0.349)
+부품 6개, 상자 3개
+점수: {&#x27;per_bin&#x27;: {&#x27;A&#x27;: 1, &#x27;B&#x27;: 0, &#x27;C&#x27;: 0}, &#x27;correct&#x27;: 1, &#x27;total&#x27;: 1}  경과 시간 2.20 s
+피크 0.16  RMS 0.33  속도 0.43  -&gt;  통과</code></pre></div>
+<p><code>analyze()</code>의 피크·RMS 비는 <strong>(필요 토크 × 안전율 1.2) / 모터 한계</strong>, 속도 비는 <strong>최대 모터 속도 / 최고 속도</strong>(안전율 없음)입니다. 1보다 작으면 통과이고, 0.16처럼 작으면 모터가 넉넉하다는 뜻입니다.</p>
+<div class="callout callout-check"><div class="callout-title">스스로 확인</div><div class="callout-body"><ul><li>분석 탭의 검증 결과와 Python <code>analyze()</code>가 돌려주는 <code>peak_ratio</code>·<code>rms_ratio</code>·<code>speed_ratio</code>·<code>inertia_ratio</code>는 각각 어떤 그래프·한계선과 대응하나요?</li><li><code>edu_servo</code> 예에서 최대 속도(5.01 rad/s)와 최대 토크(0.46 N·m)가 모두 한계 안인데 불합격인 이유를 한 문장으로 말할 수 있나요?</li><li>Playground 코드에 설계를 적지 않고 <code>DeltaRobot()</code>만 쓰면 어떤 설계가 쓰이나요?</li></ul></div></div>
+<h2 id="자주-나는-오류와-해결">자주 나는 오류와 해결<a class="anchor" href="#자주-나는-오류와-해결">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>증상·메시지</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td>조그 슬라이더 값이 빨갛게 바뀌고 로봇이 따라오지 않음</td><td>모터각·볼조인트·팔꿈치 한계 초과</td><td>조그 탭 표시에서 어떤 한계인지 보고 반대 방향으로</td></tr><tr><td><code>경고: 관절 속도 ... rad/s 가 모터 한계 ... rad/s(감속 후)를 넘습니다 — set_speed()로 속도를 낮추세요</code></td><td>Playground(record)는 경고만 하고 계속 실행</td><td><code>robot.set_speed()</code>로 낮추고, 실물용 serial·ros2 백엔드는 이 경우 <code>WorkspaceError</code>로 거부된다는 점을 기억</td></tr><tr><td>Playground에서 시뮬레이터와 다른 설계가 나옴</td><td>코드의 <code>DeltaRobot(&quot;프리셋&quot;)</code>이 우선</td><td>시뮬레이터 설계를 쓰려면 설계 인자를 비우거나 JSON으로 내보내 사용</td></tr><tr><td>공유 링크를 열었는데 기본 설계가 나옴</td><td><code>#design=</code> 뒤가 잘림(메신저 줄바꿈 등)</td><td>연결 탭에서 다시 복사하거나 설계 JSON 파일로 전달</td></tr><tr><td><code>RuntimeError: 가상 시간 600 s 제한을 넘었습니다 (무한 루프인가요?)</code></td><td>Playground 가상 시간 한도 초과</td><td>반복문 종료 조건 확인, <code>wait()</code> 누적 시간 확인</td></tr></tbody></table></div>
+<h2 id="과제">과제<a class="anchor" href="#과제">#</a></h2>
+<ol><li>네 프리셋(<code>edu_servo</code>, <code>edu_dynamixel</code>, <code>printer_stepper</code>, <code>industrial_picker</code>)의 [설계 검증] 결과(D×H, ✔/✖)와 파생값 표의 이동판 질량을 한 표로 정리하세요.</li><li>실습 B에서 찾은 "처음 ✖가 뜨는 설정"을 공유 링크로 만들어 제출하고, 그래프 캡처에 한계를 넘는 지점을 표시하세요.</li><li>Playground 예제의 <code>robot.parts()[0]</code> 대신 <strong>모든 부품</strong>을 같은 색 상자에 넣도록 바꾸고, 점수와 <code>analyze()</code> 결과를 보고하세요.</li></ol>
+<h2 id="참고자료">참고자료<a class="anchor" href="#참고자료">#</a></h2>
+<ul><li>이 저장소 <code>docs/API.md</code> §10 — 시뮬레이터·Playground·URDF 뷰어 화면 구성.</li><li>Pyodide 문서 — https://pyodide.org (브라우저에서 Python을 실행하는 런타임).</li><li>three.js 문서 — https://threejs.org/docs/ (시뮬레이터 3D 표시).</li><li>T03 좌표계와 설계 파라미터, T07 작업영역 (이 강의).</li></ul>
+      <nav class="pager"><a class="pager-prev" href="t08.html"><span>이전 · T08</span>동역학과 모터 토크</a><a class="pager-next" href="d02.html"><span>다음 · D02</span>설계 요구사항 정의</a></nav>
+    </div>
+    <aside class="lesson-toc"><div class="toc-title">이 장의 내용</div><div class="toc-links"><a class="toc-l2" href="#학습-목표">학습 목표</a><a class="toc-l2" href="#화면-구성">화면 구성</a><a class="toc-l3" href="#설계-탭-설계-검증">설계 탭 — [설계 검증]</a><a class="toc-l3" href="#조그-탭-한계를-손으로-느끼기">조그 탭 — 한계를 손으로 느끼기</a><a class="toc-l3" href="#작업-탭과-분석-탭-움직이고-재고-판정하기">작업 탭과 분석 탭 — 움직이고, 재고, 판정하기</a><a class="toc-l2" href="#그래프-읽는-법">그래프 읽는 법</a><a class="toc-l2" href="#설계-공유와-다른-도구로-넘기기">설계 공유와 다른 도구로 넘기기</a><a class="toc-l2" href="#실습-시뮬레이터">실습 (시뮬레이터)</a><a class="toc-l2" href="#실습-python-playground">실습 (Python Playground)</a><a class="toc-l2" href="#자주-나는-오류와-해결">자주 나는 오류와 해결</a><a class="toc-l2" href="#과제">과제</a><a class="toc-l2" href="#참고자료">참고자료</a></div></aside>
+  </div>
+</article>
+
+</main>
+<script src="../assets/js/site.js"></script>
+
+</body>
+</html>
