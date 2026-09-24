@@ -60,6 +60,7 @@
       <div class="view-chips">
         <label class="chk"><input type="checkbox" id="optPassive" checked> 수동 관절 계산</label>
         <label class="chk"><input type="checkbox" id="optAxes"> 링크 좌표축</label>
+        <label class="chk"><input type="checkbox" id="optJointAxes" checked> 관절 축 방향</label>
       </div>
     </div>
     <div class="fallback-note" id="noGL" hidden></div>
@@ -88,6 +89,9 @@
         ROS 2에서는 <code>delta_driver</code>가 같은 계산으로 <code>/joint_states</code>를 발행합니다.</p>
     </div>
     <div class="tab-body" id="tab-tree">
+      <p class="hint" style="margin-top:0">화살표 = 관절 축(<code>&lt;axis&gt;</code>)의 + 방향. 회전 관절은 이 축에 대해
+        <b>오른손 법칙</b>으로 + 회전합니다 — 모터 축은 팔 좌표계 +y′이므로 +θ는 팔이 <b>아래로</b> 내려가는 방향입니다.
+        직동 관절(effector_x/y/z)은 화살표 방향으로 + 이동합니다. 색: 빨강·초록·파랑 = 링크 좌표축 x·y·z.</p>
       <p class="legend"><span class="j-active" style="color:var(--accent)">■ 능동</span><span style="color:var(--warn)">■ 수동</span><span style="color:#c084fc">■ 가상</span><span style="color:var(--text-faint)">■ 고정</span></p>
       <div class="link-list" id="tree"></div>
     </div>

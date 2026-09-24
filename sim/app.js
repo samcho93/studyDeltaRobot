@@ -54,6 +54,7 @@ async function boot() {
   }
   S.cat = await loadCatalog('../python/deltarobot/data/catalog.json');
   view = new DeltaView($('viewport'));
+  window.deltaSim = { view, state: S };   // debugging handle (browser console)
 
   // initial design: #design= > ?preset= > localStorage > default
   let init = null;
@@ -277,7 +278,8 @@ function applyDesign(d, o = {}) {
 // ------------------------------------------------------------------ overlays
 let cloudCache = null;
 function setupOverlays() {
-  ['optCloud', 'optCyl', 'optPath', 'optTrail'].forEach((id) => $(id).addEventListener('change', refreshOverlays));
+  ['optCloud', 'optCyl', 'optPath', 'optTrail', 'optFrames'].forEach((id) => $(id).addEventListener('change', refreshOverlays));
+  if (params.get('frames') === '1') $('optFrames').checked = true;
 }
 function refreshOverlays() {
   if (!view || !S.design) return;
@@ -288,6 +290,8 @@ function refreshOverlays() {
     } else view.showWorkspace(cloudCache.pts);
   } else view.showWorkspace(null);
   view.showCylinder($('optCyl').checked ? S.cyl : null);
+  view.framesOn = $('optFrames').checked;
+  view.showJointFrames(view.framesOn);
   showPathPreview();
 }
 function showPathPreview() {
@@ -346,7 +350,13 @@ function buildJogSliders() {
     Math.round(d.theta_min * DEG), Math.round(d.theta_max * DEG), 0.1, (v) => jogQ(i, v / DEG)));
   paintJog();
 }
+let framesAuto = false;
 function enterJog() {
+  if (!framesAuto && !$('optFrames').checked) {   // show the axis conventions the first time
+    framesAuto = true;
+    $('optFrames').checked = true;
+    refreshOverlays();
+  }
   if (S.live) return;
   pause();
   paintJog();

@@ -29,6 +29,61 @@ function placeStrut(mesh, p0, p1) {
   mesh.quaternion.setFromUnitVectors(Y, _d.normalize());
 }
 
+
+/** Text label that always faces the camera. */
+export function textSprite(text, color = '#ffffff', height = 0.02) {
+  const cv = document.createElement('canvas');
+  const g = cv.getContext('2d');
+  const font = 'bold 44px "Segoe UI", "Malgun Gothic", sans-serif';
+  g.font = font;
+  const w = Math.ceil(g.measureText(text).width) + 20;
+  cv.width = w; cv.height = 64;
+  g.font = font;
+  g.fillStyle = 'rgba(0,0,0,0.55)';
+  g.fillRect(0, 6, w, 52);
+  g.fillStyle = color;
+  g.textBaseline = 'middle';
+  g.fillText(text, 10, 33);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true }));
+  sp.scale.set(height * w / 64, height, 1);
+  sp.renderOrder = 10;
+  return sp;
+}
+
+/** Arrow drawn on top of the robot (no depth test). */
+export function overlayArrow(dir, origin, len, color) {
+  const a = new THREE.ArrowHelper(new THREE.Vector3(...dir).normalize(), new THREE.Vector3(...origin), len, color, len * 0.22, len * 0.12);
+  a.traverse((o) => { if (o.material) { o.material.depthTest = false; o.material.transparent = true; } o.renderOrder = 9; });
+  return a;
+}
+
+/** Curved arrow showing the positive rotation sense: center + radius (cos a u + sin a w), a in [0, sweep]. */
+export function rotationArrow(center, u, w, radius, sweep, color) {
+  const pts = [];
+  for (let k = 0; k <= 24; k++) {
+    const a = sweep * k / 24;
+    pts.push(new THREE.Vector3(
+      center[0] + radius * (Math.cos(a) * u[0] + Math.sin(a) * w[0]),
+      center[1] + radius * (Math.cos(a) * u[1] + Math.sin(a) * w[1]),
+      center[2] + radius * (Math.cos(a) * u[2] + Math.sin(a) * w[2])));
+  }
+  const g = new THREE.Group();
+  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({ color, depthTest: false, transparent: true }));
+  line.renderOrder = 9;
+  g.add(line);
+  const end = pts[pts.length - 1], prev = pts[pts.length - 3];
+  const head = new THREE.Mesh(new THREE.ConeGeometry(radius * 0.12, radius * 0.3, 12),
+    new THREE.MeshBasicMaterial({ color, depthTest: false, transparent: true }));
+  head.position.copy(end);
+  head.quaternion.setFromUnitVectors(Y, end.clone().sub(prev).normalize());
+  head.renderOrder = 9;
+  g.add(head);
+  return g;
+}
+
 export class DeltaView {
   constructor(container) {
     this.container = container;
@@ -162,6 +217,8 @@ export class DeltaView {
     this.robot = { group: g, arms, eff, tool, size };
     this.buildCell(sceneData);
     this.clearTrail();
+    this.frames = null;
+    if (this.framesOn) this.showJointFrames(true);
   }
 
   buildTool(d) {
@@ -408,6 +465,66 @@ export class DeltaView {
     this.extras.add(this.cloud);
   }
 
+  /** Joint frames: base XYZ, motor axes with the +θ sense, elbow passive axes, effector frame, TCP. */
+  showJointFrames(on) {
+    if (this.frames) {
+      for (const o of this.frames) if (o.parent) o.parent.remove(o);
+      this.frames = null;
+    }
+    if (!on || !this.robot) return;
+    const d = this.d, L = d.upper_arm, s = this.robot.size;
+    const list = [];
+    const add = (parent, obj) => { parent.add(obj); list.push(obj); };
+    const lab = (parent, text, pos, color, h = s * 0.028) => { const t = textSprite(text, color, h); t.position.set(...pos); add(parent, t); };
+    const g = this.robot.group;
+    // base frame (REP-103: x red, y green, z blue)
+    const ax = s * 0.22;
+    add(g, overlayArrow([1, 0, 0], [0, 0, 0], ax, 0xef4444)); lab(g, 'X', [ax * 1.12, 0, 0], '#ef4444');
+    add(g, overlayArrow([0, 1, 0], [0, 0, 0], ax, 0x22c55e)); lab(g, 'Y', [0, ax * 1.12, 0], '#22c55e');
+    add(g, overlayArrow([0, 0, 1], [0, 0, 0], ax, 0x3b82f6)); lab(g, 'Z', [0, 0, ax * 1.12], '#3b82f6');
+    lab(g, 'base', [0, 0, -s * 0.04], '#e5e7eb', s * 0.022);
+    const colors = [0x3b82f6, 0xf59e0b, 0x10b981], css = ['#60a5fa', '#fbbf24', '#34d399'];
+    this.robot.arms.forEach((arm, i) => {
+      const phi = PHI[i];
+      const u = [Math.cos(phi), Math.sin(phi), 0], t = [-Math.sin(phi), Math.cos(phi), 0];
+      const m = [d.base_radius * u[0], d.base_radius * u[1], 0];
+      // motor joint axis = arm-frame +y (tangent); +θ turns the arm DOWN (right-hand rule about +y)
+      const alen = Math.max(0.05, 0.5 * L);
+      add(g, overlayArrow(t, m, alen, colors[i]));
+      lab(g, `모터${i + 1} 축`, [m[0] + t[0] * alen * 1.2, m[1] + t[1] * alen * 1.2, m[2]], css[i], s * 0.022);
+      const rad = 0.45 * L;
+      add(g, rotationArrow(m, u, [0, 0, -1], rad, 1.1, colors[i]));
+      const a = 0.9;
+      lab(g, `+θ${i + 1}`, [m[0] + rad * 1.3 * Math.cos(a) * u[0], m[1] + rad * 1.3 * Math.cos(a) * u[1], -rad * 1.3 * Math.sin(a)], css[i]);
+      // θ = 0 reference: upper arm horizontal
+      const zl = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...m),
+        new THREE.Vector3(m[0] + L * u[0], m[1] + L * u[1], 0)]),
+      new THREE.LineDashedMaterial({ color: colors[i], dashSize: L * 0.06, gapSize: L * 0.04, depthTest: false, transparent: true }));
+      zl.computeLineDistances(); zl.renderOrder = 9;
+      add(g, zl);
+      lab(g, 'θ=0', [m[0] + L * 1.08 * u[0], m[1] + L * 1.08 * u[1], 0.012 * s], css[i], s * 0.018);
+      // passive elbow axes ride on the swinging upper arm (arm frame: x along the arm, y = motor axis)
+      const el = Math.max(0.03, 0.3 * L);
+      add(arm.swing, overlayArrow([0, 1, 0], [L, 0, 0], el, 0xf59e0b));
+      add(arm.swing, overlayArrow([0, 0, 1], [L, 0, 0], el * 0.8, 0xc084fc));
+      if (i === 0) {
+        lab(arm.swing, 'pitch 축(y)', [L, el * 1.25, 0], '#fbbf24', s * 0.018);
+        lab(arm.swing, 'yaw 축(z)', [L, 0, el * 1.0], '#c084fc', s * 0.018);
+      }
+    });
+    // effector frame: translation only, always parallel to the base frame
+    const e = this.robot.eff, el = s * 0.1;
+    add(e, overlayArrow([1, 0, 0], [0, 0, 0], el, 0xef4444));
+    add(e, overlayArrow([0, 1, 0], [0, 0, 0], el, 0x22c55e));
+    add(e, overlayArrow([0, 0, 1], [0, 0, 0], el, 0x3b82f6));
+    lab(e, '이펙터 (base와 평행)', [el * 0.3, el * 0.3, el * 1.25], '#e5e7eb', s * 0.02);
+    const tcp = new THREE.Mesh(new THREE.SphereGeometry(s * 0.008, 12, 8), new THREE.MeshBasicMaterial({ color: 0xff4d8d, depthTest: false }));
+    tcp.position.z = -d.toolLength - 0.005; tcp.renderOrder = 10;
+    add(e, tcp);
+    lab(e, 'TCP', [s * 0.035, 0, -d.toolLength - 0.005], '#ff4d8d', s * 0.02);
+    this.frames = list;
+  }
+
   showCylinder(cyl) {
     if (this.cyl) { this.extras.remove(this.cyl); this.cyl.geometry.dispose(); this.cyl = null; }
     if (!cyl || !(cyl.diameter > 0)) return;
@@ -424,9 +541,9 @@ export class DeltaView {
   fit() {
     if (!this.robot) return;
     const s = this.robot.size;
-    const zc = -0.55 * s;
+    const zc = -0.42 * s;
     this.controls.target.set(0, 0, zc);
-    this.camera.position.set(1.5 * s, -1.9 * s, zc + 0.7 * s);
+    this.camera.position.set(1.55 * s, -2.0 * s, zc + 0.75 * s);
     this.camera.near = s / 200;
     this.camera.far = s * 40;
     this.camera.updateProjectionMatrix();

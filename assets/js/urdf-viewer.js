@@ -5,6 +5,7 @@ import URDFLoader from 'urdf-loader';
 import { Design, loadCatalog } from './delta/design.js';
 import { tryFk, PHI } from './delta/kinematics.js';
 import { generate, jointState } from './delta/urdf.js';
+import { overlayArrow, rotationArrow, textSprite } from '../../sim/render.js';
 
 const $ = (id) => document.getElementById(id);
 const DEG = 180 / Math.PI;
@@ -79,6 +80,7 @@ function load() {
   apply();
   fit();
   axesVisible();
+  jointAxes();
 }
 
 function buildSliders() {
@@ -151,6 +153,40 @@ function paintTree() {
   $('tree').innerHTML = lines.join('\n');
 }
 
+let jointMarks = [];
+function jointAxes() {
+  jointMarks.forEach((m) => m.parent && m.parent.remove(m));
+  jointMarks = [];
+  if (!$('optJointAxes').checked || !robot) return;
+  const s = design.upper_arm + design.forearm;
+  for (const j of Object.values(robot.joints)) {
+    if (j.jointType === 'fixed') continue;
+    const active = j.name.startsWith('motor');
+    const virt = j.name.startsWith('effector');
+    if (!active && !virt && !j.name.includes('a_')) continue;          // show the 'a' rod only (b mimics it)
+    const color = active ? 0x38bdf8 : virt ? 0xc084fc : 0xf59e0b;
+    const len = active ? 0.5 * design.upper_arm : virt ? 0.1 * s : 0.3 * design.upper_arm;
+    const ax = [j.axis.x, j.axis.y, j.axis.z];
+    // fixed to the joint's zero pose in the parent link, so the marks do not spin with the joint value
+    const holder = new THREE.Group();
+    holder.position.copy(j.origPosition || j.position);
+    holder.quaternion.copy(j.origQuaternion || j.quaternion);
+    j.parent.add(holder); jointMarks.push(holder);
+    const a = overlayArrow(ax, [0, 0, 0], len, color);
+    holder.add(a);
+    if (active) {
+      // +θ sense: rotate the joint's x axis toward -z about +y (right-hand rule)
+      const r = rotationArrow([0, 0, 0], [1, 0, 0], [0, 0, -1], 0.45 * design.upper_arm, 1.1, color);
+      holder.add(r);
+    }
+    if (active || virt || j.name.startsWith('elbow1')) {
+      const t = textSprite(j.name + (active ? '  (+θ ↓)' : ''), active ? '#7dd3fc' : virt ? '#d8b4fe' : '#fcd34d', s * 0.022);
+      t.position.set(ax[0] * len * 1.15, ax[1] * len * 1.15, ax[2] * len * 1.15);
+      holder.add(t);
+    }
+  }
+}
+
 function fit() {
   const s = design.upper_arm + design.forearm;
   controls.target.set(0, 0, -0.5 * s);
@@ -173,6 +209,7 @@ function axesVisible() {
 src.addEventListener('change', load);
 $('optPassive').addEventListener('change', apply);
 $('optAxes').addEventListener('change', axesVisible);
+$('optJointAxes').addEventListener('change', jointAxes);
 $('btnFit').addEventListener('click', fit);
 $('btnHome').addEventListener('click', () => { const h = design.homeTheta; q = [h, h, h]; apply(); });
 let wiggle = false;

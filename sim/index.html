@@ -64,6 +64,7 @@
         <label class="chk"><input type="checkbox" id="optCyl" checked> 작업 실린더</label>
         <label class="chk"><input type="checkbox" id="optPath" checked> 경로</label>
         <label class="chk"><input type="checkbox" id="optTrail"> TCP 궤적</label>
+        <label class="chk"><input type="checkbox" id="optFrames"> 관절 좌표·방향</label>
       </div>
       <div class="drop-hint">드래그 회전 &middot; 휠 확대 &middot; 우클릭 드래그 이동</div>
     </div>
@@ -141,6 +142,11 @@
 
     <!-- ── 조그 ── -->
     <div class="tab-body" id="tab-jog">
+      <div class="d-axisnote">
+        <b>방향 규약</b> — 베이스 좌표 <span style="color:#ef4444">X</span>·<span style="color:#22c55e">Y</span>·<span style="color:#3b82f6">Z</span>(위쪽),
+        작업은 z&lt;0. 팔 1·2·3은 φ = 0°·120°·240°. 모터각 <b>θ = 0 은 위팔 수평, +θ 는 팔이 아래로</b>
+        (모터축 +y′ 기준 오른손 법칙). 화면 왼쪽 아래 <b>관절 좌표·방향</b>을 켜면 3D로 보입니다.
+      </div>
       <h3 class="sub-title">TCP 위치 (mm) — 역기구학</h3>
       <div class="sliders" id="xyzSliders"></div>
       <h3 class="sub-title">모터각 (°) — 순기구학</h3>

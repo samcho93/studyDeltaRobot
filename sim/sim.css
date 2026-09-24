@@ -94,3 +94,6 @@
 }
 .embed.dsim.sim-page { height: 100vh; overflow: hidden; }
 .embed .sim-stage { height: 100vh !important; }
+
+.d-axisnote { font-size: 12px; line-height: 1.6; color: var(--text-dim); padding: 8px 10px; margin-bottom: 12px;
+  border: 1px solid var(--border-soft); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); background: var(--bg); }
