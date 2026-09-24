@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>델타로봇 URDF 뷰어 — studyDeltaRobot</title>
+<meta name="description" content="설계값으로 생성한 델타로봇 URDF를 three.js + urdf-loader로 표시하고, 모터각에서 수동 관절을 계산해 닫힌 사슬을 보여 주는 뷰어.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/file-guard.js"></script>
+<link rel="stylesheet" href="../assets/css/sim.css">
+<link rel="stylesheet" href="../sim/sim.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/",
+    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/",
+    "urdf-loader": "https://cdn.jsdelivr.net/npm/urdf-loader@0.13.1/src/URDFLoader.js"
+  }
+}
+</script>
+<style>
+  .link-list { font-family: var(--mono); font-size: 11.5px; line-height: 1.6; max-height: 260px; overflow: auto; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 6px 8px; background: var(--bg); white-space: pre; }
+  .link-list .j-active { color: var(--accent); font-weight: 700; }
+  .link-list .j-passive { color: var(--warn); }
+  .link-list .j-virtual { color: #c084fc; }
+  .link-list .j-fixed { color: var(--text-faint); }
+  .legend span { display: inline-block; margin-right: 12px; font-size: 11.5px; }
+</style>
+</head>
+<body class="sim-page dsim">
+<header class="sim-top">
+  <a class="sim-back" href="../index.html">&larr; 강의</a>
+  <div class="sim-title"><strong>델타로봇 URDF 뷰어</strong><span id="subTitle">urdf-loader · 닫힌 사슬의 트리 표현</span></div>
+  <div class="sim-top-actions">
+    <nav class="tool-nav" aria-label="도구">
+      <a class="sim-back" href="../sim/index.html">시뮬레이터</a>
+      <a class="sim-back" href="playground.html">Playground</a>
+      <a class="sim-back" href="urdf-viewer.html" aria-current="page">URDF 뷰어</a>
+      <a class="sim-back" href="kinematics-lab.html">기구학 실험실</a>
+    </nav>
+    <button class="theme-btn" type="button" data-theme-toggle aria-label="테마 전환">테마</button>
+    <button class="icon-btn" id="btnFit" type="button" title="화면에 맞추기" aria-label="화면에 맞추기">&#9974;</button>
+  </div>
+</header>
+<main class="sim-layout">
+  <section class="sim-stage">
+    <div class="viewport" id="viewport"></div>
+    <div class="stage-overlay stage-tl">
+      <div class="pose-readout">
+        <div class="pr-row"><span>링크</span><code id="nLinks">—</code></div>
+        <div class="pr-row"><span>관절</span><code id="nJoints">—</code></div>
+        <div class="pr-row"><span>닫힘오차</span><code id="closure">—</code></div>
+      </div>
+    </div>
+    <div class="stage-overlay stage-bl">
+      <div class="view-chips">
+        <label class="chk"><input type="checkbox" id="optPassive" checked> 수동 관절 계산</label>
+        <label class="chk"><input type="checkbox" id="optAxes"> 링크 좌표축</label>
+      </div>
+    </div>
+    <div class="fallback-note" id="noGL" hidden></div>
+  </section>
+  <aside class="sim-panel">
+    <div class="tabs">
+      <button type="button" class="active" data-tab="joints">관절</button>
+      <button type="button" data-tab="tree">트리</button>
+      <button type="button" data-tab="text">URDF</button>
+    </div>
+    <div class="tab-body active" id="tab-joints">
+      <h3 class="sub-title">설계</h3>
+      <select id="source" class="d-select" aria-label="설계 선택"></select>
+      <p class="hint" id="srcNote"></p>
+      <h3 class="sub-title">능동 관절 (모터) — 슬라이더</h3>
+      <div class="sliders" id="sliders"></div>
+      <div class="panel-actions">
+        <button class="s-btn" id="btnHome" type="button">홈</button>
+        <button class="s-btn" id="btnWiggle" type="button">자동 움직이기</button>
+      </div>
+      <h3 class="sub-title">계산된 수동·가상 관절</h3>
+      <table class="servo-table" id="passiveTable"></table>
+      <p class="hint">URDF는 트리만 표현할 수 있어 델타로봇의 닫힌 사슬을 그대로 담지 못합니다. 그래서 이펙터는
+        <b>가상 직동 관절 effector_x/y/z</b>로 베이스에 매달고, 각 로드는 팔꿈치에서 <b>pitch·yaw 수동 관절</b>로 꺾습니다(b 로드는 a 로드를
+        <code>mimic</code>). 이 값들을 순기구학으로 계산해 넣어야 로드 끝이 이펙터에 딱 붙습니다 — 왼쪽 아래 <b>수동 관절 계산</b>을 꺼 보세요.
+        ROS 2에서는 <code>delta_driver</code>가 같은 계산으로 <code>/joint_states</code>를 발행합니다.</p>
+    </div>
+    <div class="tab-body" id="tab-tree">
+      <p class="legend"><span class="j-active" style="color:var(--accent)">■ 능동</span><span style="color:var(--warn)">■ 수동</span><span style="color:#c084fc">■ 가상</span><span style="color:var(--text-faint)">■ 고정</span></p>
+      <div class="link-list" id="tree"></div>
+    </div>
+    <div class="tab-body" id="tab-text">
+      <div class="panel-actions" style="margin-top:0">
+        <button class="s-btn primary" id="btnDownload" type="button">delta_robot.urdf 내려받기</button>
+        <button class="s-btn" id="btnCopy" type="button">복사</button>
+      </div>
+      <textarea class="export-text" id="urdfText" readonly style="height:60vh" aria-label="URDF"></textarea>
+      <p class="hint">Python에서도 똑같은 파일을 만들 수 있습니다: <code>python -m deltarobot.urdf --preset edu_dynamixel -o delta.urdf</code>
+        (웹과 Python 생성기는 테스트로 글자 하나까지 같음을 확인합니다).</p>
+    </div>
+  </aside>
+</main>
+<script type="module">
+  import('../assets/js/urdf-viewer.js').catch(function (err) {
+    const box = document.getElementById('noGL');
+    box.hidden = false;
+    box.innerHTML = '3D 라이브러리(three.js / urdf-loader)를 불러오지 못했습니다. 인터넷 연결을 확인하세요.<br><small>' + String(err && err.message || err) + '</small>';
+  });
+</script>
+</body>
+</html>

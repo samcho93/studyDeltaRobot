@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기구학 실험실 — studyDeltaRobot</title>
+<meta name="description" content="델타로봇 역기구학(원과 원의 교점)과 순기구학(세 구의 교점)을 2D 그림과 단계별 숫자로 확인하는 실험실.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M10 20h80L50 90z%22 fill=%22%2338bdf8%22/></svg>">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/delta.css">
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/file-guard.js"></script>
+<link rel="stylesheet" href="../assets/css/sim.css">
+<link rel="stylesheet" href="../sim/sim.css">
+<style>
+  .lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px; background: var(--border); height: 100%; }
+  .lab > div { background: var(--bg); position: relative; min-height: 0; }
+  .lab canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+  .cap { position: absolute; left: 12px; top: 10px; font-size: 12px; font-weight: 700; color: var(--text-dim); pointer-events: none; }
+  .steps { font-family: var(--mono); font-size: 11.5px; line-height: 1.65; white-space: pre-wrap; background: var(--bg); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 8px 10px; }
+  .steps b { color: var(--accent); font-weight: 700; }
+  .seg { display: flex; gap: 4px; margin-bottom: 10px; }
+  .seg button { flex: 1; font: inherit; font-size: 12.5px; font-weight: 700; padding: 6px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg); color: var(--text-dim); cursor: pointer; }
+  .seg button.on { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-soft); }
+  @media (max-width: 980px) { .lab { grid-template-columns: 1fr; grid-auto-rows: 42vh; } }
+</style>
+</head>
+<body class="sim-page dsim">
+<header class="sim-top">
+  <a class="sim-back" href="../index.html">&larr; 강의</a>
+  <div class="sim-title"><strong>기구학 실험실</strong><span>IK: 원 ∩ 원 · FK: 세 구의 교점</span></div>
+  <div class="sim-top-actions">
+    <nav class="tool-nav" aria-label="도구">
+      <a class="sim-back" href="../sim/index.html">시뮬레이터</a>
+      <a class="sim-back" href="playground.html">Playground</a>
+      <a class="sim-back" href="urdf-viewer.html">URDF 뷰어</a>
+      <a class="sim-back" href="kinematics-lab.html" aria-current="page">기구학 실험실</a>
+    </nav>
+    <button class="theme-btn" type="button" data-theme-toggle aria-label="테마 전환">테마</button>
+  </div>
+</header>
+<main class="sim-layout">
+  <section class="sim-stage">
+    <div class="lab">
+      <div><canvas id="top" aria-label="위에서 본 그림"></canvas><span class="cap" id="capTop">위에서 본 그림 (x–y) — 목표점을 드래그하세요</span></div>
+      <div><canvas id="side" aria-label="팔 평면 그림"></canvas><span class="cap" id="capSide">팔 1의 평면 (x′–z)</span></div>
+    </div>
+  </section>
+  <aside class="sim-panel">
+    <div class="tab-body active">
+      <div class="seg" role="group" aria-label="모드">
+        <button type="button" id="modeIk" class="on">역기구학 (IK)</button>
+        <button type="button" id="modeFk">순기구학 (FK)</button>
+      </div>
+      <h3 class="sub-title">설계</h3>
+      <select id="preset" class="d-select" aria-label="설계"></select>
+      <div id="ikBox">
+        <h3 class="sub-title">목표 (이펙터 중심, mm)</h3>
+        <div class="sliders compact" id="pSliders"></div>
+        <h3 class="sub-title">보여 줄 팔</h3>
+        <div class="seg" id="armSeg">
+          <button type="button" data-arm="0" class="on">팔 1 (0°)</button>
+          <button type="button" data-arm="1">팔 2 (120°)</button>
+          <button type="button" data-arm="2">팔 3 (240°)</button>
+        </div>
+      </div>
+      <div id="fkBox" hidden>
+        <h3 class="sub-title">모터각 (°)</h3>
+        <div class="sliders compact" id="qSliders"></div>
+      </div>
+      <h3 class="sub-title">계산 단계</h3>
+      <div class="steps" id="steps"></div>
+      <p class="hint">식과 선택 규칙은 <code>python/deltarobot/kinematics.py</code>와 똑같습니다.
+        IK 두 해 중 <b>cos θ가 큰 쪽</b>(팔꿈치가 바깥)을, FK 두 해 중 <b>z가 작은 쪽</b>(아래)을 고릅니다.</p>
+    </div>
+  </aside>
+</main>
+<script type="module" src="kinematics-lab.js"></script>
+</body>
+</html>

@@ -191,11 +191,11 @@ def t01_serial_vs_parallel():
     s.text(40, 348, "→ 움직이는 질량이 크고, 오차가 링크마다 누적", "sub", "start")
     # --- delta (right) with real geometry
     d = DeltaDesign.preset("edu_dynamixel")
-    view = View(560, 70, 780, az=-80, el=16)
+    view = View(560, 80, 760, az=-60, el=16)
     s.text(560, 28, "델타로봇 (닫힌 사슬 3개)")
     pts = draw_delta(s, d, view, (0.0, 0.0, -0.28))
-    s.text(700, 64, "모터 3개는 베이스에 고정", "sub", "start")
-    s.line(698, 60, pts["motor0"][0] + 10, pts["motor0"][1], arrow=True, width=1.1)
+    s.text(745, 52, "모터 3개는 베이스에 고정", "sub", "end")
+    s.line(700, 58, pts["motor0"][0] + 6, pts["motor0"][1] - 4, arrow=True, width=1.1)
     s.text(420, 330, "움직이는 것은 가벼운 위팔·로드·이펙터뿐", "sub", "start")
     s.text(420, 348, "→ 큰 가속도, 세 팔이 하중을 나눠 받음", "sub", "start")
     s.write()
@@ -205,7 +205,7 @@ def t01_serial_vs_parallel():
 def t02_structure():
     s = Svg("t02-structure", 760, 460, "델타로봇의 구성 요소")
     d = DeltaDesign.preset("edu_dynamixel")
-    view = View(330, 90, 900, az=-80, el=18)
+    view = View(300, 90, 900, az=-60, el=18)
     pts = draw_delta(s, d, view, (0.03, 0.0, -0.27))
 
     def callout(key_pt, tx, ty, label, sub=None, anchor="start"):

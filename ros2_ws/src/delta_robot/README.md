@@ -36,7 +36,8 @@ pip install -e "python[websim,serial]"
 # colcon 빌드·실행 전에 항상 이 venv 를 activate 합니다
 ```
 
-확인: `python3 -c "import deltarobot, websockets; print('ok')"`
+확인: `python3 -c "import deltarobot, websockets; print(websockets.__version__)"` → **12 이상**이어야 합니다.
+apt 의 `python3-websockets`(22.04: 9.x, 24.04: 10.x)는 너무 오래되어 web bridge 가 동작하지 않으므로 pip 버전을 씁니다.
 
 ## 2. 빌드
 

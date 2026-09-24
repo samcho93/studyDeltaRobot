@@ -19,39 +19,39 @@
   <text class="sub" x="40" y="330" text-anchor="start">모터 M2·M3가 앞 링크에 실려 함께 움직임</text>
   <text class="sub" x="40" y="348" text-anchor="start">→ 움직이는 질량이 크고, 오차가 링크마다 누적</text>
   <text class="lbl" x="560" y="28" text-anchor="middle">델타로봇 (닫힌 사슬 3개)</text>
-  <path class="box" d="M656 74.7 L657.4 71.2 L657.1 67.7 L655.2 64.2 L651.6 60.8 L646.5 57.6 L639.9 54.6 L631.9 51.8 L622.7 49.4 L612.4 47.3 L601.2 45.6 L589.3 44.4 L576.9 43.5 L564.3 43.2 L551.5 43.2 L538.9 43.8 L526.7 44.7 L515 46.2 L504.1 48 L494.1 50.2 L485.3 52.7 L477.8 55.6 L471.6 58.6 L467 61.9 L464 65.3 L462.6 68.8 L462.9 72.3 L464.8 75.8 L468.4 79.2 L473.5 82.4 L480.1 85.4 L488.1 88.2 L497.3 90.6 L507.6 92.7 L518.8 94.4 L530.7 95.6 L543.1 96.5 L555.7 96.8 L568.5 96.8 L581.1 96.2 L593.3 95.3 L605 93.8 L615.9 92 L625.9 89.8 L634.7 87.3 L642.2 84.4 L648.4 81.4 L653 78.1 Z" stroke-width="1.4"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M511.3 52 L555.3 47.6" stroke-width="9" stroke-linecap="round"/>
-  <path class="ln-hi" d="M533.3 49.8 L500.8 59.1" stroke-width="5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M482.5 61 L519.1 57.3" stroke-width="2.5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M482.5 61 L532.3 274.7" stroke-width="1.8"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M519.1 57.3 L569 271" stroke-width="1.8"/>
-  <circle class="hi" cx="482.5" cy="61" r="2.6"/>
-  <circle class="hi" cx="519.1" cy="57.3" r="2.6"/>
-  <circle class="hi" cx="532.3" cy="274.7" r="2.6"/>
-  <circle class="hi" cx="569" cy="271" r="2.6"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M640.9 67.4 L632.8 80.1" stroke-width="9" stroke-linecap="round"/>
-  <path class="ln-hi" d="M636.8 73.7 L730.4 112.2" stroke-width="5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M733.8 107 L727 117.5" stroke-width="2.5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M733.8 107 L590.3 276" stroke-width="1.8"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M727 117.5 L583.5 286.5" stroke-width="1.8"/>
-  <circle class="hi" cx="733.8" cy="107" r="2.6"/>
-  <circle class="hi" cx="727" cy="117.5" r="2.6"/>
-  <circle class="hi" cx="590.3" cy="276" r="2.6"/>
-  <circle class="hi" cx="583.5" cy="286.5" r="2.6"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M527.8 90.6 L491.9 82.3" stroke-width="9" stroke-linecap="round"/>
-  <path class="ln-hi" d="M509.9 86.5 L448.8 140.5" stroke-width="5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M463.7 144 L433.8 137" stroke-width="2.5" stroke-linecap="round"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M463.7 144 L557.4 289.2" stroke-width="1.8"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M433.8 137 L527.5 282.2" stroke-width="1.8"/>
-  <circle class="hi" cx="463.7" cy="144" r="2.6"/>
-  <circle class="hi" cx="433.8" cy="137" r="2.6"/>
-  <circle class="hi" cx="557.4" cy="289.2" r="2.6"/>
-  <circle class="hi" cx="527.5" cy="282.2" r="2.6"/>
-  <path class="box-hi" d="M596.3 281.7 L596.9 279.9 L596.3 278.2 L594.6 276.5 L591.9 274.9 L588.2 273.4 L583.7 272.2 L578.4 271.1 L572.6 270.4 L566.4 269.9 L560 269.8 L553.6 269.9 L547.4 270.4 L541.6 271.1 L536.3 272.2 L531.8 273.4 L528.1 274.9 L525.4 276.5 L523.7 278.2 L523.1 279.9 L523.7 281.7 L525.4 283.4 L528.1 285 L531.8 286.5 L536.3 287.7 L541.6 288.7 L547.4 289.5 L553.6 289.9 L560 290.1 L566.4 289.9 L572.6 289.5 L578.4 288.7 L583.7 287.7 L588.2 286.5 L591.9 285 L594.6 283.4 Z" stroke-width="1.4"/>
-  <path style="fill:none;stroke:var(--text-dim)" d="M560 279.9 L560 332.4" stroke-width="3"/>
-  <circle class="hi" cx="560" cy="332.4" r="3.5"/>
-  <text class="sub" x="700" y="64" text-anchor="start">모터 3개는 베이스에 고정</text>
-  <path class="ln" d="M698 60 L646.8 73.7" stroke-width="1.1" marker-end="url(#arr-t01-serial-vs-parallel)"/>
+  <path class="box" d="M642.3 93.1 L647.8 90 L651.8 86.8 L654.2 83.4 L655 80 L654.2 76.6 L651.8 73.2 L647.8 70 L642.3 66.9 L635.4 64.1 L627.2 61.5 L617.8 59.2 L607.5 57.3 L596.4 55.8 L584.6 54.7 L572.4 54 L560 53.8 L547.6 54 L535.4 54.7 L523.6 55.8 L512.5 57.3 L502.2 59.2 L492.8 61.5 L484.6 64.1 L477.7 66.9 L472.2 70 L468.2 73.2 L465.8 76.6 L465 80 L465.8 83.4 L468.2 86.8 L472.2 90 L477.7 93.1 L484.6 95.9 L492.8 98.5 L502.2 100.8 L512.5 102.7 L523.6 104.2 L535.4 105.3 L547.6 106 L560 106.2 L572.4 106 L584.6 105.3 L596.4 104.2 L607.5 102.7 L617.8 100.8 L627.2 98.5 L635.4 95.9 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M537.2 59.1 L582.8 59.1" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M560 59.1 L560 66.6" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M541 66.6 L579 66.6" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M541 66.6 L541 277.2" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M579 66.6 L579 277.2" stroke-width="1.8"/>
+  <circle class="hi" cx="541" cy="66.6" r="2.6"/>
+  <circle class="hi" cx="579" cy="66.6" r="2.6"/>
+  <circle class="hi" cx="541" cy="277.2" r="2.6"/>
+  <circle class="hi" cx="579" cy="277.2" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M505.6 95.9 L482.8 85" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M494.2 90.5 L414 136.3" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M423.5 140.9 L404.5 131.8" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M423.5 140.9 L546.5 292.8" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M404.5 131.8 L527.5 283.7" stroke-width="1.8"/>
+  <circle class="hi" cx="423.5" cy="140.9" r="2.6"/>
+  <circle class="hi" cx="404.5" cy="131.8" r="2.6"/>
+  <circle class="hi" cx="546.5" cy="292.8" r="2.6"/>
+  <circle class="hi" cx="527.5" cy="283.7" r="2.6"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M637.2 85 L614.4 95.9" stroke-width="9" stroke-linecap="round"/>
+  <path class="ln-hi" d="M625.8 90.5 L706 136.3" stroke-width="5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M715.5 131.8 L696.5 140.9" stroke-width="2.5" stroke-linecap="round"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M715.5 131.8 L592.5 283.7" stroke-width="1.8"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M696.5 140.9 L573.5 292.8" stroke-width="1.8"/>
+  <circle class="hi" cx="715.5" cy="131.8" r="2.6"/>
+  <circle class="hi" cx="696.5" cy="140.9" r="2.6"/>
+  <circle class="hi" cx="592.5" cy="283.7" r="2.6"/>
+  <circle class="hi" cx="573.5" cy="292.8" r="2.6"/>
+  <path class="box-hi" d="M591.1 289.5 L593.7 287.9 L595.4 286.3 L595.9 284.6 L595.4 282.8 L593.7 281.2 L591.1 279.6 L587.5 278.2 L583.1 277 L578 276 L572.3 275.3 L566.2 274.8 L560 274.7 L553.8 274.8 L547.7 275.3 L542 276 L536.9 277 L532.5 278.2 L528.9 279.6 L526.3 281.2 L524.6 282.8 L524.1 284.6 L524.6 286.3 L526.3 287.9 L528.9 289.5 L532.5 290.9 L536.9 292.1 L542 293.1 L547.7 293.9 L553.8 294.3 L560 294.5 L566.2 294.3 L572.3 293.9 L578 293.1 L583.1 292.1 L587.5 290.9 Z" stroke-width="1.4"/>
+  <path style="fill:none;stroke:var(--text-dim)" d="M560 284.6 L560 335.7" stroke-width="3"/>
+  <circle class="hi" cx="560" cy="335.7" r="3.5"/>
+  <text class="sub" x="745" y="52" text-anchor="end">모터 3개는 베이스에 고정</text>
+  <path class="ln" d="M700 58 L631.8 86.5" stroke-width="1.1" marker-end="url(#arr-t01-serial-vs-parallel)"/>
   <text class="sub" x="420" y="330" text-anchor="start">움직이는 것은 가벼운 위팔·로드·이펙터뿐</text>
   <text class="sub" x="420" y="348" text-anchor="start">→ 큰 가속도, 세 팔이 하중을 나눠 받음</text>
 </svg>
