@@ -86,7 +86,7 @@
 .check-item input { accent-color: var(--accent); }
 .lesson-body li:has(> .check-item) { list-style: none; margin-left: -20px; }
 
-.math { font-family: "Cambria Math", "STIX Two Math", serif; font-style: italic; white-space: nowrap; }
+.math { font-family: "Cambria Math", "STIX Two Math", serif; font-style: italic; white-space: normal; overflow-wrap: anywhere; }
 
 /* --- 코드 블록 배지/실행 버튼 --- */
 .code-head { gap: 8px; }
