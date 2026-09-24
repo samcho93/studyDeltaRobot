@@ -44,9 +44,9 @@
   function read() {
     try {
       var v = localStorage.getItem(KEY);
-      return MODES.indexOf(v) >= 0 ? v : 'system';
+      return MODES.indexOf(v) >= 0 ? v : 'light';      // ML Basic 과 같이 밝은 화면이 기본
     } catch (e) {
-      return 'system';
+      return 'light';
     }
   }
 
