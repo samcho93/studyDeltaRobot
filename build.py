@@ -612,8 +612,18 @@ def refresh_manifest() -> None:
     mod.main()
 
 
+def refresh_example_setups() -> None:
+    """tools/playground-setups.json: starting design + scene of every Playground example (stand-by view)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("make_example_setups", ROOT / "tools" / "make_example_setups.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.main()
+
+
 def main() -> int:
     refresh_manifest()
+    refresh_example_setups()
     cur = load_curriculum()
     LESSONS.mkdir(exist_ok=True)
 

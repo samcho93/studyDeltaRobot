@@ -54,6 +54,7 @@ window.addEventListener('message', (ev) => {
   if (m.type === 'sim-ready' || m.type === 'sim-design') {
     simReady = true;
     simHello = { design: m.design, scene: m.scene };
+    if (m.type === 'sim-ready' && pendingStandby && !pendingTimeline) { const id = pendingStandby; pendingStandby = null; standby(id); }
     if (pendingTimeline) { frame.contentWindow.postMessage({ type: 'timeline', timeline: pendingTimeline }, '*'); pendingTimeline = null; }
   } else if (m.type === 'sim-progress') {
     $('playBar').hidden = false;
@@ -65,6 +66,22 @@ window.addEventListener('message', (ev) => {
     out('시뮬레이터: ' + m.error, 'err');
   }
 });
+// ------------------------------------------------------------------ example stand-by
+// tools/playground-setups.json (made by tools/make_example_setups.py): design + scene each example starts with
+let setups = null, pendingStandby = null;
+const setupsReady = fetch('playground-setups.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({}))
+  .then((j) => { setups = j; return j; });
+async function standby(id) {
+  if (!simReady) { pendingStandby = id; return; }
+  await setupsReady;
+  pendingTimeline = null;
+  frame.contentWindow.postMessage({ type: 'standby', setup: (setups && setups[id]) || null }, '*');
+  const ex = EXAMPLES.find((e) => e.id === id);
+  $('playBar').hidden = false;
+  $('playT').textContent = '⏸ 대기 — ▶ 실행';
+  $('playFill').style.width = '0%';
+  $('summary').innerHTML = `<span class="hint">예제 <b>${ex ? ex.title : id}</b> — 시뮬레이터가 시작 자세로 대기 중입니다. ▶ 실행(Ctrl+Enter)을 누르면 동작을 재생합니다.</span>`;
+}
 function sendTimeline(tl) {
   if (simReady) frame.contentWindow.postMessage({ type: 'timeline', timeline: tl }, '*');
   else pendingTimeline = tl;
@@ -208,6 +225,10 @@ document.addEventListener('keydown', (e) => {
 });
 startWorker();
 if (fromLesson) run();
+else {
+  const exId = new URLSearchParams(location.search).get('example');
+  if (EXAMPLES.some((e) => e.id === exId)) standby(exId);   // ?example=… opens in stand-by too
+}
 
 editor = await createEditor($('editor'), {
   doc: doc0,
@@ -223,6 +244,14 @@ sel.innerHTML += groups.map((g) => `<optgroup label="${g}">` + EXAMPLES.filter((
   .map((e) => `<option value="${e.id}">${e.title}</option>`).join('') + '</optgroup>').join('');
 sel.addEventListener('change', () => {
   const ex = EXAMPLES.find((e) => e.id === sel.value);
-  if (ex && (editor.getValue() === ex.code || confirm('지금 코드를 예제로 바꿀까요? (현재 코드는 사라집니다)'))) editor.setValue(ex.code);
+  if (ex && (editor.getValue() === ex.code || confirm('지금 코드를 예제로 바꿀까요? (현재 코드는 사라집니다)'))) {
+    if (running) stop();                       // an old run must not overwrite the stand-by with its playback
+    pendingRun = false;
+    $('btnRun').innerHTML = '&#9654; 실행';
+    editor.setValue(ex.code);
+    lsSet(LS_CODE, ex.code);
+    out('예제 불러옴: ' + ex.title + ' — 시뮬레이터 대기 중 (▶ 실행 또는 Ctrl+Enter)', 'info');
+    standby(ex.id);
+  }
   sel.value = '';
 });

@@ -1027,6 +1027,20 @@ function setupEmbed() {
       if (S.timeline) { S.t = 0; S.lastT = 0; resetPlayback(); play(); }
     } else if (m.type === 'stop') {
       pause();
+    } else if (m.type === 'standby') {
+      // Playground picked an example: stop playback, show its robot + work cell at home, wait for a run
+      pause();
+      S.jogMode = false;
+      const st = m.setup;
+      if (st && st.design) {
+        S.presetName = null;
+        if (st.scene && st.scene.kind) S.sceneKind = st.scene.kind;
+        applyDesign(new Design(st.design), { sceneData: st.scene || undefined, fit: true });
+      } else {
+        if (st && SCENE_KINDS[st.kind]) S.sceneKind = st.kind;
+        applyDesign(S.design, { fit: true });
+      }
+      paintPlayer();
     }
   });
   postParent({ type: 'sim-ready', design: S.design.toDict(), scene: S.sceneData });
@@ -1064,7 +1078,7 @@ function loop(now) {
     }
     $('hudTcp').textContent = res.tcp.map((v) => (v * 1000).toFixed(1).padStart(7)).join(' ') + ' mm';
     $('hudQ').textContent = S.q.map((v) => (v * DEG).toFixed(1).padStart(6)).join(' ') + ' °';
-    $('hudT').textContent = S.live ? `PC ${tSim.toFixed(2)} s` : S.timeline && !S.jogMode ? `${S.t.toFixed(2)} / ${S.timeline.duration.toFixed(2)} s` : '조그';
+    $('hudT').textContent = S.live ? `PC ${tSim.toFixed(2)} s` : S.timeline && !S.jogMode ? `${S.t.toFixed(2)} / ${S.timeline.duration.toFixed(2)} s` : EMBED ? '대기' : '조그';
     $('hudTool').textContent = (S.tool ? 'ON' : 'off') + (S.sceneState && S.sceneState.held ? ' · ' + S.sceneState.held.id : '');
   }
   if (now - lastChart > 100) {
