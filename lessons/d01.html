@@ -235,8 +235,8 @@
 <div class="callout callout-task"><div class="callout-title">실습 A — 다섯 탭 한 바퀴</div><div class="callout-body"><ol><li>프리셋 <code>edu_dynamixel</code>을 고르고 <strong>[설계 검증]</strong> 을 누릅니다. 작업 실린더 D×H와 ✔/✖를 기록합니다.</li><li><strong>조그</strong> 탭에서 TCP x를 끝까지 밀어 처음으로 빨간색이 되는 값(모터각·볼조인트·팔꿈치 중 무엇인지)을 기록합니다.</li><li><strong>작업</strong> 탭에서 장면 "분류", 데모 "분류 데모"를 재생합니다. 재생 배속을 바꿔 보세요.</li><li><strong>분석</strong> 탭에서 τ 그래프의 가장 큰 봉우리가 동작의 어느 순간(들어 올림 / 가로 이동 / 내려놓음)인지 찾습니다.</li><li><strong>연결</strong> 탭에서 공유 링크를 복사해 새 탭에 붙여 넣고, 같은 설계가 열리는지 확인합니다.</li></ol></div></div>
 <div class="callout callout-task"><div class="callout-title">실습 B — 일부러 한계 넘기기</div><div class="callout-body"><ol><li>프리셋 <code>edu_servo</code>, 장면 "빈 작업대", 데모 "Adept 사이클"을 고릅니다.</li><li>궤적 설정의 속도와 가속도를 조금씩 올리며 재생하고, 분석 탭 검증 결과에 처음 ✖가 뜨는 설정을 찾습니다.</li><li>그때 그래프에서 속도·토크 곡선이 한계선과 어떤 관계인지 위의 "그래프 읽는 법" 순서대로 설명합니다.</li></ol></div></div>
 <h2 id="실습-python-playground">실습 (Python Playground)<a class="anchor" href="#실습-python-playground">#</a></h2>
-<p>같은 설계·장면을 Python으로도 움직일 수 있습니다. <strong>Playground에서 열기</strong>를 누르면 실행 결과가 오른쪽 내장 시뮬레이터에서 재생됩니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+<p>같은 설계·장면을 Python으로도 움직일 수 있습니다. <strong>▶ 오른쪽에서 실행</strong>을 누르면 페이지 오른쪽 실습 패널에서 코드가 실행되고 결과가 시뮬레이터로 재생됩니다.</p>
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
 
 robot = DeltaRobot(&quot;edu_dynamixel&quot;, scene=&quot;pick_place&quot;)
 print(robot)

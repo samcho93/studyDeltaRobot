@@ -104,7 +104,7 @@
 <ul><li><code>robot.parts()</code>, <code>robot.bins()</code>로 장면 정보를 읽고, 부품 색에 맞는 상자를 고르는 자료구조를 만듭니다.</li><li><code>arch_to</code> → <code>tool_on</code> → <code>arch_to</code> → <code>tool_off</code>로 이루어진 pick &amp; place 사이클을 작성합니다.</li><li><code>try/except WorkspaceError</code>로 닿지 않는 부품을 건너뛰는 <strong>안전한 루프</strong>를 만듭니다.</li><li><code>robot.scene.score()</code>로 결과를 채점하고, <code>robot.analyze()</code>의 <code>peak_ratio</code>, <code>rms_ratio</code>, <code>speed_ratio</code>, <code>curve_ratio</code>를 해석해 속도를 조정합니다.</li></ul>
 <h2 id="장면-읽기">장면 읽기<a class="anchor" href="#장면-읽기">#</a></h2>
 <p><code>scene=&quot;pick_place&quot;</code>는 설계의 작업 실린더 크기에 맞춰 부품 6개(빨강·파랑·초록 × 플라스틱·철)와 같은 색 상자 3개를 배치합니다. 시뮬레이터 작업 탭의 <strong>분류</strong> 장면과 같은 숫자입니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
 
 robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;pick_place&quot;)
 print(&quot;작업대 높이 surface_z = %.3f m&quot; % robot.scene.data[&quot;surface_z&quot;])
@@ -160,7 +160,7 @@ print(&quot;빨간 상자:&quot;, robot.scene.bin(&quot;A&quot;)[&quot;color&quo
 </svg><figcaption>한 사이클: 부품 윗면으로 아치 이동 → 흡착 → 상자 위로 아치 이동 → 놓기</figcaption></figure>
 <h2 id="예외-처리-닿지-않는-부품-건너뛰기">예외 처리: 닿지 않는 부품 건너뛰기<a class="anchor" href="#예외-처리-닿지-않는-부품-건너뛰기">#</a></h2>
 <p>실제 셀에서는 부품이 작업영역 가장자리에 놓이기도 합니다. 한 부품 때문에 전체 프로그램이 죽지 않도록 **한 사이클을 <code>try</code>로 감쌉니다.** <code>arch_to</code>는 경로 전체를 검사한 뒤에 움직이므로, 예외가 나면 로봇은 제자리에 있습니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot, WorkspaceError, default_scene, DeltaDesign
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot, WorkspaceError, default_scene, DeltaDesign
 
 scene = default_scene(DeltaDesign.preset(&quot;edu_servo&quot;), &quot;pick_place&quot;)
 scene[&quot;parts&quot;].append({&quot;id&quot;: &quot;far&quot;, &quot;x&quot;: 0.16, &quot;y&quot;: 0.0, &quot;size&quot;: 0.015, &quot;h&quot;: 0.009,
@@ -185,7 +185,7 @@ far 건너뜀 — 작업영역 밖: (0.160, 0.000, -0.276) m — 모터 각도 �
 <div class="callout callout-warn"><div class="callout-title">except 범위는 좁게</div><div class="callout-body"><p><code>except Exception:</code>으로 모두 잡으면 <code>EmergencyStop</code>(R03 이후 비상정지)까지 삼켜서 <strong>비상정지 후에도 루프가 계속 돕니다.</strong> 작업영역 문제만 <code>WorkspaceError</code>로 잡고, 비상정지는 프로그램을 끝내게 두세요.</p></div></div>
 <h2 id="실습-색깔-분류-프로그램">실습: 색깔 분류 프로그램<a class="anchor" href="#실습-색깔-분류-프로그램">#</a></h2>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot, WorkspaceError
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot, WorkspaceError
 
 robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;pick_place&quot;)
 surface = robot.scene.data[&quot;surface_z&quot;]
@@ -230,7 +230,7 @@ p6(green) -&gt; 상자 C  [14.05 s]
 <p>위 결과 해석: <code>peak_ratio</code> 0.25는 피크 토크를 4분의 1만 쓴다는 뜻이고, <code>rms_ratio</code> 0.47은 <strong>중력을 버티는 데 대부분</strong>이 들어간 값입니다. 로봇이 가만히 있어도 위팔과 이펙터 무게를 계속 받쳐야 하기 때문입니다. <code>speed_ratio</code> 0.50은 마지막 <code>home()</code>(관절 공간 3 rad/s 이동)에서 나왔습니다.</p>
 <h2 id="속도-조정">속도 조정<a class="anchor" href="#속도-조정">#</a></h2>
 <p><code>robot.set_speed(speed, accel)</code>로 직교 속도[m/s]와 가속도[m/s²]를 바꿔 같은 분류 작업을 반복해 봅니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
 
 def run_cycle(speed, accel):
     robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;pick_place&quot;)

@@ -186,7 +186,7 @@ float US_PER_DEG[3] = {10.3, 10.3, 10.3};         // 1°당 펄스 (MG996R 약 1
 <h2 id="드라이런-playground에서-먼저">드라이런: Playground에서 먼저<a class="anchor" href="#드라이런-playground에서-먼저">#</a></h2>
 <p>실물에 보내기 전에 **같은 동작을 <code>record</code> 백엔드로 돌려<strong> 모터 부하, 각도 범위, 최대 모터 속도를 확인합니다. 펌웨어 슬루율(200°/s ≈ 3.5 rad/s)은 카탈로그의 MG996R 최고 속도(대표값 6 rad/s)보다 낮으므로, </strong>최대 모터 속도가 200°/s 아래인지**를 따로 봅니다. 넘으면 펌웨어가 따라가지 못해 경로가 계획과 달라집니다.</p>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaRobot
 
 FIRMWARE_DEG_S = 200.0       # 펌웨어 슬루율 제한 MAX_SPEED_DEG_S

@@ -104,7 +104,7 @@
 <ul><li>컨베이어 위 부품의 위치를 <span class="math">x(t) = x₀ + v·(t − t₀)</span>로 예측하고, 로봇 이동 시간과 맞물린 <strong>만남 지점(intercept)</strong> 을 반복 계산으로 구합니다.</li><li>이동 시간을 <code>deltarobot.trajectory.Profile</code>과 <code>arch_path</code>로 <strong>움직이기 전에</strong> 추정합니다.</li><li>흡착하는 동안 컨베이어 속도로 따라가는 트래킹 pick, 색깔 분류, 예외 처리를 갖춘 프로그램을 완성합니다.</li><li>같은 프로그램을 Playground → 웹 시뮬(websim) → ROS 2 → 실물 순으로 옮기며 단계마다 달라지는 점을 검증합니다.</li></ul>
 <h2 id="문제-정의">문제 정의<a class="anchor" href="#문제-정의">#</a></h2>
 <p><code>scene=&quot;conveyor&quot;</code>는 설계 크기에 맞춘 컨베이어 셀입니다. 부품 30개가 2초 간격으로 벨트 왼쪽 끝(<code>x_start</code>)에 나타나 +x 방향으로 흘러가고, 오른쪽 끝(<code>x_end</code>)을 지나면 사라집니다. 빨강은 상자 A, 파랑은 상자 B에 넣어야 합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
 
 robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;conveyor&quot;)
 conv = robot.scene.conveyor()
@@ -177,7 +177,7 @@ t=4.0 s  c2 blue  x=-0.1234 y=-0.0370
 <div class="callout callout-info"><div class="callout-title">arch_path는 이펙터 중심 좌표</div><div class="callout-body"><p><code>deltarobot.trajectory</code>의 경로 함수는 라이브러리 내부 함수라 <strong>이펙터 중심</strong> 좌표를 씁니다(R01). TCP 목표에 툴 길이를 더해 넘기고, 시작점은 <code>robot.effector</code>를 씁니다. 경로 길이는 평행 이동이라 어느 좌표든 같지만, 아치의 높이 계산을 <code>arch_to</code>와 똑같이 맞추려는 것입니다.</p></div></div>
 <h2 id="1단계-playground에서-완성">1단계: Playground에서 완성<a class="anchor" href="#1단계-playground에서-완성">#</a></h2>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaRobot, WorkspaceError
 from deltarobot.trajectory import Profile, arch_path
 
@@ -261,7 +261,7 @@ peak 0.31 rms 0.52 최대 모터 속도 172 °/s ok=True</code></pre></div>
 <h2 id="1-2단계-벨트와-속도를-맞추는-트래킹-pick-trackpick">1-2단계: 벨트와 속도를 맞추는 트래킹 pick (<code>track_pick</code>)<a class="anchor" href="#1-2단계-벨트와-속도를-맞추는-트래킹-pick-trackpick">#</a></h2>
 <p>위 프로그램은 만남 지점에 <strong>멈춰 서서</strong> 부품을 기다렸다가 잡습니다. 계산상으로는 잡는 순간 위치가 정확히 맞지만, 툴은 정지(속도 0)해 있고 부품은 벨트 속도로 움직이므로 <strong>상대 속도가 v인 채로 접촉</strong>합니다. 화면에서는 부품이 툴 밑으로 미끄러져 들어와 "착" 붙는 것처럼 보이고, 실물에서는 흡착컵이 부품을 긁거나 놓칩니다. 실제 컨베이어 트래킹은 <strong>부품 위에서 벨트와 같은 속도로 함께 움직이며</strong> 내려가 잡습니다. 라이브러리의 <code>robot.track_pick(part)</code>가 이 동작입니다.</p>
 <ol><li>부품이 도착할 곳보다 <code>v·T_d/2</code>만큼 <strong>앞쪽 상공</strong>(<code>hover</code>, 기본 20 mm)으로 아치 이동합니다.</li><li><code>T_d</code>(기본 0.3 s) 동안 내려가면서 x속도를 <span class="math">ẋ = v(1 − cos(πτ/T_d))/2</span>로 0 → v까지 부드럽게 올립니다. 이 곡선을 적분하면 이동 거리가 정확히 <code>v·T_d/2</code>라서, 접촉 순간 <strong>위치와 속도가 모두</strong> 부품과 같습니다.</li><li><code>tool_on()</code> 후 <code>dwell</code>(기본 0.1 s) 동안 벨트 속도로 따라가며 흡착(진공 형성 시간)합니다.</li><li>올라가면서 x속도를 v → 0으로 줄입니다. 그다음 상자로 아치 이동합니다.</li></ol>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaRobot, WorkspaceError, kinematics as kin
 
 robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;conveyor&quot;)

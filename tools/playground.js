@@ -88,12 +88,14 @@ function sendTimeline(tl) {
   $('playBar').hidden = false;
   // make sure the student actually sees the playback (narrow layouts put it off-screen)
   const r = frame.getBoundingClientRect();
-  if (r.bottom < 60 || r.top > window.innerHeight - 60) frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // not when embedded (lesson dock): scrollIntoView would also scroll the lesson page behind it
+  if (window.parent === window && (r.bottom < 60 || r.top > window.innerHeight - 60)) frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 $('btnReplay').addEventListener('click', () => {
   if (frame.contentWindow) frame.contentWindow.postMessage({ type: 'replay' }, '*');
   const r = frame.getBoundingClientRect();
-  if (r.bottom < 60 || r.top > window.innerHeight - 60) frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // not when embedded (lesson dock): scrollIntoView would also scroll the lesson page behind it
+  if (window.parent === window && (r.bottom < 60 || r.top > window.innerHeight - 60)) frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 function paintSummary(ev, duration) {
   if (!ev) { $('summary').innerHTML = `<span class="hint">총 ${Number(duration || 0).toFixed(2)} s 재생 중</span>`; return; }
@@ -236,6 +238,22 @@ editor = await createEditor($('editor'), {
   onChange: (v) => lsSet(LS_CODE, v),
 });
 if (editor.loadError) out('코드 편집기(CodeMirror)를 불러오지 못해 기본 입력창을 씁니다.', 'info');
+
+// Lesson practice dock (assets/js/site.js): the lesson page sends the next code block to run
+// without reloading the page (Pyodide stays loaded).
+if (window.parent !== window) {
+  window.addEventListener('message', (ev) => {
+    if (ev.source !== window.parent) return;
+    const m = ev.data || {};
+    if (m.type !== 'load-code' || typeof m.code !== 'string') return;
+    if (running) stop();
+    editor.setValue(m.code);
+    lsSet(LS_CODE, m.code);
+    out('강의에서 코드를 불러왔습니다.', 'info');
+    if (m.run) run();
+  });
+  window.parent.postMessage({ type: 'playground-ready' }, '*');
+}
 if (pendingRun && ready) { pendingRun = false; run(); }
 
 const sel = $('examples');

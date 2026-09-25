@@ -258,7 +258,7 @@ class MarkdownRenderer:
         if "run" in flags:
             badges = '<span class="code-badge badge-run">시뮬 실행 가능</span>'
             buttons = ('<button class="run-btn" type="button" data-playground="%splayground">'
-                       'Playground에서 열기</button>' % self.rel)
+                       '▶ 오른쪽에서 실행</button>' % self.rel)
             cls = " code-run"
         return ('<div class="code-block%s">'
                 '<div class="code-head"><span class="code-lang">%s</span>%s'

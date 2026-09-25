@@ -212,7 +212,7 @@ tau = [I * theta_dd[i] - k * G * math.cos(theta[i]) + jtf[i] for i in range(3)]<
        (라이브러리: 부하 = 팔 관성 − 구동부 관성 + m_p·L²/3  (이펙터 판의 대략적 환산))</code></pre></div>
 <p>관성비가 너무 크면 서보 게인을 올리기 어려워 진동·오버슈트가 생기기 쉽고, 너무 작으면 모터 관성만 돌리느라 에너지를 씁니다. 권장 범위는 제조사·드라이브마다 다르므로(흔히 수 배 ~ 10배 이내를 권함) 데이터시트를 확인하세요. 일체형 서보(RC, Dynamixel)는 라이브러리가 관성비를 0으로 둡니다.</p>
 <h2 id="실습-a-정적-토크-나누어-보기">실습 A — 정적 토크 나누어 보기<a class="anchor" href="#실습-a-정적-토크-나누어-보기">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign
 from deltarobot import dynamics as dyn
 from deltarobot import kinematics as kin
@@ -254,7 +254,7 @@ worst static |tau| over workspace = 0.622 N m  (motor dxl_xm430_w350: rated 1.40
 <ul><li>m_p = 0.4445 kg: 판 0.06 + 그리퍼 + 페이로드 0.2 + 로드 쌍 절반 × 3. 이 무게 <span class="math">m_p·g ≈ 4.36</span> N를 세 팔이 나눠 듭니다.</li><li>중심축 위에서는 세 팔 토크가 같고 모두 <strong>음수</strong>입니다. 판 항이 팔 중력 항보다 약 3~5배 커서, 페이로드·툴 무게가 모터 부하를 좌우합니다.</li><li>중심에서 z에 따라 토크가 변합니다(−0.28에서 가장 큼). <span class="math">Jᵀ</span>가 자세에 따라 바뀌기 때문입니다. 팔 중력 항은 θ가 커질수록(cos θ↓) 줄어듭니다.</li><li>(0.12, 0, −0.28): 팔 1 쪽으로 치우치면 팔 1이 하중 대부분(−0.509)을 집니다.</li><li>(−0.12, 0, −0.28): 팔 1 반대편. 팔 1의 판 항이 <strong>양수</strong>(+0.071)입니다. 세 로드 힘의 합이 수직 하중과 평형을 이루려면 수평 성분도 상쇄돼야 해서, 멀리 떨어진 팔 1은 오히려 판을 끌어당기는(팔을 아래로 미는) 방향의 토크를 냅니다. "모든 팔이 항상 위로 든다"는 직관이 틀릴 수 있다는 예입니다.</li><li>작업영역 전체의 최대 정적 토크 0.622 N·m는 XM430 정격(1.40 N·m, 카탈로그 대표값)보다 작습니다. 하지만 동작 중에는 관성 항이 더해집니다(실습 B).</li></ul>
 <h2 id="실습-b-pick-사이클-검증-deltarobot-analyze">실습 B — pick 사이클 검증 (<code>DeltaRobot.analyze()</code>)<a class="anchor" href="#실습-b-pick-사이클-검증-deltarobot-analyze">#</a></h2>
 <p>record 백엔드(Playground 기본)는 동작을 가상 시간으로 기록합니다. <code>analyze()</code>는 기록된 프레임에서 속도·가속도를 <strong>중앙 차분</strong>으로 구하고, 위 모델로 토크를 계산한 뒤 <code>evaluate()</code>로 모터를 검증합니다. 아래 코드는 ±0.1 m를 25 mm 아치로 오가는 축소판 Adept 사이클을 속도별로 비교합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
 
 def cycle(speed, accel):
     robot = DeltaRobot(&quot;edu_dynamixel&quot;)
@@ -290,7 +290,7 @@ problems at 1.5 m/s:
 <p>읽는 법</p>
 <ul><li>0.3 → 0.5 m/s로 올리면 사이클(왕복 1회)이 2.00 → 1.36 s로 줄고 모든 지표가 1 이하입니다.</li><li><strong>0.6 m/s에서는 피크(0.33)·RMS(0.35)·속도(0.84)가 모두 여유 있는데도 실패</strong>합니다. <code>curve_ratio</code> = 1.45 — 스마트 서보는 빠르게 돌수록 낼 수 있는 토크가 직선으로 줄어서(그림), 최고 속도의 84%로 돌 때 남는 토크가 필요한 토크보다 작기 때문입니다. <strong>피크 토크만 보고 모터를 고르면 안 되는 이유</strong>입니다.</li><li>1.5 m/s·30 m/s²에서는 관절 속도가 모터 한계(4.8 rad/s)를 넘어 record 백엔드가 <strong>경고</strong>를 출력하고(<code>serial</code>·<code>ros2</code>는 이런 동작을 거부), 네 가지 검사가 모두 실패합니다. <code>curve_ratio</code>가 <code>inf</code>인 것은 최고 속도를 넘는 순간 낼 수 있는 토크가 0이기 때문입니다.</li><li>가운데 경로(y = 0, 팔 1 방향)를 오가므로 팔 1의 피크 토크(1.122 N·m)가 팔 2·3(0.626)보다 큽니다.</li></ul>
 <h3 id="감속비와-관성비-industrialpicker">감속비와 관성비 — industrial_picker<a class="anchor" href="#감속비와-관성비-industrialpicker">#</a></h3>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
 from deltarobot import dynamics as dyn
 
 # industrial preset: gearbox, reflected inertia and inertia ratio

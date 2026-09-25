@@ -119,7 +119,7 @@ Jx = | s₁ᵀ |         Jθᵢ = sᵢ · ∂Eᵢ/∂θᵢ
 <div class="callout callout-info"><div class="callout-title">IK가 쉬운 것처럼, 역속도도 쉽다</div><div class="callout-body"><p>IK가 팔마다 독립으로 풀렸듯이 역속도도 팔마다 스칼라 나눗셈 한 번입니다. 반대로 FK가 연립 방정식이었듯이 순속도에는 3×3 역행렬 <span class="math">Jx⁻¹</span>이 필요합니다. 델타(병렬로봇)에서 "역방향이 쉽고 순방향이 어렵다"는 성질은 위치·속도 모두에서 같습니다.</p></div></div>
 <h2 id="실습-a-야코비안을-직접-만들고-검증">실습 A — 야코비안을 직접 만들고 검증<a class="anchor" href="#실습-a-야코비안을-직접-만들고-검증">#</a></h2>
 <p>T04 예제와 같은 점 <span class="math">P = (0.05, −0.04, −0.26)</span>에서 Jx, Jθ, J를 만들고, FK를 수치 미분한 값과 비교합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 
@@ -530,7 +530,7 @@ condition number = 1.856</code></pre></div>
 <h3 id="2형-특이점-병렬-순기구학-특이점">2형 특이점 (병렬·순기구학 특이점)<a class="anchor" href="#2형-특이점-병렬-순기구학-특이점">#</a></h3>
 <ul><li>조건: <span class="math">det Jx = 0</span>, 즉 세 로드 벡터 <span class="math">s₁, s₂, s₃</span>가 <strong>한 평면에 놓이거나 서로 평행</strong>.</li><li>의미: 모터를 모두 고정해도 이펙터가 Jx의 영공간 방향으로 <strong>순간적으로 움직일 수 있습니다</strong>(자유도 증가). 강성을 잃고, 그 방향의 작은 외력도 버티려면 토크가 무한대로 필요합니다.</li><li>위치: <span class="math">sᵢ = P − Cᵢ</span>이므로 세 <span class="math">sᵢ</span>가 한 평면 ⇔ P가 <strong>세 구 중심의 평면 위</strong>에 있음 ⇔ FK에서 <span class="math">h = 0</span>(두 해가 만남). T05의 두 조립 모드가 만나는 경계입니다.</li><li>델타에서는 이펙터가 팔꿈치 높이까지 올라와 로드가 수평에 가까워질 때 이 상황에 다가갑니다. 모터각 한계와 l &gt; R − r + L 같은 치수 선택이 정상 작업영역에서 2형 특이점을 멀리 떼어 놓습니다.</li></ul>
 <h2 id="실습-b-조건수와-특이점에-다가가기">실습 B — 조건수와 특이점에 다가가기<a class="anchor" href="#실습-b-조건수와-특이점에-다가가기">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, random
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, random
 from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 

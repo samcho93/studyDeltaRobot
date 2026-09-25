@@ -112,7 +112,7 @@
 <ul><li><strong>모터 분해능</strong> — NEMA17은 1.8°/스텝, 드라이버 1/16 마이크로스텝이면 0.1125°(카탈로그 <code>resolution_deg</code>, 대표값). 벨트 4:1을 거치면 출력축에서 <span class="math">δθ = 0.1125°/4 = 0.0281°</span>.</li><li><strong>백래시</strong> — 벨트 감속의 대표 백래시 6′(arcmin)은 <strong>출력축 기준</strong>입니다. 방향이 바뀌면 ±절반(3′)씩 헛돌 수 있다고 보고 계산합니다. 감속비를 바꿔도 이 값은 줄지 않습니다.</li><li><strong>최악 오차</strong> — 세 모터가 각각 <span class="math">±δθ</span> 틀리는 8가지 조합 중 <span class="math">|J·δθ|</span>가 가장 큰 값을 씁니다.</li></ul>
 <div class="callout callout-warn"><div class="callout-title">마이크로스텝은 &quot;분해능&quot;이지 &quot;정확도&quot;가 아닙니다</div><div class="callout-body"><p>1/16 마이크로스텝으로 명령은 0.1125° 단위로 줄 수 있지만, 실제 스테퍼 축이 그 위치에 정확히 서는 것은 아닙니다(부하·전류 파형에 따라 오차). 위 계산은 <strong>낙관적인 하한</strong>이라고 생각하고, 실물에서는 반복 그리기로 확인해야 합니다.</p></div></div>
 <h2 id="2단계-설계-반복">2단계 — 설계 반복<a class="anchor" href="#2단계-설계-반복">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
 from deltarobot import DeltaDesign, DeltaRobot
 from deltarobot import kinematics as kin
 
@@ -189,7 +189,7 @@ v1 (printer_stepper 치수), 종이 높이를 바꿔 가며
 <ul><li>원을 <code>move_to</code>로 그리면 3.5 mm짜리 변마다 가속·감속하느라 <strong>한 번도 50 mm/s에 도달하지 못하고</strong> 3배 넘게 오래 걸립니다. 디스펜서라면 점선처럼 뭉친 선이 됩니다.</li><li>별을 <code>move_path</code>로 그리면 꼭짓점에서 멈추지 않고 방향만 확 꺾여, 가속도 한계 0.5 m/s²의 약 9배가 순간적으로 걸립니다(경로의 꺾인 점에서는 곡률 반지름이 0).</li><li>결론: <strong>매끈한 곡선</strong>은 <code>move_path</code>, <strong>날카로운 꼭짓점</strong>은 꼭짓점마다 멈추는 <code>move_to</code>. (꼭짓점을 작은 원호로 둥글린 뒤 <code>move_path</code>를 쓰는 방법도 있습니다 — 과제 3.)</li></ul>
 <h2 id="4단계-응용-프로그램-a5에-테두리-원-별-글자-그리기">4단계 — 응용 프로그램: A5에 테두리·원·별·글자 그리기<a class="anchor" href="#4단계-응용-프로그램-a5에-테두리-원-별-글자-그리기">#</a></h2>
 <p>최종 설계(printer_stepper 치수 + NEMA17 + 벨트 4:1 + 펜, 종이 면 z = −0.320 m)로 그리기 장면을 만들고, 한 획 글꼴로 "DELTA"까지 씁니다. 장면은 <code>default_scene(design, &quot;drawing&quot;)</code>으로 만든 뒤 <code>surface_z</code>만 바꿔 작업대를 올렸습니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign, DeltaRobot, default_scene
 from deltarobot import dynamics as dyn
 

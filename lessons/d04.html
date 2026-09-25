@@ -110,7 +110,7 @@
 <p>1.2는 <code>safety_factor</code> 기본값, 1.5는 스테퍼의 탈조 여유 <code>dynamics.STEPPER_MARGIN</code>입니다.</p>
 <h2 id="모터-종류와-속도-토크-모델">모터 종류와 속도-토크 모델<a class="anchor" href="#모터-종류와-속도-토크-모델">#</a></h2>
 <p>카탈로그의 모든 모터 사양은 <strong>교육용 대표값</strong>입니다. 실제 선정에서는 반드시 제조사 데이터시트를 확인하세요.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, catalog
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, catalog
 from deltarobot import dynamics as dyn
 
 print(&quot;모터          종류         피크   정격   최고속도  |  가용 토크 @ 0%  50%  90% 최고속도&quot;)
@@ -215,7 +215,7 @@ ac_servo_750w   ac_servo     7.16   2.39   523.6   |   7.16   7.16   7.16  N·m<
 <div class="callout callout-info"><div class="callout-title">AC 서보·BLDC 곡선이 평탄한 이유</div><div class="callout-body"><p>실제 서보 모터는 고속에서 역기전력 때문에 쓸 수 있는 토크가 줄어드는 구간이 있습니다. 이 강의의 모델은 드라이브가 최고 속도까지 피크 전류를 유지한다고 <strong>단순화</strong>했습니다. 최고 속도 근처(속도 비 0.8 이상)를 쓰는 설계라면 데이터시트의 속도-토크 곡선으로 다시 확인하세요.</p></div></div>
 <h2 id="같은-일을-시켜-보기-구동계-비교">같은 일을 시켜 보기 — 구동계 비교<a class="anchor" href="#같은-일을-시켜-보기-구동계-비교">#</a></h2>
 <p><code>industrial_picker</code> 치수(L = 350, l = 800 mm), 페이로드 0.5 kg으로 Adept 사이클(25/305/25 mm)을 3 m/s, 30 m/s²로 한 번 돌리고, 구동계만 바꿔 판정합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign, DeltaRobot
 
 def adept_check(d, speed, accel, across=0.305, up=0.025):
@@ -364,7 +364,7 @@ J_load = 0.0466 kg·m², J_rotor = 2.6e-05 kg·m²  -&gt;  N* = 42.3</code></pre
   <text class="tag" x="694.8" y="54.0" text-anchor="start">N* ≈ 42</text>
   <text class="tag" x="380.0" y="440.0" text-anchor="middle">AC 400 W + 유성, 0.5 kg, Adept 305 mm 사이클, 3 m/s · 30 m/s², 모서리 반지름 25 mm</text>
 </svg><figcaption>AC 400 W + 유성 감속기에서 감속비만 바꿨을 때의 사용률(왼쪽)과 관성비(오른쪽, 로그 축). 점선 세로선은 관성 정합 감속비 N*.</figcaption></figure>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, DeltaRobot
 
 base = DeltaDesign.preset(&quot;industrial_picker&quot;).copy(payload=0.5, motor=&quot;ac_servo_400w&quot;, gearbox=&quot;planetary&quot;)
 print(&quot; N   사이클   피크   RMS   속도  관성비  판정&quot;)

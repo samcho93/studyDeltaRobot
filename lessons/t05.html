@@ -177,7 +177,7 @@ ez = ex × ey</code></pre></div>
 <div class="callout callout-tip"><div class="callout-title">두 번째 비교 방법 — 연립 1차 + 2차</div><div class="callout-body"><p>교재에 따라 구 방정식 두 쌍을 빼서 1차식 두 개를 만들고, x·y를 z의 1차식으로 표현한 뒤 구 하나에 넣어 z의 2차방정식을 푸는 방법도 씁니다. 결과는 같지만, 특정 팔 배치(예: 두 중심의 z가 같을 때)에서 나눗셈이 0이 되는 경우를 따로 처리해야 합니다. 위의 국소 좌표계 방법은 세 중심이 <strong>한 직선 위에 있을 때만</strong> 실패하므로 더 안정적입니다.</p></div></div>
 <h2 id="풀이-예제-라이브러리로-계산">풀이 예제 (라이브러리로 계산)<a class="anchor" href="#풀이-예제-라이브러리로-계산">#</a></h2>
 <p>edu_dynamixel, <span class="math">θ = (0.2, 0.6, 0.4)</span> rad의 이펙터 위치를 구합니다. 아래 코드는 유도한 식을 한 줄씩 옮긴 FK입니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 
@@ -230,7 +230,7 @@ library fk    : [0.04004, -0.02428, -0.28311]</code></pre></div>
 <p>읽는 법</p>
 <ul><li>C₁ = (0.1924, 0, −0.0258): 팔꿈치 <span class="math">E₁ = (0.1 + 0.13·cos 0.2, 0, −0.13·sin 0.2) = (0.2274, 0, −0.0258)</span>에서 x를 r = 0.035만큼 뺀 값입니다.</li><li>팔 2의 θ가 가장 커서(0.6) C₂가 가장 낮습니다(z = −0.0734).</li><li><span class="math">X = d/2 = 0.1598</span>, <span class="math">h = √0.056012 ≈ 0.2367</span>. 아래 해의 z = −0.283 m, 위 해는 z = +0.185 m(베이스 위)입니다.</li><li>이펙터가 팔 2의 반대쪽(+x, −y)으로 치우쳤습니다. 팔 2가 가장 많이 내려가 이펙터를 밀어낸 결과입니다. T04 예제와 방향이 비슷한 것도 확인해 보세요.</li></ul>
 <h2 id="실습-왕복-검증과-조립-불가-각도">실습 — 왕복 검증과 조립 불가 각도<a class="anchor" href="#실습-왕복-검증과-조립-불가-각도">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, random
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, random
 from deltarobot import DeltaDesign, DeltaRobot, WorkspaceError
 from deltarobot import kinematics as kin
 

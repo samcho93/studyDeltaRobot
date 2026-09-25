@@ -504,7 +504,7 @@
 <div class="code-block"><div class="code-head"><span class="code-lang">text</span><span class="code-actions"><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-text">sin(yaw) = y′ / l     →    |yaw| ≤ β   ⇔   |y′| ≤ l·sin β</code></pre></div>
 <p>y′는 이펙터가 팔 i의 평면에서 옆으로 벗어난 거리일 뿐이므로 <strong>z, θ와 무관</strong>합니다. edu_dynamixel(l = 0.3 m, β = 0.6 rad)에서는 <span class="math">l·sin β = 0.1694</span> m. 세 팔에 대해 이 조건을 겹치면 위에서 볼 때 <strong>육각형</strong> 경계가 되고, 높이 방향으로는 <strong>기둥 모양</strong>이 됩니다. 그래서 그림에서 좌우 경계가 수직선이고, T06 조건수 지도가 육각형으로 잘린 것입니다. 작업 실린더의 반지름도 이 값을 넘을 수 없습니다.</p>
 <h2 id="실습-a-점마다-무엇이-걸리는지-보기">실습 A — 점마다 무엇이 걸리는지 보기<a class="anchor" href="#실습-a-점마다-무엇이-걸리는지-보기">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 
@@ -539,7 +539,7 @@ l * sin(ball_joint_limit) = 0.1694 m</code></pre></div>
 <p>라이브러리 <code>work_cylinder(d, height)</code>의 계산 방법:</p>
 <ol><li>z = 0부터 <span class="math">−(L + l)</span>까지 40칸으로 나눈 높이마다, 원의 둘레 24방향이 <strong>모두</strong> <code>reachable()</code>인 최대 반지름을 찾습니다(<code>max_radius_at()</code>: 바깥으로 걸어가다가 실패하면 이분법). 중심점 (0, 0, z)부터 안 되면 그 높이의 반지름은 0입니다.</li><li>이 반지름 프로파일 위에서 높이 H 창(window)을 위아래로 밀며, 창 안의 <strong>최소 반지름이 가장 큰</strong> 위치를 고릅니다.</li><li>결과: <code>{&quot;diameter&quot;, &quot;height&quot;, &quot;z_top&quot;, &quot;z_bottom&quot;, &quot;profile&quot;}</code> — 모두 <strong>이펙터 중심</strong> 좌표입니다. TCP로는 툴 길이만큼 아래입니다.</li></ol>
 <p>높이는 40칸 격자에 맞춰 반올림되므로 돌려받는 <code>height</code>가 요청값과 약간 다를 수 있습니다(예: 0.08 → 0.075 m).</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 
 for name in (&quot;edu_servo&quot;, &quot;edu_dynamixel&quot;):

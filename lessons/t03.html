@@ -218,7 +218,7 @@ z′ =  z</code></pre></div>
 <h2 id="실습">실습<a class="anchor" href="#실습">#</a></h2>
 <h3 id="실습-a-규약을-코드로-확인">실습 A — 규약을 코드로 확인<a class="anchor" href="#실습-a-규약을-코드로-확인">#</a></h3>
 <p>아래 코드는 edu_dynamixel 설계의 모터·팔꿈치 위치를 출력하고, 등가 반지름과 TCP 오프셋을 확인합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign, DeltaRobot
 from deltarobot import kinematics as kin
 
@@ -261,7 +261,7 @@ home: effector centre [0.0, 0.0, -0.2791]  TCP [0.0, 0.0, -0.3491]</code></pre><
 <p>읽는 법</p>
 <ul><li>팔꿈치 z가 모두 −0.0446 m: <span class="math">−L·sin 0.35 = −0.13 × 0.3429</span>. θ &gt; 0이면 팔꿈치가 모터축 평면보다 <strong>아래</strong>에 있습니다.</li><li>팔 1의 팔꿈치 x = 0.2221 = <span class="math">R + L·cos 0.35</span> = 0.1 + 0.1221.</li><li>(R, r)과 (R − r, 0)의 IK 결과가 소수점 여섯째 자리까지 같습니다.</li><li><code>robot.ik()</code>에는 TCP를 넣었는데 <code>kin.ik()</code>에 이펙터 중심을 넣은 것과 같은 각도가 나옵니다. 둘의 z 차이는 정확히 툴 길이 0.07 m입니다.</li></ul>
 <h3 id="실습-b-파라미터를-바꾸면-높이가-어떻게-변하나">실습 B — 파라미터를 바꾸면 높이가 어떻게 변하나<a class="anchor" href="#실습-b-파라미터를-바꾸면-높이가-어떻게-변하나">#</a></h3>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 
 # how each parameter changes the home height and the reach

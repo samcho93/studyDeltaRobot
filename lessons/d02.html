@@ -169,7 +169,7 @@
 <div class="callout callout-task"><div class="callout-title">실습 A — 프리셋이 요구를 만족하는지 화면으로 확인</div><div class="callout-body"><ol><li><strong>설계</strong> 탭에서 프리셋 <code>edu_dynamixel</code>을 고르고 페이로드를 0.2 kg으로 둡니다.</li><li><strong>[설계 검증]</strong> 을 눌러 작업 실린더 D×H와 표준 사이클의 모터 검증 결과(✔/✖)를 적습니다.</li><li><strong>작업</strong> 탭에서 데모 프로그램 "Adept 사이클"을 재생하고, <strong>분석</strong> 탭에서 사이클 시간·분당 사이클을 읽습니다.</li><li>작업 탭의 궤적 설정에서 속도를 두 배로 올려 다시 재생하고, 분석 탭 검증 결과가 어떻게 바뀌는지 기록합니다.</li></ol></div></div>
 <h2 id="실습-python-요구사항-판정-스크립트">실습 (Python) — 요구사항 판정 스크립트<a class="anchor" href="#실습-python-요구사항-판정-스크립트">#</a></h2>
 <p>아래 스크립트는 요구사항 딕셔너리 <code>REQ</code>를 받아 다섯 항목을 ✔/✖ 로 판정합니다. <code>adept_cycle()</code>은 축소 Adept 사이클 한 번의 시간을, <code>tcp_resolution()</code>은 세 모터가 모두 분해능 1칸씩 틀렸을 때 TCP가 얼마나 움직이는지(<span class="math">δ p = J·δθ</span>)를 계산합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, itertools
 from deltarobot import DeltaDesign, DeltaRobot
 from deltarobot import kinematics as kin
 

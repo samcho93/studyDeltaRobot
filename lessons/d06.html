@@ -207,7 +207,7 @@
 <p>델타로봇은 이동 질량이 가벼워 가속도가 매우 크기 때문에 <strong>저크 제한</strong>이 사이클 시간만큼 중요합니다. 3D 프린팅 팔(<code>pla_print</code>)처럼 강성이 낮은 재질은 특히 사다리꼴 프로파일에서 잔진동이 큽니다(이 강의의 모델은 강체라 진동을 직접 계산하지는 않습니다).</p>
 <h2 id="실습-python-프로파일별-사이클-토크-저크">실습 (Python) — 프로파일별 사이클·토크·저크<a class="anchor" href="#실습-python-프로파일별-사이클-토크-저크">#</a></h2>
 <p><code>industrial_picker</code>(페이로드 0.5 kg)로 Adept 사이클을 3 m/s, 30 m/s², 모서리 반지름 25 mm로 한 번 돌리며 프로파일만 바꿉니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, DeltaRobot
 from deltarobot import trajectory as traj
 
 d = DeltaDesign.preset(&quot;industrial_picker&quot;).copy(payload=0.5)
@@ -260,7 +260,7 @@ cycloidal   0.529 s   0.36  0.52        713</code></pre></div>
   <text class="tag" x="450.0" y="244.0" text-anchor="start">높이 25, 반지름 1 mm</text>
   <text class="tag" x="700.0" y="22.0" text-anchor="end">z 방향 확대 (가로 305 mm)</text>
 </svg><figcaption>305 mm 아치 경로의 네 가지 모양 (<code>arch_path</code>로 계산, z 방향 확대).</figcaption></figure>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign, DeltaRobot
 from deltarobot import dynamics as dyn
 

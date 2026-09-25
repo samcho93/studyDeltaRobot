@@ -172,7 +172,7 @@ a² + y′² + z² + L² + 2L·(z·sin θ − a·cos θ) = l²</code></pre></div
 </svg><figcaption>아래 예제의 팔 2를 실제 축척으로 그린 그림. 초록 점선 원(반지름 L)과 주황 점선 호(반지름 √(l² − y′²))의 두 교점이 두 해이고, cos θ가 큰 해 A(팔꿈치 바깥)를 고릅니다.</figcaption></figure>
 <h2 id="풀이-예제-라이브러리로-계산">풀이 예제 (라이브러리로 계산)<a class="anchor" href="#풀이-예제-라이브러리로-계산">#</a></h2>
 <p>edu_dynamixel 설계(R = 0.1, r = 0.035, L = 0.13, l = 0.3 m)에서 이펙터 중심 <span class="math">P = (0.05, −0.04, −0.26)</span> m의 모터각을 구합니다. 아래 코드는 유도한 식을 한 줄씩 그대로 옮겨 중간값을 모두 출력합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 
@@ -209,7 +209,7 @@ library ik: [0.003328, 0.588603, 0.232528]</code></pre></div>
 <p>관찰: 이펙터가 아래에 있으면 α가 −π 근처라서, 우리가 원하는 해는 대개 <strong>두 번째 식</strong>(<span class="math">α + π − asin</span>)에서 나옵니다. "항상 θ₁ 식을 쓰면 된다"고 외우면 틀립니다. 반드시 cos 비교로 고르세요.</p>
 <div class="callout callout-check"><div class="callout-title">해석</div><div class="callout-body"><ul><li>팔 2의 θ = 0.589 rad(33.7°)가 가장 큽니다. 이펙터가 팔 2의 반대쪽(x′ = −0.06, 즉 팔 2에서 멀어지는 방향)에 있으므로 팔 2가 많이 내려가야 합니다.</li><li>버린 해(팔 2의 θ = −2.836 rad)는 위팔이 베이스 안쪽 위로 접힌 자세입니다. 모터각 한계 [−0.7, 1.5] 밖이기도 합니다.</li></ul></div></div>
 <h2 id="실습-ik를-처음부터-구현하고-비교">실습 — IK를 처음부터 구현하고 비교<a class="anchor" href="#실습-ik를-처음부터-구현하고-비교">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, random
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math, random
 from deltarobot import DeltaDesign, DeltaRobot, WorkspaceError
 from deltarobot import kinematics as kin
 

@@ -189,7 +189,7 @@
 <h2 id="실습-1-첫-프로그램">실습 1: 첫 프로그램<a class="anchor" href="#실습-1-첫-프로그램">#</a></h2>
 <p class="cta-row"><a class="ghost-btn cta" href="../tools/playground.html">Playground 열기</a></p>
 <p>아래 코드를 Playground에 붙여 넣고 <strong>실행</strong> 버튼(또는 <code>Ctrl+Enter</code>)을 누르세요. 오른쪽 시뮬레이터가 기록된 동작을 재생합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import time
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import time
 from deltarobot import DeltaRobot
 
 robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;empty&quot;)
@@ -222,7 +222,7 @@ sleep 후 시간: 3.53 s
 <ul><li>로봇은 <strong>홈 자세</strong>(세 모터 모두 0.35 rad)에서 시작합니다. 이때 TCP는 베이스 아래 24.6 cm입니다.</li><li><code>DeltaRobot(&quot;edu_servo&quot;)</code>의 첫 인자는 설계입니다. 프리셋 이름, <code>DeltaDesign</code>, dict, <code>&quot;파일.json&quot;</code>을 받을 수 있습니다.</li><li>한 변 8 cm를 가는 데 약 0.63 s가 걸립니다. 기본 속도는 <code>0.25·(L+l)/0.43</code> m/s이며, <code>edu_servo</code>(L+l = 0.32 m)에서는 약 0.19 m/s입니다. 가속·감속 구간이 있어서 평균 속도는 이보다 낮습니다.</li></ul>
 <div class="callout callout-info"><div class="callout-title">Playground에서 설계와 장면이 정해지는 방식</div><div class="callout-body"><ul><li><code>DeltaRobot()</code>처럼 설계를 비우면 <strong>시뮬레이터에서 마지막으로 쓴 설계와 장면</strong>을 씁니다.</li><li><code>DeltaRobot(&quot;edu_servo&quot;)</code>처럼 프리셋을 주면, 시뮬레이터의 설계가 같을 때만 그 장면을 그대로 쓰고, 다르면 <strong>같은 종류의 장면을 이 설계 크기에 맞게 다시 만듭니다.</strong></li><li><code>scene=&quot;pick_place&quot;</code>, <code>&quot;conveyor&quot;</code>, <code>&quot;drawing&quot;</code>, <code>&quot;empty&quot;</code>를 직접 주면 그 장면이 우선합니다. 이 트랙의 예제는 결과가 늘 같도록 설계와 장면을 모두 적습니다.</li></ul></div></div>
 <h2 id="실습-2-tcp와-이펙터-ik-확인">실습 2: TCP와 이펙터, IK 확인<a class="anchor" href="#실습-2-tcp와-이펙터-ik-확인">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaRobot, WorkspaceError
 
 robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;empty&quot;)
@@ -257,7 +257,7 @@ WorkspaceError: 작업영역 밖: (0.150, 0.000, -0.270) m — 모터 각도 한
 <p>Playground의 파이썬은 브라우저 안에서 돕니다. 실제로 0.5 s를 기다리면 화면이 멈추므로, <code>record</code> 백엔드는 <strong>시계를 직접 넘기는 방식</strong>으로 동작합니다.</p>
 <ol><li>이동 명령은 10 ms 간격의 <code>(t, q)</code> 샘플을 만들고, <code>record</code>는 이를 <code>frames</code> 목록에 붙인 뒤 가상 시각을 마지막 샘플의 t로 <strong>즉시</strong> 옮깁니다. 계산은 순식간에 끝나지만 기록상으로는 그만큼 시간이 흐릅니다.</li><li><code>robot.wait(s)</code>는 같은 자세를 0.05 s 간격으로 s초 동안 기록합니다.</li><li>Playground는 <code>time.sleep</code>, <code>time.time</code>, <code>time.monotonic</code>, <code>time.perf_counter</code>를 가상 시계로 바꿔 둡니다. 그래서 <code>time.sleep(0.5)</code>는 <code>robot.wait(0.5)</code>와 같습니다.</li><li>프로그램이 끝나면 기록 전체(설계, 장면, frames, 흡착 이벤트)가 내장 시뮬레이터로 넘어가 재생되고, 결과 요약(총 시간, 모터 검증)이 표시됩니다.</li><li>가상 시간이 <code>time_limit</code>(기본 600 s)를 넘으면 <code>RuntimeError</code>로 멈춥니다. <code>while True:</code> 무한 루프를 막는 장치입니다.</li></ol>
 <p>동작마다 위치를 찍어 보고 싶으면 <code>verbose=True</code>를 주세요. <code>DeltaRobot</code>의 나머지 키워드 인자는 백엔드 옵션으로 전달됩니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaRobot
 
 robot = DeltaRobot(&quot;edu_servo&quot;, scene=&quot;empty&quot;, verbose=True)
 robot.move_to(0.0, 0.0, -0.25)

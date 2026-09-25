@@ -169,7 +169,7 @@
 </svg><figcaption>가속도에 따른 필요 유지력 <span class="math">m(g + a)· SF</span> (SF = 2, 페이로드 3종)와 각 툴의 유지력(가로 점선). 선이 점선 위로 올라가면 그 툴로는 떨어뜨립니다.</figcaption></figure>
 <div class="callout callout-warn"><div class="callout-title">가속도 설정값 ≠ 실제 가속도</div><div class="callout-body"><p><code>set_speed(speed, accel)</code>의 <code>accel</code>은 <strong>경로를 따라가는 방향</strong>의 가속도 한계입니다. 아치 궤적의 둥근 모서리를 지날 때는 원심 가속도 <span class="math">v²/ρ</span>가 더해져 훨씬 커집니다. 그래서 필요 유지력은 <strong>기록된 동작에서 직접</strong> 구해야 합니다(아래 실습). 시뮬레이터와 <code>deltarobot</code>은 유지력을 검사하지 않습니다 — 모자라도 부품이 떨어지지 않으니, 이 계산은 설계자의 몫입니다.</p></div></div>
 <h2 id="실습-python-실제-가속도로-툴-판정">실습 (Python) — 실제 가속도로 툴 판정<a class="anchor" href="#실습-python-실제-가속도로-툴-판정">#</a></h2>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign, DeltaRobot, catalog
 from deltarobot import dynamics as dyn
 
@@ -220,7 +220,7 @@ for speed, accel in ((None, None), (0.5, 16.0)):
 <p>(전자석이 목록에 있는 것은 유지력만 본 결과입니다. 부품이 철이 아니면 쓸 수 없습니다 — 다음 실습.)</p>
 <h2 id="실습-python-툴마다-집을-수-있는-부품">실습 (Python) — 툴마다 집을 수 있는 부품<a class="anchor" href="#실습-python-툴마다-집을-수-있는-부품">#</a></h2>
 <p>분류 장면(<code>pick_place</code>)의 부품 6개 중 <strong>p1~p3은 플라스틱, p4~p6은 철(steel)</strong> 입니다. 툴을 바꿔 각 부품 위에서 <code>tool_on()</code>을 호출해 봅니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, DeltaRobot
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign, DeltaRobot
 
 for tool in (&quot;suction_20&quot;, &quot;electromagnet&quot;, &quot;gripper_servo&quot;):
     d = DeltaDesign.preset(&quot;edu_dynamixel&quot;).copy(tool=tool)
@@ -242,7 +242,7 @@ gripper_servo  툴 길이 70 mm, 질량 120 g | p1(p)✔ p2(p)✔ p3(p)✔ p4(s)
 <ul><li>흡착·그리퍼는 <strong>TCP가 부품 위 12 mm 이내</strong>(그리퍼는 부품 바닥 ~ 윗면 + 12 mm 사이)이고 수평 거리가 가까울 때만 잡습니다. 이 조건을 벗어나면 <code>tool_on()</code>이 <code>None</code>을 돌려줍니다.</li><li>그리퍼는 부품 <strong>옆면</strong>을 쥐므로 TCP를 부품 높이의 중간까지 내렸습니다.</li><li>전자석은 철 부품(p4~p6)만 잡습니다.</li></ul>
 <h2 id="툴-길이tcp와-툴-질량의-영향">툴 길이(TCP)와 툴 질량의 영향<a class="anchor" href="#툴-길이tcp와-툴-질량의-영향">#</a></h2>
 <p><code>DeltaRobot</code>의 모든 좌표는 <strong>TCP(툴 끝)</strong> 기준입니다. TCP = 이펙터 중심 − (0, 0, 툴 길이). 툴이 길어지면 같은 로봇이라도 <strong>TCP가 닿는 높이가 그만큼 내려갑니다.</strong></p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 from deltarobot import dynamics as dyn
 

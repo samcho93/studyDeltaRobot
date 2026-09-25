@@ -186,21 +186,136 @@
   }
 })();
 
-/* ---- studyDeltaRobot: Playground open button — pass code via URL hash (base64url) ---- */
+/* ---- studyDeltaRobot: lesson practice dock ----
+ * 강의 본문의 실습(▶ 실행 코드, 시뮬레이터·도구 버튼)은 페이지를 떠나지 않고
+ * 오른쪽 실습 패널(iframe)에서 엽니다. 좁은 화면에서는 아래쪽 시트로 열립니다.
+ * Ctrl/⌘/가운데 클릭은 평소처럼 새 탭으로 엽니다.                                  */
 (function () {
   'use strict';
+  var article = document.querySelector('.lesson');
+  if (!article) return;
+  var W_KEY = 'studydelta.dock.width';
+
   function b64url(str) {
     var bytes = new TextEncoder().encode(str);
     var bin = '';
     for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
     return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
+  function withDock(url) {
+    var u = new URL(url, location.href);
+    u.searchParams.set('dock', '1');
+    return u;
+  }
+  var TITLES = { 'sim/index.html': '3D 시뮬레이터', 'tools/playground.html': 'Python Playground',
+                 'tools/urdf-viewer.html': 'URDF 뷰어', 'tools/kinematics-lab.html': '기구학 실험실' };
+  function titleOf(u) {
+    for (var k in TITLES) if (u.pathname.slice(-k.length) === k) return TITLES[k];
+    return '실습';
+  }
+  function isTool(u) {
+    return u.origin === location.origin && /\/(sim|tools)\/[\w-]+\.html$/.test(u.pathname);
+  }
+
+  // ------------------------------------------------------------ dock DOM
+  var dock = document.createElement('aside');
+  dock.className = 'lab-dock';
+  dock.setAttribute('aria-label', '실습 패널');
+  dock.hidden = true;
+  dock.innerHTML =
+    '<div class="lab-dock-grip" title="끌어서 폭 조절" aria-hidden="true"></div>' +
+    '<div class="lab-dock-head"><b class="lab-dock-title">실습</b>' +
+    '<span class="lab-dock-note">강의를 보면서 여기서 바로 실행합니다</span>' +
+    '<a class="lab-dock-btn" target="_blank" rel="noopener" title="새 탭에서 크게 열기">↗ 새 탭</a>' +
+    '<button class="lab-dock-btn" type="button" data-act="close" title="패널 닫기">✕</button></div>' +
+    '<iframe class="lab-dock-frame" title="실습 화면" allow="gamepad; fullscreen; clipboard-write"></iframe>';
+  document.body.appendChild(dock);
+  var frame = dock.querySelector('iframe');
+  var newTab = dock.querySelector('a.lab-dock-btn');
+  var current = '';          // pathname+search shown in the dock
+  var pgReady = false;       // playground in the dock has loaded (can take code by postMessage)
+
+  try {
+    var w = parseFloat(localStorage.getItem(W_KEY));
+    if (w >= 320) document.documentElement.style.setProperty('--dock-w', w + 'px');
+  } catch (e) { /* private mode */ }
+
+  function show(title) {
+    dock.querySelector('.lab-dock-title').textContent = title;
+    dock.hidden = false;
+    document.body.classList.add('dock-open');
+  }
+  function close() {
+    dock.hidden = true;
+    document.body.classList.remove('dock-open');
+  }
+  dock.querySelector('[data-act="close"]').addEventListener('click', close);
+
+  function openUrl(url) {
+    var u = withDock(url);
+    var key = u.pathname + u.search;
+    newTab.href = url;
+    if (key !== current || !frame.getAttribute('src')) {
+      current = key;
+      pgReady = false;
+      frame.src = u.href;
+    }
+    show(titleOf(u));
+  }
+  function runCode(base, code) {
+    var u = withDock(base + 'tools/playground.html');
+    newTab.href = base + 'tools/playground.html#code=' + b64url(code);
+    show('Python Playground');
+    if (pgReady && current === u.pathname + u.search) {
+      frame.contentWindow.postMessage({ type: 'load-code', code: code, run: true }, '*');
+      return;
+    }
+    current = u.pathname + u.search;
+    pgReady = false;
+    frame.src = u.href + '#code=' + b64url(code);   // the Playground runs #code= on load
+  }
+  window.addEventListener('message', function (ev) {
+    if (ev.source === frame.contentWindow && ev.data && ev.data.type === 'playground-ready') pgReady = true;
+  });
+
+  // ------------------------------------------------------------ hooks
   document.querySelectorAll('.run-btn[data-playground]').forEach(function (btn) {
+    btn.textContent = '▶ 오른쪽에서 실행';
+    btn.title = '오른쪽 실습 패널의 Playground에서 이 코드를 실행합니다';
     btn.addEventListener('click', function () {
       var code = btn.closest('.code-block').querySelector('code').textContent;
       var base = btn.getAttribute('data-playground').replace(/playground$/, '');
-      location.href = base + 'tools/playground.html#code=' + b64url(code);
+      runCode(base, code);
     });
+  });
+  article.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    if (a.target === '_blank') return;
+    var u = new URL(a.getAttribute('href'), location.href);
+    if (!isTool(u)) return;
+    e.preventDefault();
+    openUrl(u.href);
+  });
+
+  // ------------------------------------------------------------ width drag (wide screens)
+  var grip = dock.querySelector('.lab-dock-grip');
+  grip.addEventListener('pointerdown', function (e) {
+    grip.setPointerCapture(e.pointerId);
+    document.body.classList.add('dock-drag');
+    var move = function (ev) {
+      var w = Math.max(320, Math.min(window.innerWidth - 360, window.innerWidth - ev.clientX));
+      document.documentElement.style.setProperty('--dock-w', w + 'px');
+    };
+    var up = function () {
+      document.body.classList.remove('dock-drag');
+      grip.removeEventListener('pointermove', move);
+      grip.removeEventListener('pointerup', up);
+      try { localStorage.setItem(W_KEY, parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dock-w'))); } catch (err) { /* noop */ }
+    };
+    grip.addEventListener('pointermove', move);
+    grip.addEventListener('pointerup', up);
+    e.preventDefault();
   });
 })();
 

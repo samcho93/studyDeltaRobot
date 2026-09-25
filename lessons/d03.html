@@ -109,7 +109,7 @@
 <div class="callout callout-info"><div class="callout-title">네 가지 비교 지표</div><div class="callout-body"><ul><li><strong>작업 실린더 D (H = 100 mm)</strong> — <code>kinematics.work_cylinder(d, 0.10)</code></li><li><strong>속도 이득</strong> — 중심에서 야코비안의 최대 특이값 σ_max [m/s per rad/s]. 모터가 1 rad/s로 돌 때 TCP가 가장 빨리 움직이는 방향의 속도. 크면 빠르지만, 같은 모터 분해능·백래시가 TCP에서 그만큼 크게 보입니다.</li><li><strong>정적 토크</strong> — 중심에서 이동판 무게를 들고 있을 때 가장 큰 팔의 출력축 토크 (<code>dynamics.static_torques</code>)</li><li><strong>조건수 κ</strong> — σ_max/σ_min. 1이면 모든 방향이 같은 성능(등방성), 클수록 특정 방향이 둔해집니다. 중심과 작업 실린더 가장자리(반지름의 90 %)에서 봅니다.</li></ul></div></div>
 <h2 id="파라미터-스윕">파라미터 스윕<a class="anchor" href="#파라미터-스윕">#</a></h2>
 <p><code>edu_dynamixel</code>(R = 100, r = 35, L = 130, l = 300 mm)을 기준으로 한 번에 <strong>한 가지만</strong> 바꿉니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign
 from deltarobot import kinematics as kin
 from deltarobot import dynamics as dyn

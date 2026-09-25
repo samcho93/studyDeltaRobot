@@ -167,7 +167,7 @@
 <p><span class="math">x_pick = x_now + v_conv · T(x_pick)</span></p>
 <p>도착 시간 T는 목표 위치에 따라 달라지므로 식이 자기 자신을 참조합니다. <strong>반복 대입</strong>으로 풉니다: 현재 x로 T를 계산 → x를 갱신 → 다시 T … (3번이면 충분히 수렴). T는 움직이기 <strong>전에</strong> <code>trajectory.arch_path()</code>와 <code>trajectory.Profile(...).T</code>로 계산할 수 있습니다 — 로봇이 쓰는 것과 똑같은 궤적 계산이기 때문입니다.</p>
 <p>맨 위 설정 블록만 바꾸면 2단계의 모든 설계안을 같은 프로그램으로 판정할 수 있습니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign, DeltaRobot, default_scene
 from deltarobot import trajectory as traj
 from deltarobot import dynamics as dyn

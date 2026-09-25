@@ -166,7 +166,7 @@
 <div class="table-wrap"><table><thead><tr><th>관절</th><th>종류</th><th>값을 정하는 방법</th></tr></thead><tbody><tr><td><code>motor{i}_joint</code> (i = 1, 2, 3)</td><td>revolute, <strong>능동</strong></td><td>모터각 θᵢ (위팔 수평 0, 아래로 +)</td></tr><tr><td><code>elbow{i}a_pitch</code>, <code>elbow{i}a_yaw</code></td><td>revolute, 수동</td><td><code>kinematics.passive_angles()</code> — 아래팔 방향을 위팔 기준 pitch·yaw로 분해</td></tr><tr><td><code>elbow{i}b_pitch</code>, <code>elbow{i}b_yaw</code></td><td>revolute, 수동, <strong>mimic</strong></td><td>a 로드와 같은 값(평행사변형이라 두 로드는 항상 평행)</td></tr><tr><td><code>effector_x</code>, <code>effector_y</code>, <code>effector_z</code></td><td>prismatic, <strong>가상</strong></td><td>순기구학 <code>fk()</code>로 구한 이펙터 중심 위치</td></tr><tr><td><code>tool_joint</code>, <code>tcp_joint</code></td><td>fixed</td><td>툴 길이만큼 아래 (TCP)</td></tr></tbody></table></div>
 <p>아래팔 좌표계는 <code>Rz(φᵢ)·Ry(θᵢ)·Ry(pitch)·Rz(yaw)</code>이고 x축이 로드 방향입니다. 그래서 pitch는 <strong>위팔에 대한</strong> 상대각이고, yaw는 로드가 팔 평면 밖으로 벌어진 각도(볼조인트 각도)와 같습니다.</p>
 <p>생성된 URDF에서 몇 개의 관절을 직접 봅시다(<code>edu_dynamixel</code>).</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">from deltarobot import DeltaDesign
 from deltarobot import urdf
 
 text = urdf.generate(DeltaDesign.preset(&quot;edu_dynamixel&quot;))
@@ -203,7 +203,7 @@ for name in (&#x27;&quot;motor1_joint&quot;&#x27;, &#x27;&quot;elbow1b_pitch&quo
 <p>각 링크의 <code>&lt;inertial&gt;</code>에는 설계의 질량(<code>upper_arm_mass</code>, <code>forearm_pair_mass/2</code>, <code>effector_mass</code>, 툴 질량)이 들어가고, <code>&lt;visual&gt;</code>은 원기둥·구·상자로 단순하게 그립니다. 재질·치수를 바꾸면 URDF도 그대로 따라 바뀝니다.</p>
 <h2 id="수동-관절-값-계산-jointstate">수동 관절 값 계산: joint_state()<a class="anchor" href="#수동-관절-값-계산-jointstate">#</a></h2>
 <p><code>urdf.joint_state(design, theta)</code>는 <strong>mimic이 아닌 모든 관절</strong>의 값을 돌려줍니다. ROS 2 드라이버(R05)와 URDF 뷰어가 이 계산을 합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import re
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import re
 from deltarobot import DeltaDesign
 from deltarobot import urdf
 

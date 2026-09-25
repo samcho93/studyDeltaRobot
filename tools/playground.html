@@ -63,8 +63,18 @@
   .pg-play-t { font-family: var(--mono); color: var(--accent); white-space: nowrap; min-width: 118px; }
   .pg-play-bar { flex: 1; height: 6px; border-radius: 6px; background: var(--bg-elev-2); border: 1px solid var(--border); overflow: hidden; }
   .pg-play-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #f5b041); }
+  /* inside the lesson practice dock (?dock=1): no header, simulator on top, editor + output below */
+  .docked .pg { height: 100vh; overflow: hidden; }
+  .docked .pg-main { display: flex; flex-direction: column; }
+  .docked .pg-right { order: -1; flex: 0 0 44%; border-bottom: 1px solid var(--border); }
+  .docked .pg-right iframe { flex: 1; height: auto; min-height: 0; }
+  .docked .pg-left { flex: 1; min-height: 0; border-right: 0; }
+  .docked .pg-editor { flex: 1.2; min-height: 0; }
+  .docked .pg-out { flex: 1; min-height: 60px; }
+  .docked .pg-summary { min-height: 0; padding: 6px 12px; }
+  .docked .pg-summary .hint { display: none; }
   @media (max-width: 900px) {
-    .pg { height: auto; overflow: auto; }
+    html:not(.docked) .pg { height: auto; overflow: auto; }
     .pg-main { grid-template-columns: 1fr; display: flex; flex-direction: column; }
     .pg-right { order: -1; }                 /* narrow screens: the simulator comes first */
     .pg-left { border-right: 0; }

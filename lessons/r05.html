@@ -153,7 +153,7 @@
 <div class="table-wrap"><table><thead><tr><th>관절</th><th>종류</th><th>개수</th><th>값은 누가 정하나</th></tr></thead><tbody><tr><td><code>motor{i}_joint</code></td><td>revolute (능동)</td><td>3</td><td>모터 명령 θᵢ</td></tr><tr><td><code>elbow{i}a_pitch</code>, <code>elbow{i}a_yaw</code></td><td>revolute (수동)</td><td>6</td><td>드라이버가 FK로 계산</td></tr><tr><td><code>elbow{i}b_pitch</code>, <code>elbow{i}b_yaw</code></td><td>revolute, <strong>mimic</strong> → a</td><td>6</td><td>a 로드와 같은 값 (평행사변형)</td></tr><tr><td><code>effector_x</code>, <code>effector_y</code>, <code>effector_z</code></td><td>prismatic (가상)</td><td>3</td><td>드라이버가 FK로 계산</td></tr><tr><td><code>tool_joint</code>, <code>tcp_joint</code></td><td>fixed</td><td>2</td><td>툴 길이 (설계값)</td></tr></tbody></table></div>
 <ul><li><strong>평행사변형 → mimic</strong>: 한 팔의 두 로드는 평행사변형이라 항상 같은 방향을 향합니다. 그래서 b 로드 관절은 <code>&lt;mimic joint=&quot;elbow{i}a_pitch&quot; multiplier=&quot;1&quot; offset=&quot;0&quot;/&gt;</code>으로 a 로드를 따라 하게 하고, 발행할 값을 줄입니다. <code>robot_state_publisher</code>가 mimic 관절 값을 채워 <code>/tf</code>를 계산합니다.</li><li><strong>가상 이펙터 관절</strong>: 이펙터는 로드에 붙이지 않고 <code>base_link</code>에서 x·y·z 직선 관절 세 개로 매답니다. 델타로봇의 이펙터는 기울지 않고 평행 이동만 하므로(T02) 3자유도 직선 관절로 충분합니다.</li><li><strong>끝이 열린 로드</strong>: <code>forearm{i}{a,b}</code> 링크는 자식이 없습니다. 수동 관절 값이 정확하면 그 끝이 이펙터의 볼조인트 위치에 딱 놓입니다.</li></ul>
 <p>아래 코드로 생성된 URDF의 구성과, 홈 자세에서 발행해야 할 관절 값을 봅니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign
 from deltarobot.urdf import generate, joint_state
 
@@ -191,7 +191,7 @@ joint_state 이름 12개
 <p><code>joint_state()</code>는 내부에서 다음을 합니다.</p>
 <ol><li>모터각 θ로 순기구학(T05)을 풀어 이펙터 중심 <strong>p</strong>를 구합니다 → <code>effector_x/y/z</code>.</li><li>팔마다 팔꿈치 위치와 볼조인트 위치를 구하고, 그 방향 벡터를 위팔 좌표계로 옮겨 <strong>pitch</strong>(위팔 평면 안 각도, 위팔 기준)와 <strong>yaw</strong>(평면에서 벗어난 각도)로 나눕니다 → <code>kinematics.passive_angles()</code>.</li></ol>
 <p>URDF의 관절 순서(Rz(φ) → Ry(θ) → Ry(pitch) → Rz(yaw))대로 로드 방향을 다시 조립해, 로드 끝이 볼조인트와 만나는지 확인해 봅니다. 홈이 아닌 비대칭 자세에서 시험합니다.</p>
-<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">Playground에서 열기</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
+<div class="code-block code-run"><div class="code-head"><span class="code-lang">python</span><span class="code-badge badge-run">시뮬 실행 가능</span><span class="code-actions"><button class="run-btn" type="button" data-playground="../playground">▶ 오른쪽에서 실행</button><button class="copy-btn" type="button">복사</button></span></div><pre><code class="lang-python">import math
 from deltarobot import DeltaDesign, kinematics as kin
 
 def rot_y(a, v):

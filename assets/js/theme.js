@@ -117,5 +117,13 @@
     else if (mq.addListener) mq.addListener(onChange);
   }
 
+  // 강의 페이지 오른쪽 실습 패널(iframe) 안에서 열린 도구: 상단 머리글을 숨깁니다 (?dock=1)
+  if (/[?&]dock=1(&|$)/.test(location.search)) root.classList.add('docked');
+
+  // 다른 탭/부모 페이지에서 테마를 바꾸면 따라갑니다 (실습 패널이 강의 페이지와 같은 테마 유지)
+  window.addEventListener('storage', function (e) {
+    if (e.key === KEY) apply(read(), false);
+  });
+
   window.DRTheme = { get: function () { return mode; }, resolved: resolved, set: apply };
 })();
