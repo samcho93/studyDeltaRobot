@@ -262,7 +262,7 @@ sel.innerHTML += groups.map((g) => `<optgroup label="${g}">` + EXAMPLES.filter((
   .map((e) => `<option value="${e.id}">${e.title}</option>`).join('') + '</optgroup>').join('');
 sel.addEventListener('change', () => {
   const ex = EXAMPLES.find((e) => e.id === sel.value);
-  if (ex && (editor.getValue() === ex.code || confirm('지금 코드를 예제로 바꿀까요? (현재 코드는 사라집니다)'))) {
+  if (ex) {                                    // no confirm dialog — the editor's undo (Ctrl+Z) brings the old code back
     if (running) stop();                       // an old run must not overwrite the stand-by with its playback
     pendingRun = false;
     $('btnRun').innerHTML = '&#9654; 실행';
